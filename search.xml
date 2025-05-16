@@ -20,11 +20,11 @@
       
         <tags>
             
-            <tag> MySQL </tag>
-            
             <tag> 登录注册功能 </tag>
             
             <tag> 自动化测试平台 </tag>
+            
+            <tag> MySQL </tag>
             
             <tag> Flask </tag>
             
@@ -53,9 +53,9 @@
       
         <tags>
             
-            <tag> 数据库搭建 </tag>
-            
             <tag> MySQL </tag>
+            
+            <tag> 数据库搭建 </tag>
             
             <tag> 登录注册模块 </tag>
             
