@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title>🧠 探秘 AI + 软件测试：黑马程序员课程的奇妙之旅</title>
+      <link href="/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95%EF%BC%88Testing-Fundamentals-Methodologies%EF%BC%89/AI-heima/"/>
+      <url>/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95%EF%BC%88Testing-Fundamentals-Methodologies%EF%BC%89/AI-heima/</url>
+      
+        <content type="html"><![CDATA[<h1 id="🧠-探秘-AI-软件测试：黑马程序员课程的奇妙之旅"><a href="#🧠-探秘-AI-软件测试：黑马程序员课程的奇妙之旅" class="headerlink" title="🧠 探秘 AI + 软件测试：黑马程序员课程的奇妙之旅"></a>🧠 探秘 AI + 软件测试：黑马程序员课程的奇妙之旅</h1><p>🔗 <strong>课程链接</strong>：<a href="https://www.bilibili.com/video/BV1Y4421Q7ej/?share_source=copy_web&vd_source=615de98b25791019365749b7f5ff5105">AI+软件测试【黑马程序员】</a></p><hr><h2 id="🌟-一、AI-快速入门"><a href="#🌟-一、AI-快速入门" class="headerlink" title="🌟 一、AI 快速入门"></a>🌟 一、AI 快速入门</h2><ul><li>推荐网站：<strong>黑马星云 AI 助理</strong></li><li>推荐模型：<strong>百度文心大模型</strong></li></ul><p>🎯 <strong>AI 在软件测试中的作用：</strong></p><ul><li>提升测试速度与效率</li><li>支持缺陷预测与分析</li></ul><p>🧩 <strong>指令 Prompt 组成：</strong></p><ul><li>角色（Role）</li><li>指示（Instruction）</li><li>可选：上下文、示例、输入、输出</li></ul><hr><h2 id="🧪-二、测试基础（分类）"><a href="#🧪-二、测试基础（分类）" class="headerlink" title="🧪 二、测试基础（分类）"></a>🧪 二、测试基础（分类）</h2><h3 id="📌-按生产阶段划分"><a href="#📌-按生产阶段划分" class="headerlink" title="📌 按生产阶段划分"></a>📌 按生产阶段划分</h3><table><thead><tr><th>测试类型</th><th>说明</th><th>类比</th></tr></thead><tbody><tr><td>单元测试</td><td>对代码最小单元进行测试</td><td>检查每块砖 🧱</td></tr><tr><td>集成测试</td><td>测试模块间交互功能</td><td>组装房屋部件 🔗</td></tr><tr><td>系统测试</td><td>测试整个系统</td><td>整体房屋检查 🏠</td></tr><tr><td>验收测试</td><td>验证是否满足用户需求</td><td>业主验收 👀</td></tr></tbody></table><h3 id="📌-按代码可见度划分"><a href="#📌-按代码可见度划分" class="headerlink" title="📌 按代码可见度划分"></a>📌 按代码可见度划分</h3><table><thead><tr><th>测试类型</th><th>特点</th><th>类比</th></tr></thead><tbody><tr><td>黑盒测试</td><td>代码不可见，仅测试输入输出</td><td>看房外观 🏡</td></tr><tr><td>灰盒测试</td><td>部分代码可见</td><td>知道部分结构 🧐</td></tr><tr><td>白盒测试</td><td>全部代码可见</td><td>清楚内部细节 🔍</td></tr></tbody></table><h3 id="📌-其他测试类型"><a href="#📌-其他测试类型" class="headerlink" title="📌 其他测试类型"></a>📌 其他测试类型</h3><ul><li><strong>冒烟测试</strong> ✅：核心功能是否正常</li><li><strong>回归测试</strong> 🔁：修复后的功能是否未影响已有功能</li></ul><hr><h2 id="🧱-三、测试基础（质量模型）"><a href="#🧱-三、测试基础（质量模型）" class="headerlink" title="🧱 三、测试基础（质量模型）"></a>🧱 三、测试基础（质量模型）</h2><table><thead><tr><th>维度</th><th>说明</th><th>类比</th></tr></thead><tbody><tr><td>功能性</td><td>功能是否完备</td><td>房间配置 🛏️</td></tr><tr><td>性能</td><td>多人同时使用是否流畅</td><td>水电供应 🚰</td></tr><tr><td>兼容性</td><td>跨设备正常运行</td><td>适应不同人群 🌍</td></tr><tr><td>易用性</td><td>易学易用体验佳</td><td>合理布局 😌</td></tr><tr><td>安全性</td><td>数据是否安全加密</td><td>门锁安全 🔒</td></tr><tr><td>可靠性</td><td>长期运行稳定性</td><td>房屋耐久性 🏰</td></tr><tr><td>可移植性</td><td>系统迁移便捷</td><td>物品可搬迁 🚚</td></tr><tr><td>可维护性</td><td>故障修复是否方便</td><td>易于维修 🛠️</td></tr></tbody></table><hr><h2 id="📲-四、客户端测试：登录测试点分析"><a href="#📲-四、客户端测试：登录测试点分析" class="headerlink" title="📲 四、客户端测试：登录测试点分析"></a>📲 四、客户端测试：登录测试点分析</h2><h3 id="✳️-单功能概念"><a href="#✳️-单功能概念" class="headerlink" title="✳️ 单功能概念"></a>✳️ 单功能概念</h3><ul><li>仅含一项核心功能（如登录）</li><li>设计测试点 → 转为用例 → 执行测试 → 缺陷管理</li></ul><h3 id="✳️-等价类划分法"><a href="#✳️-等价类划分法" class="headerlink" title="✳️ 等价类划分法"></a>✳️ 等价类划分法</h3><ul><li>有效等价类 &#x2F; 无效等价类</li><li>示例：手机号登录、密码填写、验证码输入</li></ul><hr><h2 id="🎯-五、单功能测试点提取原则"><a href="#🎯-五、单功能测试点提取原则" class="headerlink" title="🎯 五、单功能测试点提取原则"></a>🎯 五、单功能测试点提取原则</h2><ul><li>有效数据 → 多组合测试</li><li>无效数据 → 与其他项组合测试</li></ul><hr><h2 id="📏-六、长度范围测试点：边界值分析法"><a href="#📏-六、长度范围测试点：边界值分析法" class="headerlink" title="📏 六、长度范围测试点：边界值分析法"></a>📏 六、长度范围测试点：边界值分析法</h2><ul><li>上点：边界值（必选）</li><li>离点：接近边界（选2个）</li><li>内点：正常值范围（建议取中间）</li></ul><p>📌 示例：注册功能，账号、密码长度限制 + 条款勾选</p><hr><h2 id="📱-七、非功能测试点：兼容性测试"><a href="#📱-七、非功能测试点：兼容性测试" class="headerlink" title="📱 七、非功能测试点：兼容性测试"></a>📱 七、非功能测试点：兼容性测试</h2><p>兼容性测试关注：</p><ul><li>📱 手机品牌&#x2F;型号</li><li>🌐 网络状况</li><li>🧩 软件&#x2F;硬件兼容性</li><li>🔌 外设&#x2F;操作系统兼容</li><li>📷 屏幕尺寸适配</li></ul><hr><h2 id="📄-八、测试用例基本结构"><a href="#📄-八、测试用例基本结构" class="headerlink" title="📄 八、测试用例基本结构"></a>📄 八、测试用例基本结构</h2><table><thead><tr><th>字段</th><th>含义</th></tr></thead><tbody><tr><td>用例编号</td><td>编号命名</td></tr><tr><td>用例标题</td><td>执行目标</td></tr><tr><td>所属模块</td><td>所属功能块</td></tr><tr><td>优先级</td><td>P0（最高）~P3（最低）</td></tr><tr><td>前置条件</td><td>用例执行前的状态要求</td></tr><tr><td>测试步骤</td><td>每一步操作流程</td></tr><tr><td>测试数据</td><td>输入数据</td></tr><tr><td>预期结果</td><td>包括显式&#x2F;隐式行为</td></tr></tbody></table><hr><h2 id="🔁-九、业务测试方法"><a href="#🔁-九、业务测试方法" class="headerlink" title="🔁 九、业务测试方法"></a>🔁 九、业务测试方法</h2><ul><li>方法：<strong>流程图法</strong></li><li>步骤：确认业务流程 → 每条路径生成一条用例</li><li>优先：先测主流程，再测模块流程</li></ul><hr><h2 id="📋-十、项目测试流程"><a href="#📋-十、项目测试流程" class="headerlink" title="📋 十、项目测试流程"></a>📋 十、项目测试流程</h2><table><thead><tr><th>阶段</th><th>内容</th></tr></thead><tbody><tr><td>需求分析</td><td>理解功能点与业务逻辑</td></tr><tr><td>测试计划</td><td>制定测试方式和资源安排</td></tr><tr><td>设计用例</td><td>编写并评审测试用例</td></tr><tr><td>执行用例</td><td>实际测试过程</td></tr><tr><td>缺陷管理</td><td>缺陷记录与跟踪</td></tr><tr><td>测试报告</td><td>总结测试过程与质量状况</td></tr></tbody></table><hr><h2 id="📱-十一、APP-测试分类"><a href="#📱-十一、APP-测试分类" class="headerlink" title="📱 十一、APP 测试分类"></a>📱 十一、APP 测试分类</h2><ul><li><strong>功能测试</strong>：业务&#x2F;功能模块完整性</li><li><strong>性能测试</strong>：流畅度、内存、耗电等</li><li><strong>专项测试</strong>：<ul><li>安装&#x2F;卸载&#x2F;升级</li><li>Push 推送</li><li>用户体验</li><li>兼容性等</li></ul></li></ul><hr><h2 id="⚙️-十二、APP-性能测试关注点"><a href="#⚙️-十二、APP-性能测试关注点" class="headerlink" title="⚙️ 十二、APP 性能测试关注点"></a>⚙️ 十二、APP 性能测试关注点</h2><table><thead><tr><th>类型</th><th>指标</th><th>工具</th></tr></thead><tbody><tr><td>内存</td><td>Privatedirty &#x2F; PSS</td><td>adb &#x2F; GT</td></tr><tr><td>CPU</td><td>总占用 &#x2F; 应用进程</td><td>adb</td></tr><tr><td>流量</td><td>网络使用情况</td><td>网络抓包工具</td></tr><tr><td>电量</td><td>系统接口 &#x2F; 软件工具 &#x2F; 硬件检测</td><td>Android Profiler 等</td></tr><tr><td>流畅度</td><td>帧率 FPS</td><td>soloPi</td></tr><tr><td>启动速度</td><td>冷启动 &#x2F; 热启动</td><td>adb logcat</td></tr></tbody></table><hr><h2 id="🤖-十三、AI-应用技巧"><a href="#🤖-十三、AI-应用技巧" class="headerlink" title="🤖 十三、AI 应用技巧"></a>🤖 十三、AI 应用技巧</h2><p>✨ AI 可辅助以下环节：</p><ul><li><strong>需求分析</strong>：理解与评审功能</li><li><strong>测试计划</strong>：制定覆盖面广的测试方案</li><li><strong>测试用例设计</strong>：覆盖更多场景和异常路径</li></ul><hr><h2 id="🎉-学习心得"><a href="#🎉-学习心得" class="headerlink" title="🎉 学习心得"></a>🎉 学习心得</h2><blockquote><p>通过这门课程，我收获了许多实用的测试知识，也更深入理解了 AI + 软件测试的结合潜力。希望我的分享对你有所帮助，一起在技术学习的道路上携手前行！</p></blockquote><hr><p>📌 <em>文档整理：由 AI 整理美化排版，内容源于黑马程序员 B站课程学习笔记</em></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 基础知识 &amp; 测试方法（Testing Fundamentals &amp; Methodologies） </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> AI </tag>
+            
+            <tag> 软件测试 </tag>
+            
+            <tag> 黑马程序员 </tag>
+            
+            <tag> 测试基础 </tag>
+            
+            <tag> 测试方法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>SA分析师认证课程 - 第四章 数据分析方法全解析</title>
       <link href="/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0-%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF%EF%BC%88Learning-Notes-Industry-Trends%EF%BC%89/SACA-chapter4/"/>
       <url>/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0-%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF%EF%BC%88Learning-Notes-Industry-Trends%EF%BC%89/SACA-chapter4/</url>
