@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title>🌐解决 Cursor 地区限制报错：Claude、GPT-4 无法使用的应对方案分享</title>
+      <link href="/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89/2025-07-30-cursor-region-limit-solution/"/>
+      <url>/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89/2025-07-30-cursor-region-limit-solution/</url>
+      
+        <content type="html"><![CDATA[<h1 id="🌐解决-Cursor-地区限制报错：Claude、GPT-4-无法使用的应对方案分享"><a href="#🌐解决-Cursor-地区限制报错：Claude、GPT-4-无法使用的应对方案分享" class="headerlink" title="🌐解决 Cursor 地区限制报错：Claude、GPT-4 无法使用的应对方案分享"></a>🌐解决 Cursor 地区限制报错：Claude、GPT-4 无法使用的应对方案分享</h1><blockquote><p>本文仅出于技术学习和经验分享目的，帮助开发者了解和解决 Cursor 使用海外模型时遇到的地区限制问题。</p></blockquote><hr><h2 id="🚨问题描述：Cursor-使用海外模型报错"><a href="#🚨问题描述：Cursor-使用海外模型报错" class="headerlink" title="🚨问题描述：Cursor 使用海外模型报错"></a>🚨问题描述：Cursor 使用海外模型报错</h2><p>近期 Cursor 编译器在使用 Claude、GPT-4 等海外模型时，部分用户（特别是中国大陆 IP）会遇到如下错误提示：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">❌ Model not available  </span><br><span class="line">This model provider doesn&#x27;t serve your region.  </span><br><span class="line">Visit https://docs.cursor.com/account/regions for more information.</span><br></pre></td></tr></table></figure><p>如图所示：</p><p><img src="/../img/region-error.png" alt="cursor地区限制报错"> </p><p>这意味着 <strong>Cursor 的模型服务商对地区进行了限制</strong>，尤其是 Claude 和 GPT-4 类模型在中国大陆区域默认不可用。</p><hr><h2 id="✅解决方案（需配置-VPN）"><a href="#✅解决方案（需配置-VPN）" class="headerlink" title="✅解决方案（需配置 VPN）"></a>✅解决方案（需配置 VPN）</h2><p>目前应对方式主要有两种路径，均依赖于你已配置好 VPN 环境：</p><hr><h3 id="🧭方案一：配置代理服务器"><a href="#🧭方案一：配置代理服务器" class="headerlink" title="🧭方案一：配置代理服务器"></a>🧭方案一：配置代理服务器</h3><p>在 Cursor 中手动设置代理服务器地址，使其网络请求通过 VPN 通道转发。</p><h4 id="第一步：打开代理设置"><a href="#第一步：打开代理设置" class="headerlink" title="第一步：打开代理设置"></a>第一步：打开代理设置</h4><p>进入 Cursor 菜单：</p><p><code>文件 &gt; 首选项 &gt; 设置 &gt; 应用程序 &gt; 代理服务器</code></p><p>输入你当前 VPN 对应的代理地址和端口号。</p><p>📍如图示例：</p><p><img src="/../img/proxy-setting.png" alt="代理服务器设置"></p><h4 id="第二步：获取代理地址（按系统）"><a href="#第二步：获取代理地址（按系统）" class="headerlink" title="第二步：获取代理地址（按系统）"></a>第二步：获取代理地址（按系统）</h4><ul><li><p><strong>Windows</strong><br>进入 <code>设置 &gt; 网络和 Internet &gt; 代理</code>，即可查看系统使用的代理服务器信息。</p><p><img src="/../img/windows-proxy.png" alt="Windows代理查看"></p></li><li><p><strong>macOS</strong><br>打开 <code>系统设置 &gt; 网络</code>，选择你当前的网络，点击“详细信息”，进入“代理”标签页查看。</p></li></ul><hr><h3 id="🌐方案二：开启-TUN-模式（全局代理）"><a href="#🌐方案二：开启-TUN-模式（全局代理）" class="headerlink" title="🌐方案二：开启 TUN 模式（全局代理）"></a>🌐方案二：开启 TUN 模式（全局代理）</h3><p>如果你使用的是支持 TUN 模式的 VPN 工具（如 Clash、Surfboard、Shadowrocket 等），可以直接开启 TUN 模式，将设备的所有网络流量通过代理通道转发。</p><p>TUN 模式的核心作用是将<strong>全局流量强制走代理</strong>，无需手动设置代理地址，适合不熟悉网络配置的同学。</p><p>📍如下图所示：</p><p><img src="/../img/tun-mode.png" alt="TUN模式示意"></p><hr><h2 id="⚙️附加配置：设置-HTTP-协议为-1-1"><a href="#⚙️附加配置：设置-HTTP-协议为-1-1" class="headerlink" title="⚙️附加配置：设置 HTTP 协议为 1.1"></a>⚙️附加配置：设置 HTTP 协议为 1.1</h2><p>为避免某些请求协议不兼容，可以在 Cursor 中将网络协议模式设置为 <code>HTTP/1.1</code>：</p><ul><li>进入：<code>设置 &gt; 网络 &gt; 网络模式</code></li><li>选择：HTTP&#x2F;1.1</li></ul><p><img src="/../img/http1.1-setting.png" alt="HTTP1.1设置"></p><hr><h2 id="⚠️可能遇到的问题及建议"><a href="#⚠️可能遇到的问题及建议" class="headerlink" title="⚠️可能遇到的问题及建议"></a>⚠️可能遇到的问题及建议</h2><p>即使设置完成，仍有可能遇到以下报错：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">connection failed. if the problem persists, please check your internet connection or vpn client</span><br><span class="line">network socket disconnected before secure tls connection was established [aborted]</span><br></pre></td></tr></table></figure><p>🔎<strong>原因分析</strong>：这是由于 VPN 网络不稳定，TLS 握手阶段中断所导致。</p><p>✅<strong>建议操作</strong>：</p><ul><li>尝试“重新发送”操作，<strong>成功率高于点击“重试”按钮</strong></li><li>若问题频发，建议更换质量更稳定的 VPN 工具（例如付费代理）</li></ul><hr><h2 id="📌免责声明（务必阅读）"><a href="#📌免责声明（务必阅读）" class="headerlink" title="📌免责声明（务必阅读）"></a>📌免责声明（务必阅读）</h2><p>本分享仅用于<strong>技术学习与问题排查交流</strong>，不代表推荐使用任何 VPN 工具，也不鼓励任何违反平台规则或法律法规的行为。</p><p>使用文中提到的代理设置或网络工具可能涉及账号、数据或法律风险，请务必自行判断与承担责任。</p><hr><h2 id="🧠写在最后"><a href="#🧠写在最后" class="headerlink" title="🧠写在最后"></a>🧠写在最后</h2><p>作为一名开发者，遇到环境配置问题、地区限制问题并不罕见。我们需要做的，是冷静分析报错现象，合法合规地寻找解决方案。</p><p>如果你也在 Cursor 上遇到“模型不可用”的问题，希望这篇文章能帮你节省查找资料的时间，顺利恢复使用 Claude、GPT-4 等模型功能。</p><p>欢迎留言交流其他解决思路或遇到的新坑🙌</p><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 这里什么都聊！（Random Thoughts &amp; Life） </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Cursor </tag>
+            
+            <tag> 地区限制 </tag>
+            
+            <tag> Claude </tag>
+            
+            <tag> GPT-4 </tag>
+            
+            <tag> VPN </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Logcat 日志详解与测试工程师实战指南</title>
       <link href="/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89/2025-07-28-logcat-guide-for-testers/"/>
       <url>/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89/2025-07-28-logcat-guide-for-testers/</url>
