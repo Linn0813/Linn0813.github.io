@@ -4,6 +4,72 @@
   
     
     <entry>
+      <title>你真的会比较版本号吗？我因为“3.9.0 &gt; 3.11.0”翻了车</title>
+      <link href="/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89/2025-08-07-version-compare-gotcha/"/>
+      <url>/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89/2025-08-07-version-compare-gotcha/</url>
+      
+        <content type="html"><![CDATA[<h2 id="你真的会比较版本号吗？我因为“3-9-0-3-11-0”翻了车"><a href="#你真的会比较版本号吗？我因为“3-9-0-3-11-0”翻了车" class="headerlink" title="你真的会比较版本号吗？我因为“3.9.0 &gt; 3.11.0”翻了车"></a>你真的会比较版本号吗？我因为“3.9.0 &gt; 3.11.0”翻了车</h2><h3 id="✍️-前言：一个不起眼的-bug，背后的大坑"><a href="#✍️-前言：一个不起眼的-bug，背后的大坑" class="headerlink" title="✍️ 前言：一个不起眼的 bug，背后的大坑"></a>✍️ 前言：一个不起眼的 bug，背后的大坑</h3><p>在一次测试任务中，我需要验证某段逻辑是否在不同版本范围内正确生效。逻辑中涉及版本号对比，我最初随手用了几个测试数据，比如 <code>3.1.0</code>、<code>3.2.0</code>、<code>3.5.2</code>，对比结果都符合预期，测试自然也通过了。</p><p>直到某一天我用上了 <code>3.9.0</code> 和 <code>3.11.0</code>，结果却让我一脸问号：<strong>系统竟然认为 3.9.0 &gt; 3.11.0？</strong></p><p>找开发一查，果然，代码中做版本比较的方式出了问题。他们直接把版本号当成字符串来比较，导致在“9”和“11”之间，字符串认为 <code>&quot;9&quot; &gt; &quot;11&quot;</code>，从而出现了错误判断。</p><hr><h3 id="🚨-问题复现：版本号字符串比较的坑"><a href="#🚨-问题复现：版本号字符串比较的坑" class="headerlink" title="🚨 问题复现：版本号字符串比较的坑"></a>🚨 问题复现：版本号字符串比较的坑</h3><p>很多人觉得版本号像字符串一样写着，直接 <code>if version1 &gt; version2</code> 不就行了吗？</p><p>来看看以下 Python 例子：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;3.9.0&quot;</span> &gt; <span class="string">&quot;3.11.0&quot;</span>)  <span class="comment"># True ❌</span></span><br></pre></td></tr></table></figure><p>这是 <strong>错误的比较方式</strong>。因为字符串是按字符顺序逐位比较的：</p><ul><li>第一位都一样（3）</li><li>第二位 “9” 和 “1”，因为字符串中 “9” &gt; “1”，比较就停止了，返回 True</li></ul><p>这根本不是真正意义上的版本号比较。</p><hr><h3 id="✅-正确做法：逐位数字对比"><a href="#✅-正确做法：逐位数字对比" class="headerlink" title="✅ 正确做法：逐位数字对比"></a>✅ 正确做法：逐位数字对比</h3><p>版本号的正确比较方式是将它按 <code>.</code> 分割后，<strong>逐段转成整数进行对比</strong>。<br>例如，<code>3.9.0</code> 应该变成 <code>[3, 9, 0]</code>，<code>3.11.0</code> 变成 <code>[3, 11, 0]</code>，再逐位比较。</p><p>以 Python 为例：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">compare_versions</span>(<span class="params">v1, v2</span>):</span><br><span class="line">    parts1 = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="built_in">int</span>, v1.split(<span class="string">&quot;.&quot;</span>)))</span><br><span class="line">    parts2 = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="built_in">int</span>, v2.split(<span class="string">&quot;.&quot;</span>)))</span><br><span class="line">    <span class="keyword">return</span> parts1 &gt; parts2</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(compare_versions(<span class="string">&quot;3.9.0&quot;</span>, <span class="string">&quot;3.11.0&quot;</span>))  <span class="comment"># False ✅</span></span><br></pre></td></tr></table></figure><p>其他语言也有类似的方法，甚至很多主流语言已经提供了内建或库级支持，比如：</p><ul><li><strong>Python</strong>：<code>packaging.version.parse</code> 或 <code>distutils.version.LooseVersion</code></li><li><strong>Java</strong>：<code>ComparableVersion</code>（Apache Maven）、自定义 <code>Version</code> 类</li><li><strong>JavaScript</strong>：可使用 <code>semver</code> 库</li><li><strong>Go</strong>：<code>github.com/hashicorp/go-version</code></li></ul><hr><h3 id="🧪-作为测试人员，这些细节不能忽视"><a href="#🧪-作为测试人员，这些细节不能忽视" class="headerlink" title="🧪 作为测试人员，这些细节不能忽视"></a>🧪 作为测试人员，这些细节不能忽视</h3><p>这次经历给了我几个很重要的启发，尤其是在测试场景中：</p><h4 id="1-测试数据不能只覆盖个位版本"><a href="#1-测试数据不能只覆盖个位版本" class="headerlink" title="1. 测试数据不能只覆盖个位版本"></a>1. <strong>测试数据不能只覆盖个位版本</strong></h4><blockquote><p>用 <code>3.1.0</code>、<code>3.2.0</code> 是远远不够的，必须包含：</p></blockquote><ul><li>跨位数（如 <code>3.9.0</code> vs <code>3.10.0</code>、<code>3.11.0</code>）</li><li>不同 patch 位数（如 <code>3.9.0</code> vs <code>3.9.1</code>）</li><li>相同主版本不同子版本组合</li></ul><h4 id="2-需主动核查开发的版本比较逻辑"><a href="#2-需主动核查开发的版本比较逻辑" class="headerlink" title="2. 需主动核查开发的版本比较逻辑"></a>2. <strong>需主动核查开发的版本比较逻辑</strong></h4><blockquote><p>如果你发现逻辑里存在版本判断，<strong>不要默认它是对的</strong>！建议直接问开发是按什么规则比的？字符串？数字？有没有用库？</p></blockquote><h4 id="3-建议团队引入标准版本比较库"><a href="#3-建议团队引入标准版本比较库" class="headerlink" title="3. 建议团队引入标准版本比较库"></a>3. <strong>建议团队引入标准版本比较库</strong></h4><blockquote><p>如果语言本身没有明确的处理方案，建议团队统一引入类似 <code>semver</code>、<code>LooseVersion</code> 这样的工具，避免重复踩坑。</p></blockquote><h4 id="4-边界值要测足够"><a href="#4-边界值要测足够" class="headerlink" title="4. 边界值要测足够"></a>4. <strong>边界值要测足够</strong></h4><blockquote><p>不只是 <code>3.9.0</code> 和 <code>3.11.0</code>，你还可以设计一些特殊情况，比如：</p></blockquote><ul><li>不同长度（<code>3.9</code> vs <code>3.9.0.0</code>）</li><li>补零（<code>3.09.0</code> vs <code>3.9.0</code>）</li><li>带前缀（如 <code>v3.9.0</code>）</li></ul><hr><h3 id="💡-总结"><a href="#💡-总结" class="headerlink" title="💡 总结"></a>💡 总结</h3><blockquote><p><strong>版本号不是字符串，它是结构化的数字！</strong></p></blockquote><p>如果你直接用字符串比较版本号，很可能在版本升级到两位数时踩坑。我们习惯性地从左到右读字符串，但机器在进行字符串比较时可能完全不是你想象的那样。</p><p>所以，不管你是开发还是测试，这种“看似简单”的细节问题，往往最容易被忽略，也最容易在上线后酿成 bug。</p><hr><h3 id="🧩-延伸阅读-推荐工具"><a href="#🧩-延伸阅读-推荐工具" class="headerlink" title="🧩 延伸阅读 &#x2F; 推荐工具"></a>🧩 延伸阅读 &#x2F; 推荐工具</h3><ul><li><a href="https://packaging.pypa.io/">Python packaging.version 文档</a></li><li><a href="https://www.npmjs.com/package/semver">Node.js semver 库</a></li><li><a href="https://maven.apache.org/ref/3.6.0/maven-artifact/apidocs/org/apache/maven/artifact/versioning/ComparableVersion.html">Maven ComparableVersion</a></li></ul><hr><h3 id="🔚-结语"><a href="#🔚-结语" class="headerlink" title="🔚 结语"></a>🔚 结语</h3><p>这次版本号比较翻车的经历让我意识到，<strong>细节决定质量，越基础的逻辑越不能掉以轻心</strong>。</p><p>如果你也遇到过类似问题，欢迎一起交流经验；如果你还没踩坑，那希望这篇文章能帮你绕过这个小陷阱～</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 项目实战 &amp; 测试经验（Testing Practices &amp; Case Studies） </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 版本比较 </tag>
+            
+            <tag> 版本号 </tag>
+            
+            <tag> 开发 </tag>
+            
+            <tag> 字符串比较 </tag>
+            
+            <tag> 测试bug </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>别再用 QPS 计算并发数了！我曾经也犯了这个错误</title>
+      <link href="/%E6%80%A7%E8%83%BD%E3%80%81%E5%AE%89%E5%85%A8-%E7%89%B9%E6%AE%8A%E6%B5%8B%E8%AF%95%EF%BC%88Performance-Security-Special-Testing%EF%BC%89/2025-08-06-qps-vs-rps/"/>
+      <url>/%E6%80%A7%E8%83%BD%E3%80%81%E5%AE%89%E5%85%A8-%E7%89%B9%E6%AE%8A%E6%B5%8B%E8%AF%95%EF%BC%88Performance-Security-Special-Testing%EF%BC%89/2025-08-06-qps-vs-rps/</url>
+      
+        <content type="html"><![CDATA[<h1 id="别再用-QPS-计算并发数了！我曾经也犯了这个错误"><a href="#别再用-QPS-计算并发数了！我曾经也犯了这个错误" class="headerlink" title="别再用 QPS 计算并发数了！我曾经也犯了这个错误"></a>别再用 QPS 计算并发数了！我曾经也犯了这个错误</h1><h3 id="✍️-前言：一次“压测误区”的反思"><a href="#✍️-前言：一次“压测误区”的反思" class="headerlink" title="✍️ 前言：一次“压测误区”的反思"></a>✍️ 前言：一次“压测误区”的反思</h3><p>在一次压测计划中，我想要模拟系统在 <strong>QPS 为 500</strong> 的情况下运行一分钟，于是直接算了下：</p><blockquote><p>500 QPS × 60 秒 &#x3D; 30,000 请求</p></blockquote><p>我很自然地把这个数当成“发起请求的总数”，在压测工具里配置成了对应的并发请求和速率。<br>可实际执行后，结果完全不对劲：服务器很快就吃不消，响应成功数远低于预期，日志也开始大量报错。</p><p>后来我才意识到，原来我混淆了 QPS 的含义。<br>压测工具配置的是<strong>发起请求数（RPS）</strong>，而我想要的是<strong>成功处理数（QPS）</strong>。<br>这之间的误解，足以让一次压测结果严重失真。</p><hr><h3 id="📌-QPS、RPS、TPS-到底有啥区别？"><a href="#📌-QPS、RPS、TPS-到底有啥区别？" class="headerlink" title="📌 QPS、RPS、TPS 到底有啥区别？"></a>📌 QPS、RPS、TPS 到底有啥区别？</h3><table><thead><tr><th>概念</th><th>全称</th><th>关注点</th><th>说明</th></tr></thead><tbody><tr><td><strong>QPS</strong></td><td>Queries Per Second</td><td>服务端处理能力</td><td>每秒成功<strong>响应</strong>的请求数</td></tr><tr><td><strong>RPS</strong></td><td>Requests Per Second</td><td>客户端施压能力</td><td>每秒<strong>发起</strong>的请求数，不一定全部处理成功</td></tr><tr><td><strong>TPS</strong></td><td>Transactions Per Second</td><td>事务处理能力</td><td>每秒完成的事务数量（如数据库事务）</td></tr></tbody></table><hr><h3 id="🎯-举个例子说明问题"><a href="#🎯-举个例子说明问题" class="headerlink" title="🎯 举个例子说明问题"></a>🎯 举个例子说明问题</h3><p>假设某系统在 1 秒内：</p><ul><li>接收了 100 个请求（RPS &#x3D; 100）</li><li>实际只处理了其中的 80 个（QPS &#x3D; 80）</li></ul><p>这就说明当前服务已经出现了处理瓶颈。RPS 代表了你希望系统处理的压力，QPS 则代表系统真正扛下的能力。</p><p>所以，在系统性能评估中：</p><ul><li><strong>RPS 越高</strong>，意味着你施加的压力量越大</li><li><strong>QPS 越高</strong>，意味着系统的处理能力越强</li></ul><hr><h3 id="🛠-在压测工具中如何体现？"><a href="#🛠-在压测工具中如何体现？" class="headerlink" title="🛠 在压测工具中如何体现？"></a>🛠 在压测工具中如何体现？</h3><p>以我们常用的 JMeter 和 Locust 为例：</p><h4 id="✅-JMeter"><a href="#✅-JMeter" class="headerlink" title="✅ JMeter"></a>✅ JMeter</h4><ul><li>设置线程数和循环次数，模拟的是 <strong>RPS</strong></li><li>报表中统计的“每秒成功响应数”是 <strong>QPS</strong></li></ul><h4 id="✅-Locust"><a href="#✅-Locust" class="headerlink" title="✅ Locust"></a>✅ Locust</h4><ul><li>可以直接设置“每秒发起请求数”，即 RPS</li><li>后台 UI 中的统计图表会展示 QPS 的变化趋势</li></ul><p>也就是说，在压测工具中我们通常设置的是 RPS，而观察的结果才是 QPS。<br>如果你错误地用 QPS 作为设置参数，就会导致实际发起请求数远大于系统处理能力，从而产生误判。</p><hr><h3 id="❌-我的错误做法回顾"><a href="#❌-我的错误做法回顾" class="headerlink" title="❌ 我的错误做法回顾"></a>❌ 我的错误做法回顾</h3><p>我曾以为：</p><blockquote><p>QPS 就是我要每秒发出的请求数，所以直接用它去设定并发和速率。</p></blockquote><p>但事实是：</p><ul><li>压测工具设置的是 RPS；</li><li>QPS 是结果，由系统的处理能力决定，不能直接“配置”出来。</li></ul><p>所以我的测试其实是在用 <strong>RPS &#x3D; 500</strong> 压系统，而不是“系统能稳定处理 500 请求”的验证。</p><p>结果当然就是，系统很快打满，响应超时、失败率飙升，QPS 也远达不到预期。</p><hr><h3 id="✅-正确的理解方式是："><a href="#✅-正确的理解方式是：" class="headerlink" title="✅ 正确的理解方式是："></a>✅ 正确的理解方式是：</h3><ul><li><strong>QPS 是观测值</strong>：测试过程中系统每秒实际处理完成的请求数量；</li><li><strong>RPS 是输入参数</strong>：我们对系统施加的压力量；</li></ul><p>因此如果你的目标是“系统达到 QPS &#x3D; 500”，你应该：</p><ol><li>配置合理的 RPS 值；</li><li>逐步加压；</li><li>观察 QPS 是否随之提升；</li><li>评估在什么点系统开始失控或无法线性提升处理能力。</li></ol><hr><h3 id="💡-我的实践建议"><a href="#💡-我的实践建议" class="headerlink" title="💡 我的实践建议"></a>💡 我的实践建议</h3><ul><li><strong>目标明确</strong>：先明确你的压测目标是测客户端发压能力（RPS）还是服务端承压能力（QPS）；</li><li><strong>逐步施压</strong>：用阶梯式压测或线性提升 RPS 的方式，逐步逼近系统极限；</li><li><strong>实时观测</strong>：通过 APM 工具、日志、Prometheus 或压测工具自身统计，实时观测 QPS、失败率、响应时间等核心指标；</li><li><strong>聚焦瓶颈点</strong>：一旦 QPS 不再随 RPS 增加，就要开始分析：是 CPU？数据库？网络？线程池？找出系统的限速器。</li></ul><hr><h3 id="🧩-总结一句话"><a href="#🧩-总结一句话" class="headerlink" title="🧩 总结一句话"></a>🧩 总结一句话</h3><blockquote><p><strong>QPS 是系统抗压的“结果”，RPS 是你施加的“压力”——两者混淆只会让压测失真。</strong></p></blockquote><hr><h3 id="🎯-最后的提醒"><a href="#🎯-最后的提醒" class="headerlink" title="🎯 最后的提醒"></a>🎯 最后的提醒</h3><p>如果你正在做接口压测，请务必检查以下问题：</p><ul><li>你配置的是 RPS 还是 QPS？</li><li>你设定的目标，是系统性能的结果，还是工具的输入？</li><li>你是否用对了这些指标的含义？</li></ul><p>我已经踩过一次坑了，如果你刚好也走到了这一步，希望这篇文章能帮你少走一点弯路。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 性能、安全 &amp; 特殊测试（Performance, Security &amp; Special Testing） </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 性能测试 </tag>
+            
+            <tag> QPS </tag>
+            
+            <tag> RPS </tag>
+            
+            <tag> TPS </tag>
+            
+            <tag> 压测 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>🌐解决 Cursor 地区限制报错：Claude、GPT-4 无法使用的应对方案分享</title>
       <link href="/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89/2025-07-30-cursor-region-limit-solution/"/>
       <url>/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89/2025-07-30-cursor-region-limit-solution/</url>
