@@ -533,6 +533,20 @@
 
   
   <url>
+    <loc>https://linn0813.github.io/tags/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E4%B8%AA%E4%BA%BA%E7%A2%8E%E7%A2%8E%E5%BF%B5/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://linn0813.github.io/tags/%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -694,14 +708,21 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D/</loc>
+    <loc>https://linn0813.github.io/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/%E4%B8%AA%E4%BA%BA%E7%A2%8E%E7%A2%8E%E5%BF%B5/</loc>
+    <loc>https://linn0813.github.io/tags/SACA%E8%AF%BE%E7%A8%8B/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E7%A5%9E%E7%AD%96%E5%88%86%E6%9E%90%E5%B8%88%E8%AE%A4%E8%AF%81/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -723,27 +744,6 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/SACA%E8%AF%BE%E7%A8%8B/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E7%A5%9E%E7%AD%96%E5%88%86%E6%9E%90%E5%B8%88%E8%AE%A4%E8%AF%81/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -855,6 +855,41 @@
   </url>
   
   <url>
+    <loc>https://linn0813.github.io/tags/AI/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%98/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -890,34 +925,6 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/%E5%BA%94%E5%B1%8A%E7%94%9F%E6%B1%82%E8%81%8C/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E5%BC%80%E5%8F%91/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E7%AE%97%E6%B3%95%E5%B7%A5%E7%A8%8B%E5%B8%88/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://linn0813.github.io/tags/JMeter/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -947,6 +954,34 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E5%BA%94%E5%B1%8A%E7%94%9F%E6%B1%82%E8%81%8C/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E5%BC%80%E5%8F%91/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E7%AE%97%E6%B3%95%E5%B7%A5%E7%A8%8B%E5%B8%88/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -996,41 +1031,6 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/AI%E8%BE%85%E5%8A%A9/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/AI/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%98/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1135,20 +1135,6 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%8C%87%E6%A0%87/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E8%B4%A8%E9%87%8F%E5%BA%A6%E9%87%8F/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://linn0813.github.io/tags/Python/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -1164,6 +1150,34 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/Newman/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/Mock-Server/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1212,28 +1226,49 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95/</loc>
+    <loc>https://linn0813.github.io/tags/%E5%90%8E%E7%AB%AF%E6%9E%B6%E6%9E%84/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B/</loc>
+    <loc>https://linn0813.github.io/tags/MVC/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/Newman/</loc>
+    <loc>https://linn0813.github.io/tags/%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/Mock-Server/</loc>
+    <loc>https://linn0813.github.io/tags/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%8C%87%E6%A0%87/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E8%B4%A8%E9%87%8F%E5%BA%A6%E9%87%8F/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1297,41 +1332,6 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/axios/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E5%90%8E%E7%AB%AF%E6%9E%B6%E6%9E%84/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/MVC/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1576,34 +1576,6 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/tags/%E5%AE%9E%E4%B9%A0%E7%94%9F%E5%9F%B9%E5%85%BB/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E8%AE%A1%E5%88%92/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%8A%80%E8%83%BD/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://linn0813.github.io/tags/%E7%89%88%E6%9C%AC%E6%AF%94%E8%BE%83/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -1633,6 +1605,34 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%AF%94%E8%BE%83/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E5%AE%9E%E4%B9%A0%E7%94%9F%E5%9F%B9%E5%85%BB/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E8%AE%A1%E5%88%92/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%8A%80%E8%83%BD/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1716,6 +1716,34 @@
   </url>
   
   <url>
+    <loc>https://linn0813.github.io/tags/%E6%8B%A6%E6%88%AA%E8%AF%B7%E6%B1%82/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E4%BF%AE%E6%94%B9%E8%AF%B7%E6%B1%82/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E4%BF%AE%E6%94%B9%E5%93%8D%E5%BA%94/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%A8%A1%E6%8B%9F%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://linn0813.github.io/tags/%E9%AB%98%E7%BA%A7%E5%91%BD%E4%BB%A4/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -1752,34 +1780,6 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/%E5%AE%9E%E6%88%98%E6%8A%80%E5%B7%A7/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%8B%A6%E6%88%AA%E8%AF%B7%E6%B1%82/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E4%BF%AE%E6%94%B9%E8%AF%B7%E6%B1%82/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E4%BF%AE%E6%94%B9%E5%93%8D%E5%BA%94/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/tags/%E6%A8%A1%E6%8B%9F%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1886,7 +1886,7 @@
 
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95-%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%EF%BC%88Test-Automation-Tool-Development%EF%BC%89-%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91-%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/</loc>
+    <loc>https://linn0813.github.io/categories/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89-%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D-%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1894,6 +1894,13 @@
   
   <url>
     <loc>https://linn0813.github.io/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95-%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%EF%BC%88Test-Automation-Tool-Development%EF%BC%89-%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B7%A5%E5%85%B7/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95-%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%EF%BC%88Test-Automation-Tool-Development%EF%BC%89-%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91-%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1928,7 +1935,7 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89-%E5%8D%9A%E5%AE%A2%E4%BB%8B%E7%BB%8D-%E4%B8%AA%E4%BA%BA%E6%88%90%E9%95%BF/</loc>
+    <loc>https://linn0813.github.io/categories/%E8%AE%A4%E8%AF%81%E5%AD%A6%E4%B9%A0-%E5%9F%B9%E8%AE%AD%EF%BC%88Certification-Training%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-SACA%E8%AF%BE%E7%A8%8B/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1936,13 +1943,6 @@
   
   <url>
     <loc>https://linn0813.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0-%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF%EF%BC%88Learning-Industry-Trends%EF%BC%89-%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7-%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/categories/%E8%AE%A4%E8%AF%81%E5%AD%A6%E4%B9%A0-%E5%9F%B9%E8%AE%AD%EF%BC%88Certification-Training%EF%BC%89-%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-SACA%E8%AF%BE%E7%A8%8B/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1970,14 +1970,14 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95-%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%EF%BC%88Test-Automation-Tool-Development%EF%BC%89-%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0-%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/</loc>
+    <loc>https://linn0813.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0-%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF%EF%BC%88Learning-Industry-Trends%EF%BC%89-%E6%B5%8B%E8%AF%95%E6%8A%80%E6%9C%AF-%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89-%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92-%E6%B1%82%E8%81%8C%E7%BB%8F%E9%AA%8C/</loc>
+    <loc>https://linn0813.github.io/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95-%E5%B7%A5%E5%85%B7%E5%BC%80%E5%8F%91%EF%BC%88Test-Automation-Tool-Development%EF%BC%89-%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0-%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1991,14 +1991,14 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-Bug%E5%88%86%E6%9E%90-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C/</loc>
+    <loc>https://linn0813.github.io/categories/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89-%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92-%E6%B1%82%E8%81%8C%E7%BB%8F%E9%AA%8C/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0-%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF%EF%BC%88Learning-Industry-Trends%EF%BC%89-%E6%B5%8B%E8%AF%95%E6%8A%80%E6%9C%AF-%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80/</loc>
+    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-Bug%E5%88%86%E6%9E%90-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -2026,13 +2026,6 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E6%B5%8B%E8%AF%95%E5%BA%A6%E9%87%8F-%E8%B4%A8%E9%87%8F%E7%AE%A1%E7%90%86/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://linn0813.github.io/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0-%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF%EF%BC%88Learning-Industry-Trends%EF%BC%89-%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5-%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -2047,6 +2040,20 @@
   </url>
   
   <url>
+    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E6%B5%8B%E8%AF%95%E5%BA%A6%E9%87%8F-%E8%B4%A8%E9%87%8F%E7%AE%A1%E7%90%86/</loc>
+    <lastmod>2025-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E5%89%8D%E7%AB%AF%E5%AE%9E%E8%B7%B5-%E5%BC%80%E5%8F%91%E9%85%8D%E7%BD%AE/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -2055,13 +2062,6 @@
   
   <url>
     <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E5%89%8D%E7%AB%AF%E5%AE%9E%E8%B7%B5-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/</loc>
-    <lastmod>2025-10-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -2131,14 +2131,14 @@
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89-%E8%81%8C%E5%9C%BA%E7%BB%8F%E9%AA%8C-%E6%B5%8B%E8%AF%95%E5%9F%B9%E8%AE%AD/</loc>
+    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C-%E6%B5%8B%E8%AF%95bug/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://linn0813.github.io/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C%EF%BC%88Testing-Practices-Case-Studies%EF%BC%89-%E6%B5%8B%E8%AF%95%E7%BB%8F%E9%AA%8C-%E6%B5%8B%E8%AF%95bug/</loc>
+    <loc>https://linn0813.github.io/categories/%E8%BF%99%E9%87%8C%E4%BB%80%E4%B9%88%E9%83%BD%E8%81%8A%EF%BC%81%EF%BC%88Random-Thoughts-Life%EF%BC%89-%E8%81%8C%E5%9C%BA%E7%BB%8F%E9%AA%8C-%E6%B5%8B%E8%AF%95%E5%9F%B9%E8%AE%AD/</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
