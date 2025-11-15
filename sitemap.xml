@@ -2,7 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://linn0813.github.io/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E4%B8%8E%E7%90%86%E8%AE%BA-Testing-Fundamentals/%E6%B5%8B%E8%AF%95%E7%90%86%E5%BF%B5%E4%B8%8E%E6%96%B9%E6%B3%95-Testing-Concepts-Methods/%E6%B5%8B%E8%AF%95%E6%A6%82%E5%BF%B5-Testing-Concepts/2025-11-02-uat-acceptance-testing-guide/</loc>
+    <loc>https://linn0813.github.io/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E4%B8%8E%E7%90%86%E8%AE%BA-Testing-Fundamentals/%E6%B5%8B%E8%AF%95%E7%90%86%E5%BF%B5%E4%B8%8E%E6%96%B9%E6%B3%95-Testing-Concepts-Methods/%E6%B5%8B%E8%AF%95%E6%A6%82%E5%BF%B5-Testing-Concepts/2025-11-16-pe-engineer-role-explained/</loc>
+    
+    <lastmod>2025-11-16</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E4%B8%8E%E7%90%86%E8%AE%BA-Testing-Fundamentals/%E6%B5%8B%E8%AF%95%E7%90%86%E5%BF%B5%E4%B8%8E%E6%96%B9%E6%B3%95-Testing-Concepts-Methods/%E6%B5%8B%E8%AF%95%E6%A6%82%E5%BF%B5-Testing-Concepts/2025-11-15-uat-acceptance-testing-guide/</loc>
     
     <lastmod>2025-11-15</lastmod>
     
@@ -2186,6 +2195,55 @@
   
   <url>
     <loc>https://linn0813.github.io/tags/%E4%B8%9A%E5%8A%A1%E9%AA%8C%E6%94%B6/</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/PE%E5%B7%A5%E7%A8%8B%E5%B8%88/</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E4%BA%A7%E5%93%81%E5%B7%A5%E7%A8%8B%E5%B8%88/</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/Production-Engineer/</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/Process-Engineer/</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/AI%E6%99%BA%E8%83%BD%E4%BD%93/</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E8%81%8C%E4%B8%9A%E5%8F%91%E5%B1%95/</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://linn0813.github.io/tags/%E6%8A%80%E6%9C%AF%E7%A7%91%E6%99%AE/</loc>
     <lastmod>2025-11-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
