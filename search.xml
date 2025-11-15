@@ -4,6 +4,45 @@
   
     
     <entry>
+      <title>🌟 UAT 验收是什么？——一次项目流程升级带来的思考与科普</title>
+      <link href="/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E4%B8%8E%E7%90%86%E8%AE%BA-Testing-Fundamentals/%E6%B5%8B%E8%AF%95%E7%90%86%E5%BF%B5%E4%B8%8E%E6%96%B9%E6%B3%95-Testing-Concepts-Methods/%E6%B5%8B%E8%AF%95%E6%A6%82%E5%BF%B5-Testing-Concepts/2025-11-02-uat-acceptance-testing-guide/"/>
+      <url>/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E4%B8%8E%E7%90%86%E8%AE%BA-Testing-Fundamentals/%E6%B5%8B%E8%AF%95%E7%90%86%E5%BF%B5%E4%B8%8E%E6%96%B9%E6%B3%95-Testing-Concepts-Methods/%E6%B5%8B%E8%AF%95%E6%A6%82%E5%BF%B5-Testing-Concepts/2025-11-02-uat-acceptance-testing-guide/</url>
+      
+        <content type="html"><![CDATA[<p>最近我们公司对项目流程做了一次调整，新增了一个重要节点：<strong>UAT 验收</strong>。<br>为了更好地理解这个概念，我自己系统学习了一遍，也顺便整理成这篇博客，既是记录，也希望对看到这篇文章的你有所帮助。</p><hr><h2 id="🎯-什么是-UAT？"><a href="#🎯-什么是-UAT？" class="headerlink" title="🎯 什么是 UAT？"></a>🎯 什么是 UAT？</h2><p>UAT，全称 <strong>User Acceptance Testing</strong>，中文叫：</p><ul><li>用户验收测试</li><li>业务验收测试</li><li>受理测试</li><li>验收测试</li></ul><p>它是软件上线前的<strong>最后一个测试阶段</strong>，由真正的<strong>业务使用者或代表</strong>来执行，目的只有一个：</p><blockquote><p><strong>确认系统是否能在真实业务场景中正常使用、符合预期，并决定是否上线。</strong></p></blockquote><p>这和我们常说的 QA 测试是完全不同的。</p><hr><h2 id="🧩-UAT-到底解决了什么问题？"><a href="#🧩-UAT-到底解决了什么问题？" class="headerlink" title="🧩 UAT 到底解决了什么问题？"></a>🧩 UAT 到底解决了什么问题？</h2><p>测试人员会把功能点、逻辑、边界条件等都测得非常完整精准，但有一个问题：<br><strong>业务团队未必真正看过”做出来的东西”。</strong></p><p>比如：</p><ul><li>字段名对业务是不是友好？</li><li>流程是不是符合真实的工作模式？</li><li>是否符合线下&#x2F;场景&#x2F;运营流程中的「实际习惯」？</li><li>报表数据是不是他们”能用、敢用”的？</li><li>多系统链路是否真的跑通业务逻辑？</li></ul><p>QA 的职责是验证”按需求实现”，而业务的职责是判断”是否满足我们的实际需求”。</p><p>所以 UAT 的价值就在于：<strong>在上线前，给业务一次真实把关的机会。</strong></p><hr><h2 id="🔎-QA-vs-UAT：到底有什么区别？"><a href="#🔎-QA-vs-UAT：到底有什么区别？" class="headerlink" title="🔎 QA vs UAT：到底有什么区别？"></a>🔎 QA vs UAT：到底有什么区别？</h2><p>作为测试同学，我们经常被问：”既然 QA 已经测过了，为什么还需要 UAT？”</p><p>一句话概括：</p><blockquote><p><strong>QA 测”实现是否正确”，UAT 测”业务是否满意”。</strong></p></blockquote><p>更直观的对比：</p><table><thead><tr><th>对比维度</th><th>项目系统测试（QA）</th><th>UAT 验收（业务方）</th></tr></thead><tbody><tr><td><strong>关注点</strong></td><td>功能正确性、逻辑完整性</td><td>业务价值、流程合理性</td></tr><tr><td><strong>样式</strong></td><td>细粒度、覆盖式测试</td><td>场景式、流程化使用</td></tr><tr><td><strong>执行者</strong></td><td>测试工程师</td><td>产品、运营、业务、使用部门</td></tr><tr><td><strong>找的问题</strong></td><td>Bug、异常流程</td><td>流程不顺、规则冲突、使用不便</td></tr><tr><td><strong>上线关系</strong></td><td>技术质量门槛</td><td>业务决策门槛</td></tr></tbody></table><p>两个阶段关注点完全不同，因此没有谁能替代谁。</p><hr><h2 id="🧱-为什么-UAT-一定要业务方来做？"><a href="#🧱-为什么-UAT-一定要业务方来做？" class="headerlink" title="🧱 为什么 UAT 一定要业务方来做？"></a>🧱 为什么 UAT 一定要业务方来做？</h2><p>UAT 是<strong>业务方的”确认上线”仪式</strong>。</p><p>❌ QA 无法判断：</p><ul><li>✔ 这个按钮名字对运营是否友好</li><li>✔ 这个时间显示是否符合行业规范</li><li>✔ 这个业务流程是否符合 SOP</li><li>✔ 这个规则能不能在实际场景跑得起来</li><li>✔ 这个报表数据能不能给老板看</li></ul><p>这些只有业务自己最清楚。</p><hr><h2 id="🧭-UAT-在整个项目流程中的位置"><a href="#🧭-UAT-在整个项目流程中的位置" class="headerlink" title="🧭 UAT 在整个项目流程中的位置"></a>🧭 UAT 在整个项目流程中的位置</h2><p>随着公司流程的改进，我们的项目结构大致变成了这样：</p><p><strong>需求设计 → 开发 → QA 系统测试 → 预发布 → UAT 验收 → 上线</strong></p><p>可以看到：</p><ul><li>QA 已经保证了系统功能和质量稳定</li><li>UAT 是确保系统能”真正用于业务”</li></ul><p>它属于<strong>上线前的最后一道闸口</strong>。</p><hr><h2 id="📝-UAT-验收一般做什么？"><a href="#📝-UAT-验收一般做什么？" class="headerlink" title="📝 UAT 验收一般做什么？"></a>📝 UAT 验收一般做什么？</h2><p>当业务执行 UAT 时，通常会关注：</p><h3 id="1-关键业务流程是否可用"><a href="#1-关键业务流程是否可用" class="headerlink" title="1. 关键业务流程是否可用"></a>1. 关键业务流程是否可用</h3><p>一条业务主链，从头到尾是否顺畅。</p><h3 id="2-真实使用场景是否满足"><a href="#2-真实使用场景是否满足" class="headerlink" title="2. 真实使用场景是否满足"></a>2. 真实使用场景是否满足</h3><p>例如预约、审批、投放、计算规则等。</p><h3 id="3-跨系统联动是否正常"><a href="#3-跨系统联动是否正常" class="headerlink" title="3. 跨系统联动是否正常"></a>3. 跨系统联动是否正常</h3><p>例如数据驱动、推送、自动化流程。</p><h3 id="4-权限、角色、配置是否合理"><a href="#4-权限、角色、配置是否合理" class="headerlink" title="4. 权限、角色、配置是否合理"></a>4. 权限、角色、配置是否合理</h3><h3 id="5-报表、统计、监控是否准确"><a href="#5-报表、统计、监控是否准确" class="headerlink" title="5. 报表、统计、监控是否准确"></a>5. 报表、统计、监控是否准确</h3><h3 id="6-文案、字段名、展示是否符合业务习惯"><a href="#6-文案、字段名、展示是否符合业务习惯" class="headerlink" title="6. 文案、字段名、展示是否符合业务习惯"></a>6. 文案、字段名、展示是否符合业务习惯</h3><h3 id="7-性能体验是否能满足实际工作"><a href="#7-性能体验是否能满足实际工作" class="headerlink" title="7. 性能体验是否能满足实际工作"></a>7. 性能体验是否能满足实际工作</h3><p>不像 QA 要做”覆盖式”测试，UAT 更像”业务沉浸式体验”。</p><hr><h2 id="🧨-UAT-不通过怎么办？"><a href="#🧨-UAT-不通过怎么办？" class="headerlink" title="🧨 UAT 不通过怎么办？"></a>🧨 UAT 不通过怎么办？</h2><p>大部分公司都会这样处理：</p><ol><li><strong>记录问题</strong></li><li><strong>开发修复</strong></li><li><strong>QA 回归</strong></li><li><strong>业务再次确认</strong></li><li><strong>再次 UAT</strong></li><li><strong>最终决定能否上线</strong></li></ol><p>一句话：<strong>UAT 的通过，是上线的必要条件。</strong></p><hr><h2 id="💡-UAT-的一些扩展知识（小科普）"><a href="#💡-UAT-的一些扩展知识（小科普）" class="headerlink" title="💡 UAT 的一些扩展知识（小科普）"></a>💡 UAT 的一些扩展知识（小科普）</h2><h3 id="➊-UAT-会找-bug-吗？"><a href="#➊-UAT-会找-bug-吗？" class="headerlink" title="➊ UAT 会找 bug 吗？"></a>➊ UAT 会找 bug 吗？</h3><p>会，但主要是流程、业务逻辑、使用体验相关。</p><h3 id="➋-UAT-会新增需求吗？"><a href="#➋-UAT-会新增需求吗？" class="headerlink" title="➋ UAT 会新增需求吗？"></a>➋ UAT 会新增需求吗？</h3><p>通常不建议，但实际项目中经常会出现业务反馈：</p><ul><li>“这个流程看起来不太合理”</li><li>“这个字段能不能改成 xxx”</li></ul><p>这属于<strong>验收阶段需求变更</strong>，需要谨慎控制。</p><h3 id="➌-UAT-是不是只要业务随便点点就算通过？"><a href="#➌-UAT-是不是只要业务随便点点就算通过？" class="headerlink" title="➌ UAT 是不是只要业务随便点点就算通过？"></a>➌ UAT 是不是只要业务随便点点就算通过？</h3><p><strong>不是。</strong></p><p>需要有：</p><ul><li>验收用例</li><li>验收结果记录</li><li>验收意见</li><li>验收人确认</li></ul><p>越规范，质量越有保障。</p><hr><h2 id="📦-写在最后：为什么这次流程升级值得记录？"><a href="#📦-写在最后：为什么这次流程升级值得记录？" class="headerlink" title="📦 写在最后：为什么这次流程升级值得记录？"></a>📦 写在最后：为什么这次流程升级值得记录？</h2><p>这次项目流程新增 UAT 环节，对公司而言是：</p><ul><li>提升交付质量的关键措施</li><li>让业务拥有更多话语权</li><li>减少”上线后才发现和预期不一致”的风险</li><li>建立更严谨的发布标准</li><li>让测试和开发的工作更加可控</li></ul><p>对我自己来说，这也是一个很好理解项目完整生命周期的契机。<br>也希望这篇文章能够帮到正在了解 UAT，或正经历流程升级的你。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 测试基础与理论 / Testing Fundamentals </category>
+          
+          <category> 测试理念与方法 / Testing Concepts &amp; Methods </category>
+          
+          <category> 测试概念 / Testing Concepts </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> UAT </tag>
+            
+            <tag> 验收测试 </tag>
+            
+            <tag> 用户验收 </tag>
+            
+            <tag> 项目流程 </tag>
+            
+            <tag> 测试科普 </tag>
+            
+            <tag> 业务验收 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>🚀 Cursor 模型全解析与 2.0 升级深度解读</title>
       <link href="/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF-Learning-Industry-Trends/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%B7%A5%E5%85%B7-Learning-Tools/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7-Development-Tools/2025-11-01-cursor-models-20-upgrade/"/>
       <url>/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF-Learning-Industry-Trends/%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%B7%A5%E5%85%B7-Learning-Tools/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7-Development-Tools/2025-11-01-cursor-models-20-upgrade/</url>
