@@ -6,7 +6,7 @@ User-agent: Baiduspider
 Allow: /
 
 # Sitemap
-Sitemap: https://linn0813.github.io/sitemap.xml
+Sitemap: https://linn0813.github.io//sitemap.xml/
 
 # 禁止爬取的文件和目录
 Disallow: /css/
