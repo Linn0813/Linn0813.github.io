@@ -50,6 +50,11 @@
 
     // 获取当前路径（保留路径和查询参数）
     const currentPath = window.location.pathname + window.location.search;
+    
+    // 检测是否在本地预览环境
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' ||
+                        window.location.hostname === '0.0.0.0';
 
     // 方案1: 如果配置了不同部署地址，直接跳转
     // 配置说明：
@@ -60,23 +65,38 @@
     // - Butterfly：用户页面，访问地址是 https://linn0813.github.io（根域名）
     // - Fluid：项目页面，访问地址是 https://linn0813.github.io/fluid-blog（子路径）
     //   注意：项目仓库可以是任意名称，不需要 username.github.io 格式
+    
+    // 本地预览环境：使用 /fluid 路径
+    // 生产环境：使用 /fluid-blog 路径
+    const fluidPath = isLocalhost ? '/fluid' : '/fluid-blog';
+    
     const themeUrls = {
-      butterfly: window.location.origin, // Butterfly：https://linn0813.github.io
-      fluid: window.location.origin + '/fluid-blog' // Fluid：https://linn0813.github.io/fluid-blog
-      // 如果 Fluid 部署在其他地址，修改为：
-      // fluid: 'https://linn0813.github.io/fluid-blog' // 项目页面（子路径）
-      // fluid: 'https://fluid.linn0813.github.io' // 子域名（需要配置 CNAME）
+      butterfly: window.location.origin, // Butterfly：根路径
+      fluid: window.location.origin + fluidPath // Fluid：子路径
     };
 
-    // 检查是否配置了 Fluid 主题的独立部署地址
-    // 如果配置了，直接跳转；否则显示提示
-    if (themeName === 'fluid' && themeUrls.fluid === window.location.origin) {
-      // 没有配置独立部署地址，显示提示
-      showThemeSwitchNotice(themeName);
-    } else {
-      // 跳转到对应主题的部署地址
-      const targetUrl = themeUrls[themeName] + currentPath;
-      window.location.href = targetUrl;
+    // 检查当前路径
+    const currentIsFluid = window.location.pathname.startsWith('/fluid') || 
+                           window.location.pathname.startsWith('/fluid-blog');
+    const targetIsFluid = themeName === 'fluid';
+    
+    // 如果当前在 Fluid 路径下，点击 Butterfly 需要移除 Fluid 路径前缀
+    if (currentIsFluid && themeName === 'butterfly') {
+      const pathWithoutFluid = currentPath.replace(/^\/fluid(-blog)?/, '') || '/';
+      window.location.href = themeUrls.butterfly + pathWithoutFluid;
+      return;
+    }
+    
+    // 如果当前不在 Fluid 路径下，点击 Fluid 需要添加 Fluid 路径前缀
+    if (!currentIsFluid && themeName === 'fluid') {
+      window.location.href = themeUrls.fluid + currentPath;
+      return;
+    }
+    
+    // 如果已经在目标主题的路径下，不需要跳转
+    if (currentIsFluid === targetIsFluid) {
+      console.log('已经在目标主题路径下');
+      return;
     }
   }
 
@@ -341,11 +361,29 @@
     document.body.appendChild(container);
   }
 
-  // 初始化
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', createThemeSwitcher);
+  // 初始化 - 延迟执行确保 Fluid 主题完全加载
+  function initThemeSwitcher() {
+    // 检测是否在 Fluid 主题的子路径下
+    const isFluidSubpath = window.location.pathname.startsWith('/fluid-blog');
+    
+    // 等待页面完全加载
+    const initDelay = isFluidSubpath ? 1500 : 500; // Fluid 主题需要更长的加载时间
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(createThemeSwitcher, initDelay);
+      });
+    } else {
+      setTimeout(createThemeSwitcher, initDelay);
+    }
+  }
+  
+  // 如果 Fluid 主题已加载，等待 boot.js 执行完成
+  if (typeof Fluid !== 'undefined' && Fluid.ctx) {
+    // Fluid 主题已加载，延迟初始化
+    setTimeout(createThemeSwitcher, 1500);
   } else {
-    createThemeSwitcher();
+    initThemeSwitcher();
   }
 
   // 导出到全局
