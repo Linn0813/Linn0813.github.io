@@ -1,0 +1,346 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>🎯前后端生成 `session_id` 的优劣对比与实战建议 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="详解前后端生成 &#96;session_id&#96; 的两种方案，对比其优缺点、适用场景，并给出实战推荐做法！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🎯前后端生成 &#96;session_id&#96; 的优劣对比与实战建议">
+<meta property="og:url" content="https://linn0813.github.io/2025-06-30-session-id-best-practices/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="详解前后端生成 &#96;session_id&#96; 的两种方案，对比其优缺点、适用场景，并给出实战推荐做法！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/session-id-best-practices.png">
+<meta property="article:published_time" content="2025-06-30T08:01:36.000Z">
+<meta property="article:modified_time" content="2026-01-21T04:15:00.871Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="前后端分离">
+<meta property="article:tag" content="session_id">
+<meta property="article:tag" content="会话管理">
+<meta property="article:tag" content="开发实践">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/session-id-best-practices.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "🎯前后端生成 `session_id` 的优劣对比与实战建议",
+  "url": "https://linn0813.github.io/2025-06-30-session-id-best-practices/",
+  "image": "https://linn0813.github.io/img/session-id-best-practices.png",
+  "datePublished": "2025-06-30T08:01:36.000Z",
+  "dateModified": "2026-01-21T04:15:00.871Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2025-06-30-session-id-best-practices/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '🎯前后端生成 `session_id` 的优劣对比与实战建议',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">397</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/session-id-best-practices.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">🎯前后端生成 `session_id` 的优劣对比与实战建议</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">🎯前后端生成 `session_id` 的优劣对比与实战建议</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-30T08:01:36.000Z" title="发表于 2025-06-30 16:01:36">2025-06-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-21T04:15:00.871Z" title="更新于 2026-01-21 12:15:00">2026-01-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%90%8D-%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%E5%BA%95%E5%BA%A7%EF%BC%9APython-%E8%BF%9B%E9%98%B6%E4%B8%8E%E5%89%8D%E5%90%8E%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96/">🐍 全栈开发底座：Python 进阶与前后端工程化</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%90%8D-%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%E5%BA%95%E5%BA%A7%EF%BC%9APython-%E8%BF%9B%E9%98%B6%E4%B8%8E%E5%89%8D%E5%90%8E%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF/">技术学习与行业趋势</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;已经过了&quot;,&quot;messageNext&quot;:&quot;天自上次更新，文章内容可能已过时。&quot;,&quot;postUpdate&quot;:&quot;2026-01-21 12:15:00&quot;}" hidden></div><h1 id="🎯前后端生成-session-id-的优劣对比与实战建议"><a href="#🎯前后端生成-session-id-的优劣对比与实战建议" class="headerlink" title="🎯前后端生成 session_id 的优劣对比与实战建议"></a>🎯前后端生成 <code>session_id</code> 的优劣对比与实战建议</h1><p>在一些业务流程中，我们常需要为一段操作生成一个“会话标识符”，也就是 <code>session_id</code>。它就像一个“流程ID”，贯穿用户操作的始终，比如上传一个 CSV 文件后，进行多步处理并最终生成报告。</p>
+<p>这个 <code>session_id</code> 应该由前端生成？还是后端生成？</p>
+<p>这是一个看似简单、实则充满实践经验的问题。这篇文章将为你详解两种方案的优缺点、适用场景，以及我们在真实项目中的推荐做法。</p>
+<hr>
+<h2 id="🔍-场景回顾：session-id-是什么？"><a href="#🔍-场景回顾：session-id-是什么？" class="headerlink" title="🔍 场景回顾：session_id 是什么？"></a>🔍 场景回顾：session_id 是什么？</h2><p><code>session_id</code> 在前后端分离项目中，通常不是传统意义上的“登录会话”，而是用来标识某个业务流程的数据，比如：</p>
+<ul>
+<li>一次文件上传任务</li>
+<li>一组数据处理的批次</li>
+<li>一个用户临时操作过程</li>
+</ul>
+<p>关键需求是：<strong>前后端都能识别这个 session，并围绕它存取数据或状态</strong>。</p>
+<hr>
+<h2 id="🧭-方案一：前端生成-session-id"><a href="#🧭-方案一：前端生成-session-id" class="headerlink" title="🧭 方案一：前端生成 session_id"></a>🧭 方案一：前端生成 session_id</h2><h3 id="✨-示例写法"><a href="#✨-示例写法" class="headerlink" title="✨ 示例写法"></a>✨ 示例写法</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 前端生成 UUID 作为 session_id</span></span><br><span class="line"><span class="keyword">const</span> sessionId = crypto.<span class="title function_">randomUUID</span>() || <span class="title function_">generateCustomUUID</span>();</span><br><span class="line"><span class="variable language_">localStorage</span>.<span class="title function_">setItem</span>(<span class="string">&#x27;session_id&#x27;</span>, sessionId);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接口请求时带上</span></span><br><span class="line">axios.<span class="title function_">post</span>(<span class="string">`/api/xxx`</span>, data, &#123;</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&#x27;X-Session-ID&#x27;</span>: sessionId &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="✅-优点"><a href="#✅-优点" class="headerlink" title="✅ 优点"></a>✅ 优点</h3><ul>
+<li>🔁 <strong>控制权在前端</strong>：适用于用户操作频繁切换、刷新等需要自己掌控 session 生命周期的场景；</li>
+<li>🧩 <strong>支持完整流程的 session 复用</strong>：比如上传 CSV → 配置字段映射 → 分步处理 → 下载报告，全流程一个 session_id；</li>
+<li>🔐 <strong>唯一性可控</strong>：前端用 <code>uuid</code> 即可生成，基本避免重复。</li>
+</ul>
+<h3 id="⚠-缺点"><a href="#⚠-缺点" class="headerlink" title="⚠ 缺点"></a>⚠ 缺点</h3><ul>
+<li>📦 <strong>需要自行存储和管理</strong>：需要用 <code>localStorage</code> &#x2F; <code>sessionStorage</code> &#x2F; <code>Pinia</code> 等保存；</li>
+<li>🔄 <strong>刷新&#x2F;关闭浏览器可能丢失</strong>：需要处理 session 失效的回退逻辑；</li>
+<li>🧠 <strong>对新手来说有一定复杂度</strong>：需要考虑 session_id 有效性、恢复逻辑等。</li>
+</ul>
+<hr>
+<h2 id="🧭-方案二：后端生成-session-id"><a href="#🧭-方案二：后端生成-session-id" class="headerlink" title="🧭 方案二：后端生成 session_id"></a>🧭 方案二：后端生成 session_id</h2><h3 id="✨-示例流程"><a href="#✨-示例流程" class="headerlink" title="✨ 示例流程"></a>✨ 示例流程</h3><ol>
+<li>前端发起请求（如上传 CSV），不带 session_id；</li>
+<li>后端生成 session_id，处理业务并返回；</li>
+<li>前端将 session_id 存储（如存在内存或 localStorage）；</li>
+<li>后续所有请求都携带该 session_id。</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 上传 CSV，后端返回 session_id</span></span><br><span class="line"><span class="keyword">const</span> res = <span class="keyword">await</span> axios.<span class="title function_">post</span>(<span class="string">&#x27;/api/upload&#x27;</span>, file);</span><br><span class="line"><span class="keyword">const</span> sessionId = res.<span class="property">data</span>.<span class="property">session_id</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 之后请求都带上这个 ID</span></span><br><span class="line">axios.<span class="title function_">post</span>(<span class="string">&#x27;/api/process&#x27;</span>, data, &#123;</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&#x27;X-Session-ID&#x27;</span>: sessionId &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="✅-优点-1"><a href="#✅-优点-1" class="headerlink" title="✅ 优点"></a>✅ 优点</h3><ul>
+<li>🔒 <strong>安全性更高</strong>：后端统一生成并维护，避免伪造；</li>
+<li>🧘 <strong>前端实现更轻松</strong>：无需自己生成&#x2F;维护 session，只需拿来用；</li>
+<li>🔄 <strong>适合一次性任务</strong>：如每次上传、每次分析都独立处理；</li>
+</ul>
+<h3 id="⚠-缺点-1"><a href="#⚠-缺点-1" class="headerlink" title="⚠ 缺点"></a>⚠ 缺点</h3><ul>
+<li>🤝 <strong>需一次“握手”过程</strong>：前端不能立即拥有 session_id，得等后端返回；</li>
+<li>🧵 <strong>流程中断易丢失 session</strong>：前端若不存储好，可能丢失当前上下文；</li>
+<li>⏳ <strong>状态依赖后端</strong>：session 生命周期、清理策略完全依赖后端设计。</li>
+</ul>
+<hr>
+<h2 id="🎯-推荐实践：后端生成为主，前端生成为辅"><a href="#🎯-推荐实践：后端生成为主，前端生成为辅" class="headerlink" title="🎯 推荐实践：后端生成为主，前端生成为辅"></a>🎯 推荐实践：后端生成为主，前端生成为辅</h2><h3 id="✅-推荐选型指南："><a href="#✅-推荐选型指南：" class="headerlink" title="✅ 推荐选型指南："></a>✅ 推荐选型指南：</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方式</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>一次性操作（上传、查询）</td>
+<td>后端生成</td>
+<td>安全、解耦、稳定</td>
+</tr>
+<tr>
+<td>多步流程需同一个 session</td>
+<td>后端生成（前端存用）</td>
+<td>保持上下文一致</td>
+</tr>
+<tr>
+<td>多标签页并行流程（互不干扰）</td>
+<td>前端生成</td>
+<td>避免 session 冲突</td>
+</tr>
+<tr>
+<td>要求断点续传&#x2F;流程恢复</td>
+<td>前端生成 + 本地缓存</td>
+<td>灵活持久管理</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="🛠-实战推荐方案：后端生成-前端存用"><a href="#🛠-实战推荐方案：后端生成-前端存用" class="headerlink" title="🛠 实战推荐方案：后端生成 + 前端存用"></a>🛠 实战推荐方案：后端生成 + 前端存用</h2><p>在大多数业务中，我们推荐如下组合策略：</p>
+<ol>
+<li>用户上传文件时，<strong>后端生成 session_id 并返回</strong>；</li>
+<li>前端将 session_id 存储（如放在 Pinia、localStorage 中）；</li>
+<li>后续每一步接口调用都带上这个 session_id；</li>
+<li>后端根据 session_id 管理中间状态、数据等；</li>
+<li>若用户刷新页面，可尝试恢复 session_id 并重建上下文。</li>
+</ol>
+<p>这种方案在实际项目中：</p>
+<ul>
+<li>安全 ✅</li>
+<li>稳定 ✅</li>
+<li>可控 ✅</li>
+<li>开发体验佳 ✅</li>
+</ul>
+<hr>
+<h2 id="🧪-示例：后端生成-session-id-的完整流程"><a href="#🧪-示例：后端生成-session-id-的完整流程" class="headerlink" title="🧪 示例：后端生成 session_id 的完整流程"></a>🧪 示例：后端生成 session_id 的完整流程</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">前端 -&gt;&gt; 后端: POST /api/upload</span><br><span class="line">后端 --&gt;&gt; 前端: 返回 session_id</span><br><span class="line">前端 --&gt;&gt; 本地存储: 保存 session_id</span><br><span class="line">前端 -&gt;&gt; 后端: 后续请求带上 session_id</span><br><span class="line">后端 -&gt;&gt; 数据库: 按 session_id 查询/保存数据</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🧠-总结"><a href="#🧠-总结" class="headerlink" title="🧠 总结"></a>🧠 总结</h2><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>控制方</th>
+<th>推荐使用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>前端生成 session_id</td>
+<td>前端</td>
+<td>多流程共享、流程恢复、多标签并行</td>
+</tr>
+<tr>
+<td>后端生成 session_id</td>
+<td>后端</td>
+<td>安全、标准、易维护（绝大多数项目推荐）</td>
+</tr>
+</tbody></table>
+<p>🔔 <strong>最佳实践</strong>：推荐使用 “<strong>后端生成、前端存用</strong>” 模式。既能统一流程，又能兼顾安全与可控。</p>
+<hr>
+<blockquote>
+<p>你在项目中是如何处理 <code>session_id</code> 的？欢迎留言交流！</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2025-06-30-session-id-best-practices/">https://linn0813.github.io/2025-06-30-session-id-best-practices/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB/">前后端分离</a><a class="post-meta__tags" href="/tags/session-id/">session_id</a><a class="post-meta__tags" href="/tags/%E4%BC%9A%E8%AF%9D%E7%AE%A1%E7%90%86/">会话管理</a><a class="post-meta__tags" href="/tags/%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">开发实践</a></div><div class="post-share"><div class="social-share" data-image="/img/session-id-best-practices.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025-06-30-api-baseurl-vs-vite-proxy/" title="🧩【前端实践】环境变量 vs Vite 代理：API 地址配置的最佳实践"><img class="cover" src="/img/api-baseurl-vs-vite-proxy.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">🧩【前端实践】环境变量 vs Vite 代理：API 地址配置的最佳实践</div></div><div class="info-2"><div class="info-item-1">分享前后端分离项目中 API 请求地址的两种配置方案：使用环境变量（baseUrl）和 Vite 代理，对比其优缺点并给出最佳实践建议！</div></div></div></a><a class="pagination-related" href="/2025-06-30-http-interceptor-error-handling/" title="🧩 前端工程实战：HTTP 请求拦截与错误处理的正确姿势"><img class="cover" src="/img/http-interceptor-error-handling.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">🧩 前端工程实战：HTTP 请求拦截与错误处理的正确姿势</div></div><div class="info-2"><div class="info-item-1">通过 axios 示例，讲解前端 HTTP 请求拦截与响应拦截机制，以及统一处理异常、提升用户体验与开发效率的方法！</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-06-30-api-baseurl-vs-vite-proxy/" title="🧩【前端实践】环境变量 vs Vite 代理：API 地址配置的最佳实践"><img class="cover" src="/img/api-baseurl-vs-vite-proxy.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-30</div><div class="info-item-2">🧩【前端实践】环境变量 vs Vite 代理：API 地址配置的最佳实践</div></div><div class="info-2"><div class="info-item-1">分享前后端分离项目中 API 请求地址的两种配置方案：使用环境变量（baseUrl）和 Vite 代理，对比其优缺点并给出最佳实践建议！</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">yuxiaoling</div><div class="author-info-description">AI 系统测试与测试工程化｜大模型质量评估、Prompt 回归、Agent 链路测试｜自动化与平台实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">397</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Linn0813"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Linn0813" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yuxiaoling.yxl@qq.com" target="_blank" title="Email"><i class="fa fa-envelope-open-text"></i></a><a class="social-icon" href="javascript:alert('微信公众号：Linn的技术笔记')" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">最近在做：AI 生成测试用例与质量评估</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%8E%AF%E5%89%8D%E5%90%8E%E7%AB%AF%E7%94%9F%E6%88%90-session-id-%E7%9A%84%E4%BC%98%E5%8A%A3%E5%AF%B9%E6%AF%94%E4%B8%8E%E5%AE%9E%E6%88%98%E5%BB%BA%E8%AE%AE"><span class="toc-number">1.</span> <span class="toc-text">🎯前后端生成 session_id 的优劣对比与实战建议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-%E5%9C%BA%E6%99%AF%E5%9B%9E%E9%A1%BE%EF%BC%9Asession-id-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">🔍 场景回顾：session_id 是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%AD-%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A%E5%89%8D%E7%AB%AF%E7%94%9F%E6%88%90-session-id"><span class="toc-number">1.2.</span> <span class="toc-text">🧭 方案一：前端生成 session_id</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%A8-%E7%A4%BA%E4%BE%8B%E5%86%99%E6%B3%95"><span class="toc-number">1.2.1.</span> <span class="toc-text">✨ 示例写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E4%BC%98%E7%82%B9"><span class="toc-number">1.2.2.</span> <span class="toc-text">✅ 优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%A0-%E7%BC%BA%E7%82%B9"><span class="toc-number">1.2.3.</span> <span class="toc-text">⚠ 缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%AD-%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E5%90%8E%E7%AB%AF%E7%94%9F%E6%88%90-session-id"><span class="toc-number">1.3.</span> <span class="toc-text">🧭 方案二：后端生成 session_id</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%A8-%E7%A4%BA%E4%BE%8B%E6%B5%81%E7%A8%8B"><span class="toc-number">1.3.1.</span> <span class="toc-text">✨ 示例流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E4%BC%98%E7%82%B9-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">✅ 优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%A0-%E7%BC%BA%E7%82%B9-1"><span class="toc-number">1.3.3.</span> <span class="toc-text">⚠ 缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%AF-%E6%8E%A8%E8%8D%90%E5%AE%9E%E8%B7%B5%EF%BC%9A%E5%90%8E%E7%AB%AF%E7%94%9F%E6%88%90%E4%B8%BA%E4%B8%BB%EF%BC%8C%E5%89%8D%E7%AB%AF%E7%94%9F%E6%88%90%E4%B8%BA%E8%BE%85"><span class="toc-number">1.4.</span> <span class="toc-text">🎯 推荐实践：后端生成为主，前端生成为辅</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E6%8E%A8%E8%8D%90%E9%80%89%E5%9E%8B%E6%8C%87%E5%8D%97%EF%BC%9A"><span class="toc-number">1.4.1.</span> <span class="toc-text">✅ 推荐选型指南：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9B%A0-%E5%AE%9E%E6%88%98%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88%EF%BC%9A%E5%90%8E%E7%AB%AF%E7%94%9F%E6%88%90-%E5%89%8D%E7%AB%AF%E5%AD%98%E7%94%A8"><span class="toc-number">1.5.</span> <span class="toc-text">🛠 实战推荐方案：后端生成 + 前端存用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%AA-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E5%90%8E%E7%AB%AF%E7%94%9F%E6%88%90-session-id-%E7%9A%84%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.</span> <span class="toc-text">🧪 示例：后端生成 session_id 的完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%A0-%E6%80%BB%E7%BB%93"><span class="toc-number">1.7.</span> <span class="toc-text">🧠 总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"><img src="/img/test-case-generation-prompt-design.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"/></a><div class="content"><a class="title" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践">测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践</a><time datetime="2026-02-27T02:00:00.000Z" title="发表于 2026-02-27 10:00:00">2026-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？"><img src="/img/ai-chat-testing-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="拿到 AI 对话需求后，如何设计测试方向？"/></a><div class="content"><a class="title" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？">拿到 AI 对话需求后，如何设计测试方向？</a><time datetime="2026-02-26T02:00:00.000Z" title="发表于 2026-02-26 10:00:00">2026-02-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-25-ai-test-case-generation-tool-design/" title="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD"><img src="/img/ai-test-case-generation-tool-design.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD"/></a><div class="content"><a class="title" href="/2026-02-25-ai-test-case-generation-tool-design/" title="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD">AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD</a><time datetime="2026-02-25T02:00:00.000Z" title="发表于 2026-02-25 10:00:00">2026-02-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-12-ai-testing-vs-traditional-testing/" title="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模"><img src="/img/ai-testing-vs-traditional-testing.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模"/></a><div class="content"><a class="title" href="/2026-02-12-ai-testing-vs-traditional-testing/" title="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模">🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模</a><time datetime="2026-02-12T02:00:00.000Z" title="发表于 2026-02-12 10:00:00">2026-02-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-01-26-localhost-wifi-access-guide/" title="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南"><img src="/img/localhost-wifi-access-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南"/></a><div class="content"><a class="title" href="/2026-01-26-localhost-wifi-access-guide/" title="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南">同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南</a><time datetime="2026-01-26T02:00:00.000Z" title="发表于 2026-01-26 10:00:00">2026-01-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

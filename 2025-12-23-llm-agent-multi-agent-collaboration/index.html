@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>一个 Agent 不够用？多 Agent 协作像团队一样干活 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="深入解析多 Agent 协作：从角色设定、协作协议到消息流，掌握如何让多个 Agent 像团队一样协作完成复杂任务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个 Agent 不够用？多 Agent 协作像团队一样干活">
+<meta property="og:url" content="https://linn0813.github.io/2025-12-23-llm-agent-multi-agent-collaboration/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="深入解析多 Agent 协作：从角色设定、协作协议到消息流，掌握如何让多个 Agent 像团队一样协作完成复杂任务">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/llm-agent-multi-agent-collaboration.png">
+<meta property="article:published_time" content="2025-12-23T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-28T07:30:43.758Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Multi-Agent">
+<meta property="article:tag" content="Collaboration">
+<meta property="article:tag" content="多 Agent">
+<meta property="article:tag" content="协作">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/llm-agent-multi-agent-collaboration.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "一个 Agent 不够用？多 Agent 协作像团队一样干活",
+  "url": "https://linn0813.github.io/2025-12-23-llm-agent-multi-agent-collaboration/",
+  "image": "https://linn0813.github.io/img/llm-agent-multi-agent-collaboration.png",
+  "datePublished": "2025-12-23T10:00:00.000Z",
+  "dateModified": "2026-02-28T07:30:43.758Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2025-12-23-llm-agent-multi-agent-collaboration/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '一个 Agent 不够用？多 Agent 协作像团队一样干活',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">397</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/llm-agent-multi-agent-collaboration.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">一个 Agent 不够用？多 Agent 协作像团队一样干活</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">一个 Agent 不够用？多 Agent 协作像团队一样干活</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-23T10:00:00.000Z" title="发表于 2025-12-23 18:00:00">2025-12-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-28T07:30:43.758Z" title="更新于 2026-02-28 15:30:43">2026-02-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/">🧠 LLM/Agent 从入门到精通：告别浅尝辄止</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/AI%E4%B8%8E%E7%A0%94%E7%A9%B6/">AI与研究</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>查数据的、做分析的、写报告的——<strong>一个 Agent 干不完，多个 Agent 怎么配合？</strong></p>
+<p>多 Agent 协作通过角色设定、协作协议、消息流，让多个 Agent 像团队一样分工协作。本篇解析如何设计角色、话术、通信协议，构建可扩展的多 Agent 系统。</p>
+<p><strong>多 Agent 协作</strong> &#x3D; 角色分工（各司其职）+ 协作协议（怎么配合）+ 消息流（怎么通信）。单 Agent 能力有限、复杂任务需专业分工、并行可提效——像团队一样干活。</p>
+<hr>
+<h2 id="👥-一、角色设定（Role-Assignment）"><a href="#👥-一、角色设定（Role-Assignment）" class="headerlink" title="👥 一、角色设定（Role Assignment）"></a>👥 一、角色设定（Role Assignment）</h2><p>订单处理流水线：查库存的、算优惠的、发通知的——<strong>一个 Agent 全包会乱，拆成多个各司其职</strong>。为每个 Agent 分配明确角色：专业化（专注一域）、互补性（覆盖所需技能）、清晰性（避免职责重叠）。</p>
+<h3 id="1-1-角色设计原则"><a href="#1-1-角色设计原则" class="headerlink" title="1.1 角色设计原则"></a>1.1 角色设计原则</h3><p><strong>原则1：专业化</strong></p>
+<blockquote>
+<p>每个 Agent 专注于一个领域，成为该领域的专家。</p>
+</blockquote>
+<p><strong>原则2：互补性</strong></p>
+<blockquote>
+<p>Agent 之间要互补，覆盖所有需要的技能。</p>
+</blockquote>
+<p><strong>原则3：清晰性</strong></p>
+<blockquote>
+<p>角色定义要清晰，避免职责重叠。</p>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 角色设定（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AgentRole</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name, description, capabilities, tools</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line">        <span class="variable language_">self</span>.description = description</span><br><span class="line">        <span class="variable language_">self</span>.capabilities = capabilities</span><br><span class="line">        <span class="variable language_">self</span>.tools = tools</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义角色</span></span><br><span class="line">roles = &#123;</span><br><span class="line">    <span class="string">&quot;data_analyst&quot;</span>: AgentRole(</span><br><span class="line">        name=<span class="string">&quot;数据分析师&quot;</span>,</span><br><span class="line">        description=<span class="string">&quot;负责数据查询和分析&quot;</span>,</span><br><span class="line">        capabilities=[<span class="string">&quot;数据查询&quot;</span>, <span class="string">&quot;数据分析&quot;</span>, <span class="string">&quot;数据可视化&quot;</span>],</span><br><span class="line">        tools=[<span class="string">&quot;query_database&quot;</span>, <span class="string">&quot;analyze_data&quot;</span>, <span class="string">&quot;visualize_data&quot;</span>]</span><br><span class="line">    ),</span><br><span class="line">    <span class="string">&quot;report_writer&quot;</span>: AgentRole(</span><br><span class="line">        name=<span class="string">&quot;报告撰写员&quot;</span>,</span><br><span class="line">        description=<span class="string">&quot;负责报告撰写和格式化&quot;</span>,</span><br><span class="line">        capabilities=[<span class="string">&quot;报告撰写&quot;</span>, <span class="string">&quot;格式美化&quot;</span>, <span class="string">&quot;内容审核&quot;</span>],</span><br><span class="line">        tools=[<span class="string">&quot;generate_report&quot;</span>, <span class="string">&quot;format_report&quot;</span>, <span class="string">&quot;review_report&quot;</span>]</span><br><span class="line">    ),</span><br><span class="line">    <span class="string">&quot;project_manager&quot;</span>: AgentRole(</span><br><span class="line">        name=<span class="string">&quot;项目经理&quot;</span>,</span><br><span class="line">        description=<span class="string">&quot;负责任务规划和协调&quot;</span>,</span><br><span class="line">        capabilities=[<span class="string">&quot;任务规划&quot;</span>, <span class="string">&quot;进度管理&quot;</span>, <span class="string">&quot;团队协调&quot;</span>],</span><br><span class="line">        tools=[<span class="string">&quot;plan_tasks&quot;</span>, <span class="string">&quot;track_progress&quot;</span>, <span class="string">&quot;coordinate_team&quot;</span>]</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-角色协作模式"><a href="#1-2-角色协作模式" class="headerlink" title="1.2 角色协作模式"></a>1.2 角色协作模式</h3><p><strong>模式1：流水线模式</strong></p>
+<blockquote>
+<p>Agent 按顺序工作，前一个 Agent 的输出是后一个 Agent 的输入。</p>
+</blockquote>
+<p><strong>模式2：并行模式</strong></p>
+<blockquote>
+<p>多个 Agent 并行工作，最后汇总结果。</p>
+</blockquote>
+<p><strong>模式3：层次模式</strong></p>
+<blockquote>
+<p>有主 Agent 和子 Agent，主 Agent 协调子 Agent。</p>
+</blockquote>
+<hr>
+<h2 id="💬-二、消息流（Message-Flow）"><a href="#💬-二、消息流（Message-Flow）" class="headerlink" title="💬 二、消息流（Message Flow）"></a>💬 二、消息流（Message Flow）</h2><p>消息流管理 Agent 之间的通信，确保信息正确传递。</p>
+<h3 id="2-1-消息格式"><a href="#2-1-消息格式" class="headerlink" title="2.1 消息格式"></a>2.1 消息格式</h3><p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 消息格式（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Message</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, sender, receiver, content, message_type</span>):</span><br><span class="line">        <span class="variable language_">self</span>.sender = sender</span><br><span class="line">        <span class="variable language_">self</span>.receiver = receiver</span><br><span class="line">        <span class="variable language_">self</span>.content = content</span><br><span class="line">        <span class="variable language_">self</span>.message_type = message_type</span><br><span class="line">        <span class="variable language_">self</span>.timestamp = datetime.now()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 消息类型</span></span><br><span class="line">MESSAGE_TYPES = &#123;</span><br><span class="line">    <span class="string">&quot;REQUEST&quot;</span>: <span class="string">&quot;请求&quot;</span>,</span><br><span class="line">    <span class="string">&quot;RESPONSE&quot;</span>: <span class="string">&quot;响应&quot;</span>,</span><br><span class="line">    <span class="string">&quot;NOTIFICATION&quot;</span>: <span class="string">&quot;通知&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ERROR&quot;</span>: <span class="string">&quot;错误&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-消息路由"><a href="#2-2-消息路由" class="headerlink" title="2.2 消息路由"></a>2.2 消息路由</h3><p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 消息路由（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MessageRouter</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.agents = &#123;&#125;</span><br><span class="line">        <span class="variable language_">self</span>.message_queue = []</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">register_agent</span>(<span class="params">self, agent_id, agent</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;注册 Agent&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.agents[agent_id] = agent</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">send_message</span>(<span class="params">self, message</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;发送消息&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> message.receiver <span class="keyword">in</span> <span class="variable language_">self</span>.agents:</span><br><span class="line">            <span class="variable language_">self</span>.agents[message.receiver].receive_message(message)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># 消息路由失败</span></span><br><span class="line">            <span class="variable language_">self</span>.handle_routing_error(message)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔄-三、协作协议（Collaboration-Protocol）"><a href="#🔄-三、协作协议（Collaboration-Protocol）" class="headerlink" title="🔄 三、协作协议（Collaboration Protocol）"></a>🔄 三、协作协议（Collaboration Protocol）</h2><p>协作协议定义 Agent 之间的协作规则，确保协作有序进行。</p>
+<h3 id="3-1-协议设计"><a href="#3-1-协议设计" class="headerlink" title="3.1 协议设计"></a>3.1 协议设计</h3><p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 协作协议（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CollaborationProtocol</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.rules = []</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">add_rule</span>(<span class="params">self, condition, action</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;添加规则&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.rules.append(&#123;</span><br><span class="line">            <span class="string">&quot;condition&quot;</span>: condition,</span><br><span class="line">            <span class="string">&quot;action&quot;</span>: action</span><br><span class="line">        &#125;)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute</span>(<span class="params">self, context</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;执行协议&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">for</span> rule <span class="keyword">in</span> <span class="variable language_">self</span>.rules:</span><br><span class="line">            <span class="keyword">if</span> rule[<span class="string">&quot;condition&quot;</span>](context):</span><br><span class="line">                rule[<span class="string">&quot;action&quot;</span>](context)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔍-总结：多-Agent-协作提升任务处理能力"><a href="#🔍-总结：多-Agent-协作提升任务处理能力" class="headerlink" title="🔍 总结：多 Agent 协作提升任务处理能力"></a>🔍 总结：多 Agent 协作提升任务处理能力</h2><h3 id="💡-快速回顾：你学到了什么？"><a href="#💡-快速回顾：你学到了什么？" class="headerlink" title="💡 快速回顾：你学到了什么？"></a>💡 快速回顾：你学到了什么？</h3><ol>
+<li><strong>角色设定</strong>：为每个 Agent 分配明确的角色和职责</li>
+<li><strong>消息流</strong>：管理 Agent 之间的通信</li>
+<li><strong>协作协议</strong>：定义 Agent 之间的协作规则</li>
+<li><strong>工程实践</strong>：如何实现多 Agent 协作系统</li>
+</ol>
+<h3 id="多-Agent-协作的核心组件"><a href="#多-Agent-协作的核心组件" class="headerlink" title="多 Agent 协作的核心组件"></a>多 Agent 协作的核心组件</h3><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>作用</th>
+<th>简单理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>角色设定</strong></td>
+<td>分配角色和职责</td>
+<td>就像团队分工</td>
+</tr>
+<tr>
+<td><strong>消息流</strong></td>
+<td>管理通信</td>
+<td>就像团队开会</td>
+</tr>
+<tr>
+<td><strong>协作协议</strong></td>
+<td>定义协作规则</td>
+<td>就像团队规范</td>
+</tr>
+</tbody></table>
+<p><strong>生活化理解</strong>：</p>
+<blockquote>
+<p>就像团队协作：</p>
+<ul>
+<li><strong>角色设定</strong>：项目经理、开发工程师、测试工程师，各司其职</li>
+<li><strong>消息流</strong>：通过会议、邮件、即时消息沟通</li>
+<li><strong>协作协议</strong>：定义工作流程、沟通规范、决策机制</li>
+</ul>
+</blockquote>
+<h3 id="协作模式总结"><a href="#协作模式总结" class="headerlink" title="协作模式总结"></a>协作模式总结</h3><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>流水线模式</strong></td>
+<td>Agent 按顺序工作</td>
+<td>任务有明确顺序</td>
+</tr>
+<tr>
+<td><strong>并行模式</strong></td>
+<td>多个 Agent 并行工作</td>
+<td>任务可以并行</td>
+</tr>
+<tr>
+<td><strong>层次模式</strong></td>
+<td>主 Agent 协调子 Agent</td>
+<td>复杂任务需要协调</td>
+</tr>
+</tbody></table>
+<h3 id="实战建议与检查清单"><a href="#实战建议与检查清单" class="headerlink" title="实战建议与检查清单"></a>实战建议与检查清单</h3><ol>
+<li><strong>从简单开始</strong>：先实现两个 Agent 的协作，再逐步扩展</li>
+<li><strong>明确角色</strong>：每个 Agent 的角色要明确，避免职责重叠</li>
+<li><strong>设计协议</strong>：定义清晰的协作协议，确保协作有序</li>
+<li><strong>监控协作</strong>：监控 Agent 之间的通信，及时发现问题</li>
+</ol>
+<p><strong>上线前检查</strong>：消息格式是否统一？是否有死锁&#x2F;循环依赖检测？主 Agent 是否有超时与降级策略？</p>
+<blockquote>
+<p>💡 <strong>核心理解</strong>：<br>多 Agent 协作让多个 Agent 能够像团队一样工作，通过分工协作完成复杂任务，提升任务处理能力和效率。</p>
+<p>就像团队协作一样，好的多 Agent 协作能让 Agent 系统更强大、更高效，能够处理单个 Agent 无法完成的复杂任务。</p>
+</blockquote>
+<hr>
+<h2 id="📚-延伸阅读"><a href="#📚-延伸阅读" class="headerlink" title="📚 延伸阅读"></a>📚 延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Multi-agent_system"><strong>Multi-Agent Systems（多 Agent 系统）</strong></a>：多 Agent 系统的维基百科</li>
+<li><a target="_blank" rel="noopener" href="https://www.crewai.com/"><strong>CrewAI（多 Agent 框架）</strong></a>：CrewAI 多 Agent 协作框架</li>
+</ul>
+<hr>
+<h2 id="🔔-系列说明"><a href="#🔔-系列说明" class="headerlink" title="🔔 系列说明"></a>🔔 系列说明</h2><blockquote>
+<p>本文是<a href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/">《🧠 LLM&#x2F;Agent 从入门到精通：告别浅尝辄止》</a>系列第 14 篇。上一篇：<a href="/2025-12-22-llm-agent-security-governance/">Agent 失控了怎么办？日志、审计与可观测性</a>。下一篇：<a href="/2025-12-24-llm-agent-evaluation/">Agent 好不好怎么衡量？评估指标体系与避坑指南</a>。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2025-12-23-llm-agent-multi-agent-collaboration/">https://linn0813.github.io/2025-12-23-llm-agent-multi-agent-collaboration/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/Agent/">Agent</a><a class="post-meta__tags" href="/tags/Multi-Agent/">Multi-Agent</a><a class="post-meta__tags" href="/tags/Collaboration/">Collaboration</a><a class="post-meta__tags" href="/tags/%E5%A4%9A-Agent/">多 Agent</a><a class="post-meta__tags" href="/tags/%E5%8D%8F%E4%BD%9C/">协作</a></div><div class="post-share"><div class="social-share" data-image="/img/llm-agent-multi-agent-collaboration.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025-12-22-llm-agent-security-governance/" title="Agent 失控了怎么办？日志、审计与可观测性"><img class="cover" src="/img/llm-agent-security-governance.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Agent 失控了怎么办？日志、审计与可观测性</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 安全治理：从日志记录、审计追踪到可观测性，掌握如何监控和管理 Agent 的行为，确保安全可控</div></div></div></a><a class="pagination-related" href="/2025-12-24-llm-agent-evaluation/" title="Agent 好不好怎么衡量？评估指标体系与避坑指南"><img class="cover" src="/img/llm-agent-evaluation.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Agent 好不好怎么衡量？评估指标体系与避坑指南</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 评估：从指标体系、性能评估到避坑指南，掌握如何评估和优化 Agent 的性能，避免常见问题</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-10-21-llm-agent-guide/" title="🧠 LLM 与智能体（Agent）知识记录"><img class="cover" src="/img/LLM-Agent.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-21</div><div class="info-item-2">🧠 LLM 与智能体（Agent）知识记录</div></div><div class="info-2"><div class="info-item-1">系统梳理 LLM 与 Agent 的概念、组成、原理与实践要点，配套学习路线与清单，助你快速上手智能体开发与应用</div></div></div></a><a class="pagination-related" href="/2025-10-27-langchain-framework/" title="🧠 LangChain：让大语言模型真正“动起来”的框架"><img class="cover" src="/img/langchain.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-27</div><div class="info-item-2">🧠 LangChain：让大语言模型真正“动起来”的框架</div></div><div class="info-2"><div class="info-item-1">从 Prompt 到 Agent、从单轮问答到任务编排——这篇文章帮你彻底理解 LangChain 的核心思想与实践路径。</div></div></div></a><a class="pagination-related" href="/2025-11-29-llm-agent-core-concepts-guide/" title="学了那么多术语，为什么还是不理解？LLM&#x2F;Agent 学习路线图"><img class="cover" src="/img/llm-agent-core-concepts-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-29</div><div class="info-item-2">学了那么多术语，为什么还是不理解？LLM&#x2F;Agent 学习路线图</div></div><div class="info-2"><div class="info-item-1">Prompt、Token、RAG、ReAct…学了一堆术语却还是不理解？这份路线图帮你从「会用」走到「真懂」，系统掌握 LLM 与 Agent。</div></div></div></a><a class="pagination-related" href="/2025-12-08-llm-rag-deep-integration/" title="模型一本正经地胡说八道？RAG 如何让 LLM 有据可查"><img class="cover" src="/img/llm-rag-deep-integration.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-08</div><div class="info-item-2">模型一本正经地胡说八道？RAG 如何让 LLM 有据可查</div></div><div class="info-2"><div class="info-item-1">深入解析 RAG 机制：从三阶段工作流、核心组件到进阶优化策略，构建高精度、可追溯的知识增强系统，突破 LLM 的知识时效性和幻觉问题</div></div></div></a><a class="pagination-related" href="/2025-12-10-llm-agent-concept-overview/" title="只会聊天不够用？Agent 如何让 LLM 能做事、会思考、能修正"><img class="cover" src="/img/llm-agent-concept-overview.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-10</div><div class="info-item-2">只会聊天不够用？Agent 如何让 LLM 能做事、会思考、能修正</div></div><div class="info-2"><div class="info-item-1">系统理解 Agent 的本质：从 LLM 到智能体的进化路径，深入解析 Agent 的核心构成、生命周期和关键模块，构建完整的 Agent 系统架构</div></div></div></a><a class="pagination-related" href="/2025-12-18-llm-agent-tool-system/" title="Agent 怎么查数据库、调 API？Function Calling 与工具封装"><img class="cover" src="/img/llm-agent-tool-system.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-18</div><div class="info-item-2">Agent 怎么查数据库、调 API？Function Calling 与工具封装</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 工具系统：从 Function Calling 机制、工具封装规范化设计到安全权限治理，让 Agent 拥有连接外部世界的能力</div></div></div></a><a class="pagination-related" href="/2025-12-19-llm-agent-task-planning/" title="复杂任务 Agent 怎么拆？任务规划与 Self-Correction"><img class="cover" src="/img/llm-agent-task-planning.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-19</div><div class="info-item-2">复杂任务 Agent 怎么拆？任务规划与 Self-Correction</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 任务规划：从任务分解、子任务生成到 Self-Correction，掌握如何让 Agent 把复杂任务拆成可执行步骤</div></div></div></a><a class="pagination-related" href="/2025-12-16-llm-agent-decision-engine/" title="Agent 怎么&quot;想&quot;和&quot;做&quot;？ReAct 决策引擎代码级拆解"><img class="cover" src="/img/llm-agent-decision-engine.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-16</div><div class="info-item-2">Agent 怎么&quot;想&quot;和&quot;做&quot;？ReAct 决策引擎代码级拆解</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 的决策引擎：代码级拆解 ReAct 范式，掌握如何设计 Prompt 模板、实现工具调用和错误处理，对比 Self-Ask 和 Tree of Thoughts 等策略</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">yuxiaoling</div><div class="author-info-description">AI 系统测试与测试工程化｜大模型质量评估、Prompt 回归、Agent 链路测试｜自动化与平台实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">397</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Linn0813"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Linn0813" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yuxiaoling.yxl@qq.com" target="_blank" title="Email"><i class="fa fa-envelope-open-text"></i></a><a class="social-icon" href="javascript:alert('微信公众号：Linn的技术笔记')" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">最近在做：AI 生成测试用例与质量评估</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%A5-%E4%B8%80%E3%80%81%E8%A7%92%E8%89%B2%E8%AE%BE%E5%AE%9A%EF%BC%88Role-Assignment%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">👥 一、角色设定（Role Assignment）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E8%A7%92%E8%89%B2%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 角色设计原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%A7%92%E8%89%B2%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 角色协作模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%92%AC-%E4%BA%8C%E3%80%81%E6%B6%88%E6%81%AF%E6%B5%81%EF%BC%88Message-Flow%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">💬 二、消息流（Message Flow）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 消息格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%B6%88%E6%81%AF%E8%B7%AF%E7%94%B1"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 消息路由</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%84-%E4%B8%89%E3%80%81%E5%8D%8F%E4%BD%9C%E5%8D%8F%E8%AE%AE%EF%BC%88Collaboration-Protocol%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">🔄 三、协作协议（Collaboration Protocol）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%8D%8F%E8%AE%AE%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 协议设计</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-%E6%80%BB%E7%BB%93%EF%BC%9A%E5%A4%9A-Agent-%E5%8D%8F%E4%BD%9C%E6%8F%90%E5%8D%87%E4%BB%BB%E5%8A%A1%E5%A4%84%E7%90%86%E8%83%BD%E5%8A%9B"><span class="toc-number">4.</span> <span class="toc-text">🔍 总结：多 Agent 协作提升任务处理能力</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%A1-%E5%BF%AB%E9%80%9F%E5%9B%9E%E9%A1%BE%EF%BC%9A%E4%BD%A0%E5%AD%A6%E5%88%B0%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">4.1.</span> <span class="toc-text">💡 快速回顾：你学到了什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A-Agent-%E5%8D%8F%E4%BD%9C%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="toc-number">4.2.</span> <span class="toc-text">多 Agent 协作的核心组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93"><span class="toc-number">4.3.</span> <span class="toc-text">协作模式总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E6%88%98%E5%BB%BA%E8%AE%AE%E4%B8%8E%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-number">4.4.</span> <span class="toc-text">实战建议与检查清单</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-number">5.</span> <span class="toc-text">📚 延伸阅读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%94-%E7%B3%BB%E5%88%97%E8%AF%B4%E6%98%8E"><span class="toc-number">6.</span> <span class="toc-text">🔔 系列说明</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"><img src="/img/test-case-generation-prompt-design.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"/></a><div class="content"><a class="title" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践">测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践</a><time datetime="2026-02-27T02:00:00.000Z" title="发表于 2026-02-27 10:00:00">2026-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？"><img src="/img/ai-chat-testing-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="拿到 AI 对话需求后，如何设计测试方向？"/></a><div class="content"><a class="title" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？">拿到 AI 对话需求后，如何设计测试方向？</a><time datetime="2026-02-26T02:00:00.000Z" title="发表于 2026-02-26 10:00:00">2026-02-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-25-ai-test-case-generation-tool-design/" title="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD"><img src="/img/ai-test-case-generation-tool-design.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD"/></a><div class="content"><a class="title" href="/2026-02-25-ai-test-case-generation-tool-design/" title="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD">AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD</a><time datetime="2026-02-25T02:00:00.000Z" title="发表于 2026-02-25 10:00:00">2026-02-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-12-ai-testing-vs-traditional-testing/" title="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模"><img src="/img/ai-testing-vs-traditional-testing.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模"/></a><div class="content"><a class="title" href="/2026-02-12-ai-testing-vs-traditional-testing/" title="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模">🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模</a><time datetime="2026-02-12T02:00:00.000Z" title="发表于 2026-02-12 10:00:00">2026-02-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-01-26-localhost-wifi-access-guide/" title="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南"><img src="/img/localhost-wifi-access-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南"/></a><div class="content"><a class="title" href="/2026-01-26-localhost-wifi-access-guide/" title="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南">同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南</a><time datetime="2026-01-26T02:00:00.000Z" title="发表于 2026-01-26 10:00:00">2026-01-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

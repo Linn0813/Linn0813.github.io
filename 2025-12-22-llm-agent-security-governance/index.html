@@ -1,0 +1,359 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Agent 失控了怎么办？日志、审计与可观测性 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="深入解析 Agent 安全治理：从日志记录、审计追踪到可观测性，掌握如何监控和管理 Agent 的行为，确保安全可控">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Agent 失控了怎么办？日志、审计与可观测性">
+<meta property="og:url" content="https://linn0813.github.io/2025-12-22-llm-agent-security-governance/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="深入解析 Agent 安全治理：从日志记录、审计追踪到可观测性，掌握如何监控和管理 Agent 的行为，确保安全可控">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/llm-agent-security-governance.png">
+<meta property="article:published_time" content="2025-12-22T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-28T07:30:43.363Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Security">
+<meta property="article:tag" content="Governance">
+<meta property="article:tag" content="Logging">
+<meta property="article:tag" content="Observability">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/llm-agent-security-governance.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Agent 失控了怎么办？日志、审计与可观测性",
+  "url": "https://linn0813.github.io/2025-12-22-llm-agent-security-governance/",
+  "image": "https://linn0813.github.io/img/llm-agent-security-governance.png",
+  "datePublished": "2025-12-22T10:00:00.000Z",
+  "dateModified": "2026-02-28T07:30:43.363Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2025-12-22-llm-agent-security-governance/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Agent 失控了怎么办？日志、审计与可观测性',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">397</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/llm-agent-security-governance.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">Agent 失控了怎么办？日志、审计与可观测性</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Agent 失控了怎么办？日志、审计与可观测性</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-22T10:00:00.000Z" title="发表于 2025-12-22 18:00:00">2025-12-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-28T07:30:43.363Z" title="更新于 2026-02-28 15:30:43">2026-02-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/">🧠 LLM/Agent 从入门到精通：告别浅尝辄止</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/AI%E4%B8%8E%E7%A0%94%E7%A9%B6/">AI与研究</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Agent 调用了不该调用的接口、泄露了敏感信息、陷入无限循环——<strong>出事了怎么查、怎么拦？</strong></p>
+<p>安全治理通过日志、审计、可观测性，让 Agent 行为可追溯、可复盘、可拦截。本篇解析如何设计日志体系、审计追踪、监控告警，确保 Agent 安全可控。</p>
+<p><strong>安全治理</strong> &#x3D; 日志（记操作）+ 审计（追行为）+ 可观测性（指标、日志、追踪）。Agent 行为难控、出问题难排查、有安全风险——三者结合让行为可追溯、可复盘、可拦截。</p>
+<hr>
+<h2 id="📝-一、日志记录（Logging）"><a href="#📝-一、日志记录（Logging）" class="headerlink" title="📝 一、日志记录（Logging）"></a>📝 一、日志记录（Logging）</h2><p>金融 Agent 误调了转账接口——<strong>没有日志，根本查不到是谁、何时、传了什么参数</strong>。记录 Agent 的每一步：用户输入、Thought、工具调用、执行结果、错误。记录内容：</p>
+<ul>
+<li><strong>用户输入</strong>：用户给 Agent 的指令</li>
+<li><strong>Agent 思考</strong>：Agent 的思考过程（Thought）</li>
+<li><strong>工具调用</strong>：Agent 调用了哪些工具</li>
+<li><strong>执行结果</strong>：工具执行的结果</li>
+<li><strong>错误信息</strong>：遇到的错误和异常</li>
+</ul>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 日志记录（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AgentLogger</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, log_file=<span class="string">&quot;agent.log&quot;</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.logger = logging.getLogger(<span class="string">&quot;Agent&quot;</span>)</span><br><span class="line">        <span class="variable language_">self</span>.logger.setLevel(logging.INFO)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 文件处理器</span></span><br><span class="line">        file_handler = logging.FileHandler(log_file)</span><br><span class="line">        file_handler.setFormatter(</span><br><span class="line">            logging.Formatter(<span class="string">&#x27;%(asctime)s - %(levelname)s - %(message)s&#x27;</span>)</span><br><span class="line">        )</span><br><span class="line">        <span class="variable language_">self</span>.logger.addHandler(file_handler)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log_user_input</span>(<span class="params">self, user_input, user_id</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录用户输入&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.logger.info(<span class="string">f&quot;[USER_INPUT] User: <span class="subst">&#123;user_id&#125;</span>, Input: <span class="subst">&#123;user_input&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log_thought</span>(<span class="params">self, thought, agent_id</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录 Agent 思考&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.logger.info(<span class="string">f&quot;[THOUGHT] Agent: <span class="subst">&#123;agent_id&#125;</span>, Thought: <span class="subst">&#123;thought&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log_tool_call</span>(<span class="params">self, tool_name, args, agent_id</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录工具调用&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.logger.info(</span><br><span class="line">            <span class="string">f&quot;[TOOL_CALL] Agent: <span class="subst">&#123;agent_id&#125;</span>, Tool: <span class="subst">&#123;tool_name&#125;</span>, Args: <span class="subst">&#123;args&#125;</span>&quot;</span></span><br><span class="line">        )</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log_result</span>(<span class="params">self, result, agent_id</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录执行结果&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.logger.info(<span class="string">f&quot;[RESULT] Agent: <span class="subst">&#123;agent_id&#125;</span>, Result: <span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log_error</span>(<span class="params">self, error, agent_id</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录错误&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.logger.error(<span class="string">f&quot;[ERROR] Agent: <span class="subst">&#123;agent_id&#125;</span>, Error: <span class="subst">&#123;error&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">logger = AgentLogger()</span><br><span class="line"></span><br><span class="line">logger.log_user_input(<span class="string">&quot;查询用户数据&quot;</span>, user_id=<span class="string">&quot;user_123&quot;</span>)</span><br><span class="line">logger.log_thought(<span class="string">&quot;我需要查询数据库&quot;</span>, agent_id=<span class="string">&quot;agent_001&quot;</span>)</span><br><span class="line">logger.log_tool_call(<span class="string">&quot;query_database&quot;</span>, &#123;<span class="string">&quot;sql&quot;</span>: <span class="string">&quot;SELECT * FROM users&quot;</span>&#125;, <span class="string">&quot;agent_001&quot;</span>)</span><br><span class="line">logger.log_result(&#123;<span class="string">&quot;success&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;count&quot;</span>: <span class="number">1000</span>&#125;, <span class="string">&quot;agent_001&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-结构化日志"><a href="#1-2-结构化日志" class="headerlink" title="1.2 结构化日志"></a>1.2 结构化日志</h3><p>用 JSON 等结构化格式记录，便于后续分析和检索。代码示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 结构化日志（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StructuredLogger</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log</span>(<span class="params">self, event_type, data, agent_id=<span class="literal">None</span>, user_id=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录结构化日志&quot;&quot;&quot;</span></span><br><span class="line">        log_entry = &#123;</span><br><span class="line">            <span class="string">&quot;timestamp&quot;</span>: datetime.now().isoformat(),</span><br><span class="line">            <span class="string">&quot;event_type&quot;</span>: event_type,</span><br><span class="line">            <span class="string">&quot;agent_id&quot;</span>: agent_id,</span><br><span class="line">            <span class="string">&quot;user_id&quot;</span>: user_id,</span><br><span class="line">            <span class="string">&quot;data&quot;</span>: data</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 输出 JSON 格式日志</span></span><br><span class="line">        <span class="built_in">print</span>(json.dumps(log_entry))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">logger = StructuredLogger()</span><br><span class="line"></span><br><span class="line">logger.log(</span><br><span class="line">    event_type=<span class="string">&quot;tool_call&quot;</span>,</span><br><span class="line">    data=&#123;<span class="string">&quot;tool&quot;</span>: <span class="string">&quot;query_database&quot;</span>, <span class="string">&quot;args&quot;</span>: &#123;<span class="string">&quot;sql&quot;</span>: <span class="string">&quot;SELECT * FROM users&quot;</span>&#125;&#125;,</span><br><span class="line">    agent_id=<span class="string">&quot;agent_001&quot;</span>,</span><br><span class="line">    user_id=<span class="string">&quot;user_123&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔍-二、审计追踪（Audit-Trail）"><a href="#🔍-二、审计追踪（Audit-Trail）" class="headerlink" title="🔍 二、审计追踪（Audit Trail）"></a>🔍 二、审计追踪（Audit Trail）</h2><p>审计追踪记录 Agent 的完整行为历史，用于安全审计和问题排查。</p>
+<h3 id="2-1-审计追踪实现"><a href="#2-1-审计追踪实现" class="headerlink" title="2.1 审计追踪实现"></a>2.1 审计追踪实现</h3><p>记录 Agent 的完整行为链——谁、何时、做了什么、结果如何。代码示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 审计追踪（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AuditTrail</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, db</span>):</span><br><span class="line">        <span class="variable language_">self</span>.db = db  <span class="comment"># 数据库连接</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">record_action</span>(<span class="params">self, agent_id, action_type, details, user_id=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录操作&quot;&quot;&quot;</span></span><br><span class="line">        audit_entry = &#123;</span><br><span class="line">            <span class="string">&quot;agent_id&quot;</span>: agent_id,</span><br><span class="line">            <span class="string">&quot;user_id&quot;</span>: user_id,</span><br><span class="line">            <span class="string">&quot;action_type&quot;</span>: action_type,</span><br><span class="line">            <span class="string">&quot;details&quot;</span>: details,</span><br><span class="line">            <span class="string">&quot;timestamp&quot;</span>: datetime.now(),</span><br><span class="line">            <span class="string">&quot;ip_address&quot;</span>: <span class="variable language_">self</span>.get_client_ip(),</span><br><span class="line">            <span class="string">&quot;user_agent&quot;</span>: <span class="variable language_">self</span>.get_user_agent()</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 保存到数据库</span></span><br><span class="line">        <span class="variable language_">self</span>.db.audit_logs.insert(audit_entry)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">query_audit_log</span>(<span class="params">self, agent_id=<span class="literal">None</span>, start_time=<span class="literal">None</span>, end_time=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;查询审计日志&quot;&quot;&quot;</span></span><br><span class="line">        query = &#123;&#125;</span><br><span class="line">        <span class="keyword">if</span> agent_id:</span><br><span class="line">            query[<span class="string">&quot;agent_id&quot;</span>] = agent_id</span><br><span class="line">        <span class="keyword">if</span> start_time:</span><br><span class="line">            query[<span class="string">&quot;timestamp&quot;</span>] = &#123;<span class="string">&quot;$gte&quot;</span>: start_time&#125;</span><br><span class="line">        <span class="keyword">if</span> end_time:</span><br><span class="line">            query[<span class="string">&quot;timestamp&quot;</span>][<span class="string">&quot;$lte&quot;</span>] = end_time</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.db.audit_logs.find(query)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="📊-三、可观测性（Observability）"><a href="#📊-三、可观测性（Observability）" class="headerlink" title="📊 三、可观测性（Observability）"></a>📊 三、可观测性（Observability）</h2><p>可观测性包括指标、日志和追踪，帮助理解 Agent 的运行状态。</p>
+<h3 id="3-1-指标监控（Metrics）"><a href="#3-1-指标监控（Metrics）" class="headerlink" title="3.1 指标监控（Metrics）"></a>3.1 指标监控（Metrics）</h3><p>监控成功率、响应时间、工具调用次数等——像健康检查。代码示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 指标监控（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MetricsCollector</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.metrics = &#123;</span><br><span class="line">            <span class="string">&quot;total_requests&quot;</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="string">&quot;successful_requests&quot;</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="string">&quot;failed_requests&quot;</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="string">&quot;average_response_time&quot;</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="string">&quot;tool_call_count&quot;</span>: &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">record_request</span>(<span class="params">self, success, response_time</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录请求&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.metrics[<span class="string">&quot;total_requests&quot;</span>] += <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> success:</span><br><span class="line">            <span class="variable language_">self</span>.metrics[<span class="string">&quot;successful_requests&quot;</span>] += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="variable language_">self</span>.metrics[<span class="string">&quot;failed_requests&quot;</span>] += <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 更新平均响应时间</span></span><br><span class="line">        total = <span class="variable language_">self</span>.metrics[<span class="string">&quot;total_requests&quot;</span>]</span><br><span class="line">        current_avg = <span class="variable language_">self</span>.metrics[<span class="string">&quot;average_response_time&quot;</span>]</span><br><span class="line">        <span class="variable language_">self</span>.metrics[<span class="string">&quot;average_response_time&quot;</span>] = (</span><br><span class="line">            (current_avg * (total - <span class="number">1</span>) + response_time) / total</span><br><span class="line">        )</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">record_tool_call</span>(<span class="params">self, tool_name</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;记录工具调用&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> tool_name <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.metrics[<span class="string">&quot;tool_call_count&quot;</span>]:</span><br><span class="line">            <span class="variable language_">self</span>.metrics[<span class="string">&quot;tool_call_count&quot;</span>][tool_name] = <span class="number">0</span></span><br><span class="line">        <span class="variable language_">self</span>.metrics[<span class="string">&quot;tool_call_count&quot;</span>][tool_name] += <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_metrics</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;获取指标&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.metrics</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔒-四、安全审计（Security-Audit）"><a href="#🔒-四、安全审计（Security-Audit）" class="headerlink" title="🔒 四、安全审计（Security Audit）"></a>🔒 四、安全审计（Security Audit）</h2><p>安全审计检查 Agent 的安全合规性，识别潜在的安全风险。</p>
+<h3 id="4-1-安全审计检查"><a href="#4-1-安全审计检查" class="headerlink" title="4.1 安全审计检查"></a>4.1 安全审计检查</h3><p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安全审计（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SecurityAuditor</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">audit</span>(<span class="params">self, agent_id, time_range</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;安全审计&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 1. 获取审计日志</span></span><br><span class="line">        logs = <span class="variable language_">self</span>.get_audit_logs(agent_id, time_range)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 检查安全风险</span></span><br><span class="line">        risks = []</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 检查：是否有异常操作</span></span><br><span class="line">        risks.extend(<span class="variable language_">self</span>.check_anomalous_operations(logs))</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 检查：是否有权限滥用</span></span><br><span class="line">        risks.extend(<span class="variable language_">self</span>.check_permission_abuse(logs))</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 检查：是否有敏感操作</span></span><br><span class="line">        risks.extend(<span class="variable language_">self</span>.check_sensitive_operations(logs))</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;agent_id&quot;</span>: agent_id,</span><br><span class="line">            <span class="string">&quot;time_range&quot;</span>: time_range,</span><br><span class="line">            <span class="string">&quot;risks&quot;</span>: risks,</span><br><span class="line">            <span class="string">&quot;risk_level&quot;</span>: <span class="variable language_">self</span>.calculate_risk_level(risks)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔍-总结：安全治理确保-Agent-可控可观测"><a href="#🔍-总结：安全治理确保-Agent-可控可观测" class="headerlink" title="🔍 总结：安全治理确保 Agent 可控可观测"></a>🔍 总结：安全治理确保 Agent 可控可观测</h2><h3 id="💡-快速回顾：你学到了什么？"><a href="#💡-快速回顾：你学到了什么？" class="headerlink" title="💡 快速回顾：你学到了什么？"></a>💡 快速回顾：你学到了什么？</h3><ol>
+<li><strong>日志记录</strong>：记录 Agent 的所有操作</li>
+<li><strong>审计追踪</strong>：追踪 Agent 的行为历史</li>
+<li><strong>可观测性</strong>：监控 Agent 的运行状态</li>
+<li><strong>安全审计</strong>：检查 Agent 的安全合规性</li>
+</ol>
+<h3 id="安全治理的核心组件"><a href="#安全治理的核心组件" class="headerlink" title="安全治理的核心组件"></a>安全治理的核心组件</h3><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>作用</th>
+<th>简单理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>日志记录</strong></td>
+<td>记录所有操作</td>
+<td>就像”操作记录本”</td>
+</tr>
+<tr>
+<td><strong>审计追踪</strong></td>
+<td>追踪行为历史</td>
+<td>就像”行为档案”</td>
+</tr>
+<tr>
+<td><strong>可观测性</strong></td>
+<td>监控运行状态</td>
+<td>就像”健康检查”</td>
+</tr>
+<tr>
+<td><strong>安全审计</strong></td>
+<td>检查安全合规性</td>
+<td>就像”安全检查”</td>
+</tr>
+</tbody></table>
+<p><strong>生活化理解</strong>：</p>
+<blockquote>
+<p>就像公司管理：</p>
+<ul>
+<li><strong>日志记录</strong>：记录员工的所有操作（如：谁在什么时候做了什么）</li>
+<li><strong>审计追踪</strong>：追踪员工的行为历史（如：查看某个员工的操作记录）</li>
+<li><strong>可观测性</strong>：监控系统运行状态（如：系统是否正常，性能如何）</li>
+<li><strong>安全审计</strong>：检查安全合规性（如：是否有异常操作，是否符合安全规范）</li>
+</ul>
+</blockquote>
+<h3 id="设计原则总结"><a href="#设计原则总结" class="headerlink" title="设计原则总结"></a>设计原则总结</h3><table>
+<thead>
+<tr>
+<th>原则</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>完整性</strong></td>
+<td>记录所有重要操作</td>
+<td>✅ 记录所有工具调用<br>❌ 只记录部分操作</td>
+</tr>
+<tr>
+<td><strong>可追溯性</strong></td>
+<td>能够追溯操作历史</td>
+<td>✅ 记录时间、用户、操作<br>❌ 只记录操作内容</td>
+</tr>
+<tr>
+<td><strong>实时性</strong></td>
+<td>实时监控和告警</td>
+<td>✅ 实时监控，及时告警<br>❌ 事后分析</td>
+</tr>
+<tr>
+<td><strong>安全性</strong></td>
+<td>保护日志和审计数据</td>
+<td>✅ 加密存储，权限控制<br>❌ 明文存储</td>
+</tr>
+</tbody></table>
+<h3 id="实战建议与检查清单"><a href="#实战建议与检查清单" class="headerlink" title="实战建议与检查清单"></a>实战建议与检查清单</h3><ol>
+<li><strong>从基础开始</strong>：先实现基本的日志记录，再逐步完善</li>
+<li><strong>重视安全</strong>：日志和审计数据要加密存储，权限控制</li>
+<li><strong>实时监控</strong>：实时监控 Agent 运行状态，及时发现问题</li>
+<li><strong>定期审计</strong>：定期进行安全审计，检查合规性</li>
+</ol>
+<p><strong>上线前检查</strong>：工具调用是否全量记录？敏感信息是否脱敏？是否有异常行为告警阈值？</p>
+<blockquote>
+<p>💡 <strong>核心理解</strong>：<br>安全治理是 Agent 系统的重要组成部分，通过日志、审计、可观测性和安全审计，确保 Agent 的行为可控、可观测、可审计。</p>
+<p>就像企业治理一样，好的安全治理能让 Agent 系统更安全、更可靠，便于管理和维护。</p>
+</blockquote>
+<hr>
+<h2 id="📚-延伸阅读"><a href="#📚-延伸阅读" class="headerlink" title="📚 延伸阅读"></a>📚 延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.langchain.com/docs/security/"><strong>Agent Security Best Practices</strong></a>：Agent 安全最佳实践</li>
+<li><a target="_blank" rel="noopener" href="https://www.langchain.com/docs/observability/"><strong>Observability for LLM Applications</strong></a>：LLM 应用的可观测性</li>
+</ul>
+<hr>
+<h2 id="🔔-系列说明"><a href="#🔔-系列说明" class="headerlink" title="🔔 系列说明"></a>🔔 系列说明</h2><blockquote>
+<p>本文是<a href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/">《🧠 LLM&#x2F;Agent 从入门到精通：告别浅尝辄止》</a>系列第 13 篇。上一篇：<a href="/2025-12-18-llm-agent-tool-system/">Agent 怎么查数据库、调 API？Function Calling 与工具封装</a>。下一篇：<a href="/2025-12-23-llm-agent-multi-agent-collaboration/">一个 Agent 不够用？多 Agent 协作像团队一样干活</a>。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2025-12-22-llm-agent-security-governance/">https://linn0813.github.io/2025-12-22-llm-agent-security-governance/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/Agent/">Agent</a><a class="post-meta__tags" href="/tags/Security/">Security</a><a class="post-meta__tags" href="/tags/Governance/">Governance</a><a class="post-meta__tags" href="/tags/Logging/">Logging</a><a class="post-meta__tags" href="/tags/Observability/">Observability</a></div><div class="post-share"><div class="social-share" data-image="/img/llm-agent-security-governance.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025-12-21-llm-agent-spec-design/" title="Agent 输出飘忽不定？用 Schema 锁死格式"><img class="cover" src="/img/llm-agent-spec-design.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Agent 输出飘忽不定？用 Schema 锁死格式</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent Spec 设计：从 JSON Schema 到 Pydantic，掌握如何用 Schema 限制 Agent 输出，提升稳定性和可控性</div></div></div></a><a class="pagination-related" href="/2025-12-23-llm-agent-multi-agent-collaboration/" title="一个 Agent 不够用？多 Agent 协作像团队一样干活"><img class="cover" src="/img/llm-agent-multi-agent-collaboration.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">一个 Agent 不够用？多 Agent 协作像团队一样干活</div></div><div class="info-2"><div class="info-item-1">深入解析多 Agent 协作：从角色设定、协作协议到消息流，掌握如何让多个 Agent 像团队一样协作完成复杂任务</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-10-21-llm-agent-guide/" title="🧠 LLM 与智能体（Agent）知识记录"><img class="cover" src="/img/LLM-Agent.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-21</div><div class="info-item-2">🧠 LLM 与智能体（Agent）知识记录</div></div><div class="info-2"><div class="info-item-1">系统梳理 LLM 与 Agent 的概念、组成、原理与实践要点，配套学习路线与清单，助你快速上手智能体开发与应用</div></div></div></a><a class="pagination-related" href="/2025-10-27-langchain-framework/" title="🧠 LangChain：让大语言模型真正“动起来”的框架"><img class="cover" src="/img/langchain.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-27</div><div class="info-item-2">🧠 LangChain：让大语言模型真正“动起来”的框架</div></div><div class="info-2"><div class="info-item-1">从 Prompt 到 Agent、从单轮问答到任务编排——这篇文章帮你彻底理解 LangChain 的核心思想与实践路径。</div></div></div></a><a class="pagination-related" href="/2025-11-29-llm-agent-core-concepts-guide/" title="学了那么多术语，为什么还是不理解？LLM&#x2F;Agent 学习路线图"><img class="cover" src="/img/llm-agent-core-concepts-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-29</div><div class="info-item-2">学了那么多术语，为什么还是不理解？LLM&#x2F;Agent 学习路线图</div></div><div class="info-2"><div class="info-item-1">Prompt、Token、RAG、ReAct…学了一堆术语却还是不理解？这份路线图帮你从「会用」走到「真懂」，系统掌握 LLM 与 Agent。</div></div></div></a><a class="pagination-related" href="/2025-12-08-llm-rag-deep-integration/" title="模型一本正经地胡说八道？RAG 如何让 LLM 有据可查"><img class="cover" src="/img/llm-rag-deep-integration.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-08</div><div class="info-item-2">模型一本正经地胡说八道？RAG 如何让 LLM 有据可查</div></div><div class="info-2"><div class="info-item-1">深入解析 RAG 机制：从三阶段工作流、核心组件到进阶优化策略，构建高精度、可追溯的知识增强系统，突破 LLM 的知识时效性和幻觉问题</div></div></div></a><a class="pagination-related" href="/2025-12-10-llm-agent-concept-overview/" title="只会聊天不够用？Agent 如何让 LLM 能做事、会思考、能修正"><img class="cover" src="/img/llm-agent-concept-overview.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-10</div><div class="info-item-2">只会聊天不够用？Agent 如何让 LLM 能做事、会思考、能修正</div></div><div class="info-2"><div class="info-item-1">系统理解 Agent 的本质：从 LLM 到智能体的进化路径，深入解析 Agent 的核心构成、生命周期和关键模块，构建完整的 Agent 系统架构</div></div></div></a><a class="pagination-related" href="/2025-12-18-llm-agent-tool-system/" title="Agent 怎么查数据库、调 API？Function Calling 与工具封装"><img class="cover" src="/img/llm-agent-tool-system.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-18</div><div class="info-item-2">Agent 怎么查数据库、调 API？Function Calling 与工具封装</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 工具系统：从 Function Calling 机制、工具封装规范化设计到安全权限治理，让 Agent 拥有连接外部世界的能力</div></div></div></a><a class="pagination-related" href="/2025-12-19-llm-agent-task-planning/" title="复杂任务 Agent 怎么拆？任务规划与 Self-Correction"><img class="cover" src="/img/llm-agent-task-planning.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-19</div><div class="info-item-2">复杂任务 Agent 怎么拆？任务规划与 Self-Correction</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 任务规划：从任务分解、子任务生成到 Self-Correction，掌握如何让 Agent 把复杂任务拆成可执行步骤</div></div></div></a><a class="pagination-related" href="/2025-12-16-llm-agent-decision-engine/" title="Agent 怎么&quot;想&quot;和&quot;做&quot;？ReAct 决策引擎代码级拆解"><img class="cover" src="/img/llm-agent-decision-engine.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-16</div><div class="info-item-2">Agent 怎么&quot;想&quot;和&quot;做&quot;？ReAct 决策引擎代码级拆解</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 的决策引擎：代码级拆解 ReAct 范式，掌握如何设计 Prompt 模板、实现工具调用和错误处理，对比 Self-Ask 和 Tree of Thoughts 等策略</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">yuxiaoling</div><div class="author-info-description">AI 系统测试与测试工程化｜大模型质量评估、Prompt 回归、Agent 链路测试｜自动化与平台实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">104</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">397</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Linn0813"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Linn0813" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yuxiaoling.yxl@qq.com" target="_blank" title="Email"><i class="fa fa-envelope-open-text"></i></a><a class="social-icon" href="javascript:alert('微信公众号：Linn的技术笔记')" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">最近在做：AI 生成测试用例与质量评估</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9D-%E4%B8%80%E3%80%81%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95%EF%BC%88Logging%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">📝 一、日志记录（Logging）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E7%BB%93%E6%9E%84%E5%8C%96%E6%97%A5%E5%BF%97"><span class="toc-number">1.1.</span> <span class="toc-text">1.2 结构化日志</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-%E4%BA%8C%E3%80%81%E5%AE%A1%E8%AE%A1%E8%BF%BD%E8%B8%AA%EF%BC%88Audit-Trail%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">🔍 二、审计追踪（Audit Trail）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%AE%A1%E8%AE%A1%E8%BF%BD%E8%B8%AA%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 审计追踪实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%8A-%E4%B8%89%E3%80%81%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%EF%BC%88Observability%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">📊 三、可观测性（Observability）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%8C%87%E6%A0%87%E7%9B%91%E6%8E%A7%EF%BC%88Metrics%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 指标监控（Metrics）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%92-%E5%9B%9B%E3%80%81%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1%EF%BC%88Security-Audit%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">🔒 四、安全审计（Security Audit）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1%E6%A3%80%E6%9F%A5"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 安全审计检查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-%E6%80%BB%E7%BB%93%EF%BC%9A%E5%AE%89%E5%85%A8%E6%B2%BB%E7%90%86%E7%A1%AE%E4%BF%9D-Agent-%E5%8F%AF%E6%8E%A7%E5%8F%AF%E8%A7%82%E6%B5%8B"><span class="toc-number">5.</span> <span class="toc-text">🔍 总结：安全治理确保 Agent 可控可观测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%A1-%E5%BF%AB%E9%80%9F%E5%9B%9E%E9%A1%BE%EF%BC%9A%E4%BD%A0%E5%AD%A6%E5%88%B0%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">5.1.</span> <span class="toc-text">💡 快速回顾：你学到了什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E6%B2%BB%E7%90%86%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="toc-number">5.2.</span> <span class="toc-text">安全治理的核心组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99%E6%80%BB%E7%BB%93"><span class="toc-number">5.3.</span> <span class="toc-text">设计原则总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E6%88%98%E5%BB%BA%E8%AE%AE%E4%B8%8E%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-number">5.4.</span> <span class="toc-text">实战建议与检查清单</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-number">6.</span> <span class="toc-text">📚 延伸阅读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%94-%E7%B3%BB%E5%88%97%E8%AF%B4%E6%98%8E"><span class="toc-number">7.</span> <span class="toc-text">🔔 系列说明</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"><img src="/img/test-case-generation-prompt-design.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"/></a><div class="content"><a class="title" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践">测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践</a><time datetime="2026-02-27T02:00:00.000Z" title="发表于 2026-02-27 10:00:00">2026-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？"><img src="/img/ai-chat-testing-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="拿到 AI 对话需求后，如何设计测试方向？"/></a><div class="content"><a class="title" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？">拿到 AI 对话需求后，如何设计测试方向？</a><time datetime="2026-02-26T02:00:00.000Z" title="发表于 2026-02-26 10:00:00">2026-02-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-25-ai-test-case-generation-tool-design/" title="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD"><img src="/img/ai-test-case-generation-tool-design.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD"/></a><div class="content"><a class="title" href="/2026-02-25-ai-test-case-generation-tool-design/" title="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD">AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD</a><time datetime="2026-02-25T02:00:00.000Z" title="发表于 2026-02-25 10:00:00">2026-02-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-12-ai-testing-vs-traditional-testing/" title="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模"><img src="/img/ai-testing-vs-traditional-testing.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模"/></a><div class="content"><a class="title" href="/2026-02-12-ai-testing-vs-traditional-testing/" title="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模">🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模</a><time datetime="2026-02-12T02:00:00.000Z" title="发表于 2026-02-12 10:00:00">2026-02-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-01-26-localhost-wifi-access-guide/" title="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南"><img src="/img/localhost-wifi-access-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南"/></a><div class="content"><a class="title" href="/2026-01-26-localhost-wifi-access-guide/" title="同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南">同一 Wi‑Fi 下让别人访问你的本地前后端：完整操作指南</a><time datetime="2026-01-26T02:00:00.000Z" title="发表于 2026-01-26 10:00:00">2026-01-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
