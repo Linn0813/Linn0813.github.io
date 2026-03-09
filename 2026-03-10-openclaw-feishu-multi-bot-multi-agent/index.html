@@ -1,0 +1,431 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在飞书上设置多个 OpenClaw 机器人，分别对应不同的 Agent 和角色，实现测试助理、代码助理、通用助理等各司其职，相当于多个专业助理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职">
+<meta property="og:url" content="https://linn0813.github.io/2026-03-10-openclaw-feishu-multi-bot-multi-agent/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="在飞书上设置多个 OpenClaw 机器人，分别对应不同的 Agent 和角色，实现测试助理、代码助理、通用助理等各司其职，相当于多个专业助理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/openclaw-multi-bot-cover.png">
+<meta property="article:published_time" content="2026-03-10T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-09T03:01:49.290Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="飞书">
+<meta property="article:tag" content="OpenClaw">
+<meta property="article:tag" content="多机器人">
+<meta property="article:tag" content="多Agent">
+<meta property="article:tag" content="养龙虾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/openclaw-multi-bot-cover.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职",
+  "url": "https://linn0813.github.io/2026-03-10-openclaw-feishu-multi-bot-multi-agent/",
+  "image": "https://linn0813.github.io/img/openclaw-multi-bot-cover.png",
+  "datePublished": "2026-03-10T02:00:00.000Z",
+  "dateModified": "2026-03-09T03:01:49.290Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-03-10-openclaw-feishu-multi-bot-multi-agent/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">107</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">407</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/openclaw-multi-bot-cover.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-10T02:00:00.000Z" title="发表于 2026-03-10 10:00:00">2026-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-09T03:01:49.290Z" title="更新于 2026-03-09 11:01:49">2026-03-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/">🧠 LLM/Agent 从入门到精通：告别浅尝辄止</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A7%A0-LLM-Agent-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A%EF%BC%9A%E5%91%8A%E5%88%AB%E6%B5%85%E5%B0%9D%E8%BE%84%E6%AD%A2/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%A1%8C%E4%B8%9A%E8%B6%8B%E5%8A%BF/">技术学习与行业趋势</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p><strong>摘要</strong>：养龙虾进阶实践：在飞书上配置多个机器人，每个机器人对应一个独立的 Agent，拥有不同角色和技能。需先在飞书开放平台创建好应用；创建后，<strong>用自然语言把凭证和角色告诉 OpenClaw</strong>，让它帮你生成 <code>openclaw.json</code> 配置，或按本文步骤手动配置。每个机器人完全隔离：独立记忆、独立技能、独立模型，相当于多个专业助理各司其职。</p>
+</blockquote>
+<p><strong>前置条件</strong>：已按 <a href="/2026-03-02-openclaw-local-deploy-feishu-integration">把 Claude&#x2F;GPT 搬进飞书：OpenClaw 本地部署与接入完整指南</a> 完成 OpenClaw 部署、API 配置与首个飞书机器人接入。已了解 <a href="/2026-03-07-openclaw-skills-tutorial">如何养龙虾：OpenClaw 技能教程</a> 中的技能原理与教法。</p>
+<hr>
+<h2 id="速览"><a href="#速览" class="headerlink" title="速览"></a>速览</h2><table>
+<thead>
+<tr>
+<th>模块</th>
+<th>核心内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>推荐方式</td>
+<td>先在飞书创建应用（Coze 部署可用「重新创建」一键创建）→ 把凭证和角色告诉 OpenClaw → AI 生成配置</td>
+</tr>
+<tr>
+<td>核心原理</td>
+<td>账号层 → 路由层 → Agent 层，三层完全隔离</td>
+</tr>
+<tr>
+<td>飞书侧</td>
+<td>创建多个企业自建应用，每个应用一个机器人；回调地址可统一填同一个</td>
+</tr>
+<tr>
+<td>OpenClaw 侧</td>
+<td>channels.accounts 配置多账户；agents.list 定义多 Agent；bindings 或 account.agent 做绑定</td>
+</tr>
+<tr>
+<td>隔离优势</td>
+<td>独立记忆、独立技能、独立模型，不串消息</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="一、为什么需要多个机器人-多-Agent？"><a href="#一、为什么需要多个机器人-多-Agent？" class="headerlink" title="一、为什么需要多个机器人 + 多 Agent？"></a>一、为什么需要多个机器人 + 多 Agent？</h2><p>单个机器人 + 单 Agent 时，所有对话共用一个「大脑」，技能混在一起，容易出现：</p>
+<ul>
+<li><strong>意图混淆</strong>：用户说「帮我拆测试点」和「帮我 review 这段代码」，同一个 Agent 要兼顾测试、代码、通用问答，容易顾此失彼</li>
+<li><strong>上下文臃肿</strong>：技能越多，description 越多，匹配越慢、越不准</li>
+<li><strong>角色不清</strong>：无法给用户「这是测试专家」「这是代码专家」的明确预期</li>
+</ul>
+<p><strong>多机器人 + 多 Agent</strong> 的思路是：<strong>一个机器人 &#x3D; 一个专业助理</strong>。用户 @ 测试助理，就只处理测试相关；@ 代码助理，就只处理代码相关。每个 Agent 只加载自己领域的技能，角色清晰、执行稳定。且<strong>记忆完全隔离</strong>：给 A 机器人说的「记住我明天开会」，B 机器人不会知道。</p>
+<hr>
+<h2 id="二、核心原理：账号-路由-Agent-三层架构"><a href="#二、核心原理：账号-路由-Agent-三层架构" class="headerlink" title="二、核心原理：账号-路由-Agent 三层架构"></a>二、核心原理：账号-路由-Agent 三层架构</h2><p>OpenClaw 采用 <strong>「账号层 → 路由层 → Agent 层」</strong> 三层分离架构，实现多机器人独立身份、独立记忆、独立能力的完全隔离：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐</span><br><span class="line">│ 飞书机器人 1    │ ──→ │ 路由规则匹配     │ ──→ │ Agent 1 实例     │</span><br><span class="line">│ (独立 appId)    │     │ (accountId→     │     │ (独立记忆/技能)  │</span><br><span class="line">└─────────────────┘     │  agentId)       │     └─────────────────┘</span><br><span class="line">┌─────────────────┐     └─────────────────┘     ┌─────────────────┐</span><br><span class="line">│ 飞书机器人 2    │ ──→ │ 路由规则匹配     │ ──→ │ Agent 2 实例     │</span><br><span class="line">│ (独立 appId)    │     │ (accountId→     │     │ (独立记忆/技能)  │</span><br><span class="line">└─────────────────┘     │  agentId)       │     └─────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p><strong>路由匹配流程</strong>：飞书推送消息时带 <code>appId</code> → OpenClaw 找到对应 <code>accountId</code> → 遍历 bindings 匹配 <code>agentId</code> → 消息交给对应 Agent 处理 → Agent 在自己的工作空间内生成回复 → 通过对应飞书账号发回。</p>
+<p><strong>关键点</strong>：所有机器人的回调地址可<strong>统一填同一个</strong>（如 <code>https://你的域名/webhook/feishu</code> 或长连接模式），OpenClaw 通过 <code>appId</code> 自动区分是哪个机器人收到的消息。</p>
+<hr>
+<h2 id="三、推荐方式：自然语言生成配置"><a href="#三、推荐方式：自然语言生成配置" class="headerlink" title="三、推荐方式：自然语言生成配置"></a>三、推荐方式：自然语言生成配置</h2><p><strong>说明</strong>：OpenClaw <strong>不会</strong>自动创建飞书机器人，需先在 <a target="_blank" rel="noopener" href="https://open.feishu.cn/app">飞书开放平台</a> 创建好应用并拿到 App ID、App Secret。创建完成后，用自然语言把凭证和角色需求告诉 OpenClaw，让它帮你生成 <code>openclaw.json</code> 配置，无需手动改 JSON。</p>
+<h3 id="3-1-你先做：在飞书创建应用"><a href="#3-1-你先做：在飞书创建应用" class="headerlink" title="3.1 你先做：在飞书创建应用"></a>3.1 你先做：在飞书创建应用</h3><p>在飞书开放平台为每个机器人创建独立应用，拿到 App ID 和 App Secret。权限、事件订阅、发布等步骤参考 <a href="/2026-03-02-openclaw-local-deploy-feishu-integration">部署指南</a> 第四节。所有应用的回调地址填同一个，OpenClaw 通过 appId 自动区分。</p>
+<p><strong>若你是用 Coze 一键部署的 OpenClaw</strong>：可在 Coze 的 OpenClaw 配置弹窗中，找到「渠道配置」下的飞书卡片，点击 <strong>「重新创建」</strong> 按钮，一键创建新的飞书机器人并完成授权，无需手动去飞书开放平台逐个创建应用。创建完成后，再按 3.2 把凭证和角色告诉 OpenClaw 生成多 Agent 配置即可。</p>
+<p><img src="/img/openclaw-dashboard-config.png" alt="OpenClaw 控制台：设置 → 配置，进入 Agents 等配置管理"></p>
+<p><img src="/img/openclaw-coze-recreate-feishu.png" alt="Coze 部署的 OpenClaw：渠道配置中的「重新创建」可一键创建新飞书机器人"></p>
+<h3 id="3-2-然后跟-OpenClaw-说"><a href="#3-2-然后跟-OpenClaw-说" class="headerlink" title="3.2 然后跟 OpenClaw 说"></a>3.2 然后跟 OpenClaw 说</h3><p>在 OpenClaw 的 Web 控制台或飞书聊天中，把已创建的机器人凭证和角色需求告诉它，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">我在飞书创建了 3 个应用，凭证如下：</span><br><span class="line">1. 呷呷（个人助理）：App ID cli_xxx1，App Secret xxx1</span><br><span class="line">2. Harry（测试组长）：App ID cli_xxx2，App Secret xxx2</span><br><span class="line">3. 客服机器人：App ID cli_xxx3，App Secret xxx3</span><br><span class="line"></span><br><span class="line">帮我生成 openclaw.json 配置，让它们分别对应不同的 Agent：</span><br><span class="line">呷呷处理日常事务、写代码、整理文档；Harry 专门写测试用例、分析 Bug；客服机器人只能访问知识库。三个机器人记忆不互通。</span><br></pre></td></tr></table></figure>
+
+<p>或分步说：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">我新建了两个飞书应用，App ID 是 cli_xxx2 和 cli_xxx3，分别叫 Harry 和机器人 1 号。帮我加到 openclaw 配置里，Harry 是测试组长，机器人 1 号做测试沙箱</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-OpenClaw-会帮你做什么"><a href="#3-3-OpenClaw-会帮你做什么" class="headerlink" title="3.3 OpenClaw 会帮你做什么"></a>3.3 OpenClaw 会帮你做什么</h3><p>根据你提供的凭证和角色描述，OpenClaw 会生成：</p>
+<ul>
+<li><code>channels.feishu.accounts</code> 中的多账户配置</li>
+<li><code>agents.list</code> 中的多 Agent 定义（含 workspace、identity 等）</li>
+<li><code>bindings</code> 中的路由规则</li>
+</ul>
+<p>你只需将生成的内容写入 <code>~/.openclaw/openclaw.json</code>，重启网关即可生效。</p>
+<hr>
+<h2 id="四、手动配置：一步步实现"><a href="#四、手动配置：一步步实现" class="headerlink" title="四、手动配置：一步步实现"></a>四、手动配置：一步步实现</h2><p>若希望自己掌控配置，或理解底层原理，可按以下步骤手动配置。</p>
+<h3 id="4-1-整体流程概览"><a href="#4-1-整体流程概览" class="headerlink" title="4.1 整体流程概览"></a>4.1 整体流程概览</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">飞书用户</span><br><span class="line">    │</span><br><span class="line">    ├─ @测试助理 ──→ 飞书应用 A (appId: cli_xxx1) ──→ OpenClaw account: test-assistant</span><br><span class="line">    │                                                    │</span><br><span class="line">    │                                                    └─→ Agent: test-agent (技能: PRD拆解、用例生成、日志分析)</span><br><span class="line">    │</span><br><span class="line">    ├─ @代码助理 ──→ 飞书应用 B (appId: cli_xxx2) ──→ OpenClaw account: code-assistant</span><br><span class="line">    │                                                    │</span><br><span class="line">    │                                                    └─→ Agent: code-agent (技能: 代码审查、重构建议、Git操作)</span><br><span class="line">    │</span><br><span class="line">    └─ @通用助理 ──→ 飞书应用 C (appId: cli_xxx3) ──→ OpenClaw account: main</span><br><span class="line">                                                         │</span><br><span class="line">                                                         └─→ Agent: main (技能: 通用问答、文档总结)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-2-飞书侧：创建多个机器人"><a href="#4-2-飞书侧：创建多个机器人" class="headerlink" title="4.2 飞书侧：创建多个机器人"></a>4.2 飞书侧：创建多个机器人</h3><p>每个机器人对应一个飞书企业自建应用。若已创建过第一个，按相同流程再创建即可。<strong>所有机器人的回调地址可填同一个</strong>，OpenClaw 通过 <code>appId</code> 自动区分。</p>
+<h4 id="创建应用"><a href="#创建应用" class="headerlink" title="创建应用"></a>创建应用</h4><ol>
+<li>打开 <a target="_blank" rel="noopener" href="https://open.feishu.cn/app">飞书开放平台</a></li>
+<li>点击「创建企业自建应用」</li>
+<li>填写应用名称（即机器人名称，如「测试助理」「代码助理」「通用助理」）、描述、图标</li>
+<li>创建完成后，在「凭证与基本信息」中复制 <strong>App ID</strong> 和 <strong>App Secret</strong></li>
+</ol>
+<h4 id="配置权限与机器人能力"><a href="#配置权限与机器人能力" class="headerlink" title="配置权限与机器人能力"></a>配置权限与机器人能力</h4><p>与单机器人相同：在「权限管理」中批量导入权限 JSON；在「应用能力」中启用机器人并设置机器人名称。权限 JSON 可参考 <a href="/2026-03-02-openclaw-local-deploy-feishu-integration">部署指南</a> 中的 Step 3。</p>
+<h4 id="配置事件订阅与发布"><a href="#配置事件订阅与发布" class="headerlink" title="配置事件订阅与发布"></a>配置事件订阅与发布</h4><p>在「事件与回调」中选择长连接、订阅 <code>im.message.receive_v1</code>；在「版本管理与发布」中创建版本并发布。<strong>注意</strong>：需先完成 OpenClaw 侧的 <code>channels add</code> 并启动网关，再保存长连接。</p>
+<h4 id="建议的机器人命名"><a href="#建议的机器人命名" class="headerlink" title="建议的机器人命名"></a>建议的机器人命名</h4><table>
+<thead>
+<tr>
+<th>机器人名称</th>
+<th>角色定位</th>
+<th>典型技能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>测试助理</td>
+<td>测试工程师助手</td>
+<td>PRD 拆测试点、接口用例生成、日志分析</td>
+</tr>
+<tr>
+<td>代码助理</td>
+<td>代码审查与重构</td>
+<td>代码 review、重构建议、Git 操作</td>
+</tr>
+<tr>
+<td>通用助理</td>
+<td>日常问答与文档</td>
+<td>通用问答、文档总结、知识检索</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="4-3-OpenClaw-侧：配置账号层-Agent-层-路由层"><a href="#4-3-OpenClaw-侧：配置账号层-Agent-层-路由层" class="headerlink" title="4.3 OpenClaw 侧：配置账号层 + Agent 层 + 路由层"></a>4.3 OpenClaw 侧：配置账号层 + Agent 层 + 路由层</h3><p>编辑 <code>~/.openclaw/openclaw.json</code>（Windows 为 <code>C:\Users\你的用户名\.openclaw\openclaw.json</code>），配置三个核心块。</p>
+<h4 id="①-账号层（channels-feishu-accounts）"><a href="#①-账号层（channels-feishu-accounts）" class="headerlink" title="① 账号层（channels.feishu.accounts）"></a>① 账号层（channels.feishu.accounts）</h4><p>将每个飞书应用的凭证加入 <code>accounts</code>。可在每个 account 中直接加 <code>agent</code> 字段绑定 Agent，或通过 bindings 统一配置：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;channels&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;feishu&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;defaultAccount&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;accounts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;main&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">          <span class="attr">&quot;appId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cli_xxx1&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;appSecret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;secret1&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;botName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;呷呷&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;agent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;test-assistant&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">          <span class="attr">&quot;appId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cli_xxx2&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;appSecret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;secret2&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;botName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Harry&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;agent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-agent&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;code-assistant&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">          <span class="attr">&quot;appId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cli_xxx3&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;appSecret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;secret3&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;botName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;代码助理&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;agent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-agent&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>defaultAccount</code> 指定未匹配时的默认账户。</p>
+<h4 id="②-Agent-层（agents-list）"><a href="#②-Agent-层（agents-list）" class="headerlink" title="② Agent 层（agents.list）"></a>② Agent 层（agents.list）</h4><p>为每个角色定义独立的 Agent，可配置 <code>identity</code>（名称、emoji）、<code>workspace</code>、<code>model</code>（不同 Agent 可用不同模型）：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;agents&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;list&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;identity&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;呷呷&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;emoji&quot;</span><span class="punctuation">:</span> <span class="string">&quot;🦞&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;workspace&quot;</span><span class="punctuation">:</span> <span class="string">&quot;~/.openclaw/workspace&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-agent&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;identity&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Harry&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;emoji&quot;</span><span class="punctuation">:</span> <span class="string">&quot;🦉&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;workspace&quot;</span><span class="punctuation">:</span> <span class="string">&quot;~/.openclaw/workspace/test-agent&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;anthropic/claude-sonnet-4-5&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-agent&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;identity&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;代码助理&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;emoji&quot;</span><span class="punctuation">:</span> <span class="string">&quot;🤖&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;workspace&quot;</span><span class="punctuation">:</span> <span class="string">&quot;~/.openclaw/workspace/code-agent&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>可为专业机器人分配更强的模型，普通机器人用轻量模型节省成本。</p>
+<h4 id="③-路由层（bindings）"><a href="#③-路由层（bindings）" class="headerlink" title="③ 路由层（bindings）"></a>③ 路由层（bindings）</h4><p>若未在 account 中配置 <code>agent</code>，需在 <code>bindings</code> 中配置 accountId → agentId 映射：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;bindings&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;accountId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-agent&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;accountId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-assistant&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-agent&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;accountId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-assistant&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="完整配置示例"><a href="#完整配置示例" class="headerlink" title="完整配置示例"></a>完整配置示例</h4><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;channels&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;feishu&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;defaultAccount&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;accounts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;main&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">          <span class="attr">&quot;appId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cli_xxx1&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;appSecret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;secret1&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;botName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;呷呷&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;agent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;test-assistant&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">          <span class="attr">&quot;appId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cli_xxx2&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;appSecret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;secret2&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;botName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Harry&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;agent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-agent&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;code-assistant&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">          <span class="attr">&quot;appId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cli_xxx3&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;appSecret&quot;</span><span class="punctuation">:</span> <span class="string">&quot;secret3&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;botName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;代码助理&quot;</span><span class="punctuation">,</span></span><br><span class="line">          <span class="attr">&quot;agent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-agent&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;agents&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;list&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;identity&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;呷呷&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;emoji&quot;</span><span class="punctuation">:</span> <span class="string">&quot;🦞&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span> <span class="attr">&quot;workspace&quot;</span><span class="punctuation">:</span> <span class="string">&quot;~/.openclaw/workspace&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-agent&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;identity&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Harry&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;emoji&quot;</span><span class="punctuation">:</span> <span class="string">&quot;🦉&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span> <span class="attr">&quot;workspace&quot;</span><span class="punctuation">:</span> <span class="string">&quot;~/.openclaw/workspace/test-agent&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="punctuation">&#123;</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-agent&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;identity&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;代码助理&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;emoji&quot;</span><span class="punctuation">:</span> <span class="string">&quot;🤖&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span> <span class="attr">&quot;workspace&quot;</span><span class="punctuation">:</span> <span class="string">&quot;~/.openclaw/workspace/code-agent&quot;</span> <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;bindings&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;accountId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;main&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-agent&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;accountId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-assistant&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-agent&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;accountId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-assistant&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-4-独立工作空间隔离"><a href="#4-4-独立工作空间隔离" class="headerlink" title="4.4 独立工作空间隔离"></a>4.4 独立工作空间隔离</h3><p>每个 Agent 有完全独立的运行环境：</p>
+<ul>
+<li><strong>独立记忆</strong>：各自的 <code>MEMORY.md</code> 长期记忆、<code>memory/YYYY-MM-DD.md</code> 每日记忆，互不互通</li>
+<li><strong>独立技能</strong>：各自 workspace 下的 skills，不会串用</li>
+<li><strong>独立模型</strong>：可为不同 Agent 分配不同大模型（如专业机器人用 Pro，普通用 Lite）</li>
+<li><strong>独立会话</strong>：会话历史按 Agent 隔离</li>
+</ul>
+<hr>
+<h2 id="五、为每个-Agent-准备技能"><a href="#五、为每个-Agent-准备技能" class="headerlink" title="五、为每个 Agent 准备技能"></a>五、为每个 Agent 准备技能</h2><p>每个 Agent 的 <code>workspace</code> 下应有独立的 <code>skills</code> 目录，存放该角色专属的技能。</p>
+<h3 id="5-1-目录结构示例"><a href="#5-1-目录结构示例" class="headerlink" title="5.1 目录结构示例"></a>5.1 目录结构示例</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~/.openclaw/workspace/</span><br><span class="line">├── skills/                    # main 的技能（通用）</span><br><span class="line">│   └── ...</span><br><span class="line">├── test-agent/</span><br><span class="line">│   └── skills/                # 测试助理的技能</span><br><span class="line">│       ├── prd-testpoints/</span><br><span class="line">│       │   └── SKILL.md</span><br><span class="line">│       ├── api-testcase-gen/</span><br><span class="line">│       │   └── SKILL.md</span><br><span class="line">│       └── log-analysis/</span><br><span class="line">│           └── SKILL.md</span><br><span class="line">└── code-agent/</span><br><span class="line">    └── skills/                # 代码助理的技能</span><br><span class="line">        ├── code-review/</span><br><span class="line">        │   └── SKILL.md</span><br><span class="line">        └── github/</span><br><span class="line">            └── SKILL.md</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-技能来源"><a href="#5-2-技能来源" class="headerlink" title="5.2 技能来源"></a>5.2 技能来源</h3><ul>
+<li><strong>手写</strong>：按 <a href="/2026-03-07-openclaw-skills-tutorial">养龙虾教程</a> 中的方法，为每个 workspace 编写 SKILL.md</li>
+<li><strong>安装</strong>：<code>npx clawhub@latest install &lt;skill&gt;</code> 时指定 <code>--workspace</code> 或安装后复制到对应 workspace</li>
+<li><strong>自然语言生成</strong>：在 Web 控制台选择对应 Agent 的会话，用自然语言让 OpenClaw 生成技能并写入该 workspace</li>
+</ul>
+<hr>
+<h2 id="六、启动与验证"><a href="#六、启动与验证" class="headerlink" title="六、启动与验证"></a>六、启动与验证</h2><h3 id="6-1-启动网关"><a href="#6-1-启动网关" class="headerlink" title="6.1 启动网关"></a>6.1 启动网关</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">openclaw gateway</span><br></pre></td></tr></table></figure>
+
+<p>若已安装为服务，可执行 <code>openclaw gateway restart</code> 使配置生效。</p>
+<h3 id="6-2-验证路由与记忆隔离"><a href="#6-2-验证路由与记忆隔离" class="headerlink" title="6.2 验证路由与记忆隔离"></a>6.2 验证路由与记忆隔离</h3><ol>
+<li>在飞书中分别搜索各机器人名称，发起私聊</li>
+<li>对测试助理说「帮我拆测试点」，应触发测试相关技能</li>
+<li>对代码助理说「帮我 review 这段代码」，应触发代码相关技能</li>
+<li>对通用助理说「今天天气怎么样」，应走通用问答</li>
+<li><strong>验证记忆隔离</strong>：分别给不同机器人发「记住我的手机号是 138xxxx1234」，再问「我的手机号是多少？」——每个机器人只会记得自己收到的信息，不会串记忆</li>
+</ol>
+<p><strong>实践效果</strong>：分别 @ 不同机器人说「介绍一下自己」，每个机器人会按自己的身份回复——呷呷以全能助理、Harry 以测试组组长等不同人设回应，证明路由正确、身份隔离生效。</p>
+<p><img src="/img/openclaw-multi-bot-practice.png" alt="多机器人实践效果：呷呷与 1 号（Harry）分别介绍自己，身份与人设独立"></p>
+<h3 id="6-3-查看日志"><a href="#6-3-查看日志" class="headerlink" title="6.3 查看日志"></a>6.3 查看日志</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">openclaw logs --follow</span><br></pre></td></tr></table></figure>
+
+<p>可看到消息路由到哪个 <code>agentId</code>、哪个 <code>accountId</code>，便于排查绑定是否生效。</p>
+<hr>
+<h2 id="七、进阶：按用户或群组路由"><a href="#七、进阶：按用户或群组路由" class="headerlink" title="七、进阶：按用户或群组路由"></a>七、进阶：按用户或群组路由</h2><p>除按 <code>accountId</code> 路由外，还可按<strong>用户</strong>（<code>peer.kind: &quot;direct&quot;</code>）或<strong>群组</strong>（<code>peer.kind: &quot;group&quot;</code>）路由，实现「同一机器人、不同用户&#x2F;群用不同 Agent」。</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;bindings&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-agent&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;peer&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;direct&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ou_用户A的open_id&quot;</span> <span class="punctuation">&#125;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;agentId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;code-agent&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;channel&quot;</span><span class="punctuation">:</span> <span class="string">&quot;feishu&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;peer&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;kind&quot;</span><span class="punctuation">:</span> <span class="string">&quot;group&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;oc_代码评审群的chat_id&quot;</span> <span class="punctuation">&#125;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>用户 ID（<code>ou_xxx</code>）和群 ID（<code>oc_xxx</code>）可通过 <code>openclaw logs --follow</code> 在用户发消息时从日志中获取，或通过 <code>openclaw pairing list feishu</code> 查看配对请求中的用户 ID。</p>
+<hr>
+<h2 id="八、常见问题"><a href="#八、常见问题" class="headerlink" title="八、常见问题"></a>八、常见问题</h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>可能原因</th>
+<th>解决思路</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多个机器人回复都是同一个身份</td>
+<td>bindings 未生效或 account.agent 未配置</td>
+<td>检查 <code>accounts</code> 中每个账号的 <code>agent</code> 字段，或 <code>bindings</code> 的 <code>accountId</code> 是否与 <code>accounts</code> 的 key 一致；重启网关</td>
+</tr>
+<tr>
+<td>消息都走 main</td>
+<td>bindings 未生效或 accountId 不匹配</td>
+<td>检查 bindings 是否包含所有账号的映射；重启网关</td>
+</tr>
+<tr>
+<td>机器人收不到消息</td>
+<td>飞书应用回调地址未配置或长连接未保存</td>
+<td>检查回调地址是否正确；确保网关已启动后再保存长连接；检查消息接收权限</td>
+</tr>
+<tr>
+<td>机器人发不出消息</td>
+<td>App ID&#x2F;Secret 错误或权限不足</td>
+<td>检查凭证是否正确；检查飞书应用是否已申请发送消息权限；确认机器人已加入通讯录&#x2F;群</td>
+</tr>
+<tr>
+<td>技能未被触发</td>
+<td>Agent 的 workspace 下无对应技能</td>
+<td>检查 <code>agents.list</code> 中该 Agent 的 <code>workspace</code> 路径，确认 skills 目录存在且 SKILL.md 有效</td>
+</tr>
+</tbody></table>
+<p>若遇 bindings 相关 bug（如多账户路由失败），可关注 <a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw/issues">OpenClaw 官方 Issue</a>，社区有相关修复讨论。</p>
+<hr>
+<h2 id="📚-延伸资源"><a href="#📚-延伸资源" class="headerlink" title="📚 延伸资源"></a>📚 延伸资源</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.openclaw.ai/channels/feishu">OpenClaw 飞书通道文档</a> — 多账户、Multi-agent routing 官方说明</li>
+<li><a href="/2026-03-02-openclaw-local-deploy-feishu-integration">把 Claude&#x2F;GPT 搬进飞书：OpenClaw 本地部署与接入完整指南</a></li>
+<li><a href="/2026-03-07-openclaw-skills-tutorial">如何养龙虾：OpenClaw 技能教程</a></li>
+</ul>
+<hr>
+<h2 id="✍️-结语"><a href="#✍️-结语" class="headerlink" title="✍️ 结语"></a>✍️ 结语</h2><p>多机器人 + 多 Agent 的本质是<strong>分工</strong>：每个机器人对应一个专业助理，每个 Agent 只加载自己领域的技能，用户按需 @ 不同助理，获得更精准、更稳定的回复。<strong>完全隔离</strong>：独立记忆、独立技能、独立模型，不串消息。推荐先用自然语言跟 OpenClaw 对话生成配置，再按需手动微调；单网关可承载多个机器人，成本几乎为零。从单助理到多助理，是养龙虾的进阶实践，适合对角色分离、技能隔离有要求的团队。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-03-10-openclaw-feishu-multi-bot-multi-agent/">https://linn0813.github.io/2026-03-10-openclaw-feishu-multi-bot-multi-agent/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%A3%9E%E4%B9%A6/">飞书</a><a class="post-meta__tags" href="/tags/OpenClaw/">OpenClaw</a><a class="post-meta__tags" href="/tags/%E5%A4%9A%E6%9C%BA%E5%99%A8%E4%BA%BA/">多机器人</a><a class="post-meta__tags" href="/tags/%E5%A4%9AAgent/">多Agent</a><a class="post-meta__tags" href="/tags/%E5%85%BB%E9%BE%99%E8%99%BE/">养龙虾</a></div><div class="post-share"><div class="social-share" data-image="/img/openclaw-multi-bot-cover.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026-03-07-openclaw-skills-tutorial/" title="如何养龙虾：OpenClaw 技能教程（教、验证、提升）"><img class="cover" src="/img/openclaw-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">如何养龙虾：OpenClaw 技能教程（教、验证、提升）</div></div><div class="info-2"><div class="info-item-1">详解如何教 OpenClaw 新技能（含自然语言生成技能：跟 OpenClaw 对话让它学习）、技能原理、如何验证技能质量、学成后如何持续提升。以测试工程师视角举例。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026-03-02-openclaw-local-deploy-feishu-integration/" title="把 Claude&#x2F;GPT 搬进飞书：OpenClaw 本地部署与接入完整指南"><img class="cover" src="/img/openclaw-feishu.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-02</div><div class="info-item-2">把 Claude&#x2F;GPT 搬进飞书：OpenClaw 本地部署与接入完整指南</div></div><div class="info-2"><div class="info-item-1">从动机到落地：详解为什么要搭建 OpenClaw、本地部署的好处、飞书接入的完整操作步骤，以及 PRD 拆测试点、接口用例生成、日志分析等实际使用场景</div></div></div></a><a class="pagination-related" href="/2025-11-28-feishu-ai-knowledge-integration-guide/" title="🧠【硬核实战】打通 AI 知识库的&quot;任督二脉&quot;：飞书开放平台深度集成全指南"><img class="cover" src="/img/feishu-ai-integration.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-28</div><div class="info-item-2">🧠【硬核实战】打通 AI 知识库的&quot;任督二脉&quot;：飞书开放平台深度集成全指南</div></div><div class="info-2"><div class="info-item-1">全面详解飞书开放平台与AI知识库的深度集成方案，从战略分析、权限体系到实战流程，教你如何构建高效的知识处理流水线</div></div></div></a><a class="pagination-related" href="/2026-03-07-openclaw-skills-tutorial/" title="如何养龙虾：OpenClaw 技能教程（教、验证、提升）"><img class="cover" src="/img/openclaw-cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-07</div><div class="info-item-2">如何养龙虾：OpenClaw 技能教程（教、验证、提升）</div></div><div class="info-2"><div class="info-item-1">详解如何教 OpenClaw 新技能（含自然语言生成技能：跟 OpenClaw 对话让它学习）、技能原理、如何验证技能质量、学成后如何持续提升。以测试工程师视角举例。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">yuxiaoling</div><div class="author-info-description">AI 系统测试与测试工程化｜大模型质量评估、Prompt 回归、Agent 链路测试｜自动化与平台实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">107</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">407</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">44</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Linn0813"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Linn0813" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yuxiaoling.yxl@qq.com" target="_blank" title="Email"><i class="fa fa-envelope-open-text"></i></a><a class="social-icon" href="javascript:alert('微信公众号：Linn的技术笔记')" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">最近在做：AI 生成测试用例与质量评估</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9F%E8%A7%88"><span class="toc-number">1.</span> <span class="toc-text">速览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%A4%9A%E4%B8%AA%E6%9C%BA%E5%99%A8%E4%BA%BA-%E5%A4%9A-Agent%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">一、为什么需要多个机器人 + 多 Agent？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%EF%BC%9A%E8%B4%A6%E5%8F%B7-%E8%B7%AF%E7%94%B1-Agent-%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">二、核心原理：账号-路由-Agent 三层架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A8%E8%8D%90%E6%96%B9%E5%BC%8F%EF%BC%9A%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E7%94%9F%E6%88%90%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">三、推荐方式：自然语言生成配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%BD%A0%E5%85%88%E5%81%9A%EF%BC%9A%E5%9C%A8%E9%A3%9E%E4%B9%A6%E5%88%9B%E5%BB%BA%E5%BA%94%E7%94%A8"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 你先做：在飞书创建应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%84%B6%E5%90%8E%E8%B7%9F-OpenClaw-%E8%AF%B4"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 然后跟 OpenClaw 说</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-OpenClaw-%E4%BC%9A%E5%B8%AE%E4%BD%A0%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 OpenClaw 会帮你做什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%EF%BC%9A%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.</span> <span class="toc-text">四、手动配置：一步步实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B%E6%A6%82%E8%A7%88"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 整体流程概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%A3%9E%E4%B9%A6%E4%BE%A7%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AA%E6%9C%BA%E5%99%A8%E4%BA%BA"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 飞书侧：创建多个机器人</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%BA%94%E7%94%A8"><span class="toc-number">5.2.1.</span> <span class="toc-text">创建应用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%9D%83%E9%99%90%E4%B8%8E%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%8A%9B"><span class="toc-number">5.2.2.</span> <span class="toc-text">配置权限与机器人能力</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E4%BA%8B%E4%BB%B6%E8%AE%A2%E9%98%85%E4%B8%8E%E5%8F%91%E5%B8%83"><span class="toc-number">5.2.3.</span> <span class="toc-text">配置事件订阅与发布</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BB%BA%E8%AE%AE%E7%9A%84%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%91%BD%E5%90%8D"><span class="toc-number">5.2.4.</span> <span class="toc-text">建议的机器人命名</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-OpenClaw-%E4%BE%A7%EF%BC%9A%E9%85%8D%E7%BD%AE%E8%B4%A6%E5%8F%B7%E5%B1%82-Agent-%E5%B1%82-%E8%B7%AF%E7%94%B1%E5%B1%82"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 OpenClaw 侧：配置账号层 + Agent 层 + 路由层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%91%A0-%E8%B4%A6%E5%8F%B7%E5%B1%82%EF%BC%88channels-feishu-accounts%EF%BC%89"><span class="toc-number">5.3.1.</span> <span class="toc-text">① 账号层（channels.feishu.accounts）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%91%A1-Agent-%E5%B1%82%EF%BC%88agents-list%EF%BC%89"><span class="toc-number">5.3.2.</span> <span class="toc-text">② Agent 层（agents.list）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%91%A2-%E8%B7%AF%E7%94%B1%E5%B1%82%EF%BC%88bindings%EF%BC%89"><span class="toc-number">5.3.3.</span> <span class="toc-text">③ 路由层（bindings）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B"><span class="toc-number">5.3.4.</span> <span class="toc-text">完整配置示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E7%8B%AC%E7%AB%8B%E5%B7%A5%E4%BD%9C%E7%A9%BA%E9%97%B4%E9%9A%94%E7%A6%BB"><span class="toc-number">5.4.</span> <span class="toc-text">4.4 独立工作空间隔离</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%BA%E6%AF%8F%E4%B8%AA-Agent-%E5%87%86%E5%A4%87%E6%8A%80%E8%83%BD"><span class="toc-number">6.</span> <span class="toc-text">五、为每个 Agent 准备技能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E7%A4%BA%E4%BE%8B"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 目录结构示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E6%8A%80%E8%83%BD%E6%9D%A5%E6%BA%90"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 技能来源</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%90%AF%E5%8A%A8%E4%B8%8E%E9%AA%8C%E8%AF%81"><span class="toc-number">7.</span> <span class="toc-text">六、启动与验证</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%90%AF%E5%8A%A8%E7%BD%91%E5%85%B3"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 启动网关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E9%AA%8C%E8%AF%81%E8%B7%AF%E7%94%B1%E4%B8%8E%E8%AE%B0%E5%BF%86%E9%9A%94%E7%A6%BB"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 验证路由与记忆隔离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97"><span class="toc-number">7.3.</span> <span class="toc-text">6.3 查看日志</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E8%BF%9B%E9%98%B6%EF%BC%9A%E6%8C%89%E7%94%A8%E6%88%B7%E6%88%96%E7%BE%A4%E7%BB%84%E8%B7%AF%E7%94%B1"><span class="toc-number">8.</span> <span class="toc-text">七、进阶：按用户或群组路由</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">9.</span> <span class="toc-text">八、常见问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%BB%B6%E4%BC%B8%E8%B5%84%E6%BA%90"><span class="toc-number">10.</span> <span class="toc-text">📚 延伸资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%8D%EF%B8%8F-%E7%BB%93%E8%AF%AD"><span class="toc-number">11.</span> <span class="toc-text">✍️ 结语</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026-03-10-openclaw-feishu-multi-bot-multi-agent/" title="飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职"><img src="/img/openclaw-multi-bot-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职"/></a><div class="content"><a class="title" href="/2026-03-10-openclaw-feishu-multi-bot-multi-agent/" title="飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职">飞书多机器人 + 多 Agent：养龙虾进阶，多个助理各司其职</a><time datetime="2026-03-10T02:00:00.000Z" title="发表于 2026-03-10 10:00:00">2026-03-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-03-07-openclaw-skills-tutorial/" title="如何养龙虾：OpenClaw 技能教程（教、验证、提升）"><img src="/img/openclaw-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何养龙虾：OpenClaw 技能教程（教、验证、提升）"/></a><div class="content"><a class="title" href="/2026-03-07-openclaw-skills-tutorial/" title="如何养龙虾：OpenClaw 技能教程（教、验证、提升）">如何养龙虾：OpenClaw 技能教程（教、验证、提升）</a><time datetime="2026-03-07T06:00:00.000Z" title="发表于 2026-03-07 14:00:00">2026-03-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-03-02-openclaw-local-deploy-feishu-integration/" title="把 Claude/GPT 搬进飞书：OpenClaw 本地部署与接入完整指南"><img src="/img/openclaw-feishu.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="把 Claude/GPT 搬进飞书：OpenClaw 本地部署与接入完整指南"/></a><div class="content"><a class="title" href="/2026-03-02-openclaw-local-deploy-feishu-integration/" title="把 Claude/GPT 搬进飞书：OpenClaw 本地部署与接入完整指南">把 Claude/GPT 搬进飞书：OpenClaw 本地部署与接入完整指南</a><time datetime="2026-03-02T02:00:00.000Z" title="发表于 2026-03-02 10:00:00">2026-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"><img src="/img/test-case-generation-prompt-design.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"/></a><div class="content"><a class="title" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践">测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践</a><time datetime="2026-02-27T02:00:00.000Z" title="发表于 2026-02-27 10:00:00">2026-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？"><img src="/img/ai-chat-testing-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="拿到 AI 对话需求后，如何设计测试方向？"/></a><div class="content"><a class="title" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？">拿到 AI 对话需求后，如何设计测试方向？</a><time datetime="2026-02-26T02:00:00.000Z" title="发表于 2026-02-26 10:00:00">2026-02-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
