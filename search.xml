@@ -15,14 +15,12 @@
           
           <category> 🎨 职场进阶与测试思维：从小白到资深 </category>
           
-          <category> AI 测试 </category>
+          <category> 项目实战与案例经验 </category>
           
       </categories>
       
       
         <tags>
-            
-            <tag> AI测试 </tag>
             
             <tag> 移动端测试 </tag>
             
@@ -31,6 +29,8 @@
             <tag> Firebase </tag>
             
             <tag> DebugView </tag>
+            
+            <tag> AI辅助测试 </tag>
             
         </tags>
       
