@@ -16,6 +16,12 @@
 .growth-center { color: var(--gc-text); line-height: 1.75; }
 .growth-center * { box-sizing: border-box; }
 .growth-loading { padding: 36px 0; color: var(--gc-muted); text-align: center; }
+.growth-center [hidden] { display: none !important; }
+
+.gc-subnav { margin: 0 0 26px; display: flex; flex-wrap: wrap; gap: 8px 24px; border-bottom: 1px solid var(--gc-line); }
+.gc-subnav a { padding: 8px 0; border-bottom: 2px solid transparent; color: var(--gc-muted); font-size: 14px; text-decoration: none; }
+.gc-subnav a:hover,
+.gc-subnav a.is-active { border-bottom-color: var(--gc-blue); color: var(--gc-blue); }
 
 /* 页面头部沿用博客文章页的朴素排版，不再做独立产品式 Hero。 */
 .gc-hero { padding: 8px 0 24px; border-bottom: 1px solid var(--gc-line); }
@@ -89,6 +95,13 @@
 .gc-review-grid strong { color: var(--gc-blue); font-size: 12px; }
 .gc-review-grid h3 { margin: 0; color: var(--gc-text); font-size: 16px; }
 
+.gc-overview-links { margin: 38px 0 8px; display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--gc-line); }
+.gc-overview-links a { padding: 20px 20px 20px 0; display: flex; flex-direction: column; border-bottom: 1px solid var(--gc-line); color: var(--gc-text); text-decoration: none; }
+.gc-overview-links a:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--gc-line); }
+.gc-overview-links strong { font-size: 16px; }
+.gc-overview-links span { margin-top: 4px; color: var(--gc-muted); font-size: 12px; }
+.gc-overview-links a:hover strong { color: var(--gc-blue); }
+
 .gc-skill-intro { margin-bottom: 14px; padding: 12px 0; display: flex; justify-content: space-between; gap: 18px; border-top: 1px solid var(--gc-line); border-bottom: 1px solid var(--gc-line); }
 .gc-skill-intro strong { font-size: 13px; font-weight: 500; }
 .gc-skill-intro span { color: var(--gc-muted); font-size: 12px; }
@@ -134,6 +147,8 @@
   .gc-skill-grid,
   .gc-plugin-grid,
   .gc-review-grid { grid-template-columns: 1fr; }
+  .gc-overview-links { grid-template-columns: 1fr; }
+  .gc-overview-links a:nth-child(even) { padding-left: 0; border-left: 0; }
   .gc-capability:nth-child(even) { padding-left: 4px; border-left: 0; }
   .gc-capability + .gc-capability { border-top: 1px dashed var(--gc-line); }
   .gc-heading,
