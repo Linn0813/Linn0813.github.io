@@ -18,10 +18,12 @@
 .growth-loading { padding: 36px 0; color: var(--gc-muted); text-align: center; }
 .growth-center [hidden] { display: none !important; }
 
-.gc-subnav { margin: 0 0 26px; display: flex; flex-wrap: wrap; gap: 8px 24px; border-bottom: 1px solid var(--gc-line); }
-.gc-subnav a { padding: 8px 0; border-bottom: 2px solid transparent; color: var(--gc-muted); font-size: 14px; text-decoration: none; }
+.gc-subnav { margin: 0 0 28px; display: flex; flex-wrap: wrap; gap: 10px 14px; }
+.gc-subnav a { padding: 7px 14px; border-radius: 18px; color: var(--gc-muted); background: var(--gc-soft); font-size: 13px; text-decoration: none; }
+.gc-subnav a::before { margin-right: 7px; color: var(--gc-blue); content: '◉'; font-size: 9px; }
 .gc-subnav a:hover,
-.gc-subnav a.is-active { border-bottom-color: var(--gc-blue); color: var(--gc-blue); }
+.gc-subnav a.is-active { color: #fff; background: var(--gc-blue); }
+.gc-subnav a.is-active::before { color: #fff; }
 
 /* 页面头部沿用博客文章页的朴素排版，不再做独立产品式 Hero。 */
 .gc-hero { padding: 8px 0 24px; border-bottom: 1px solid var(--gc-line); }
@@ -48,9 +50,10 @@
 .gc-today button { padding: 7px 12px; border: 1px solid var(--gc-blue); border-radius: 4px; color: var(--gc-blue); background: transparent; cursor: pointer; font-size: 12px; }
 .gc-today button:hover { color: #fff; background: var(--gc-blue); }
 
-.gc-section { margin: 44px 0; }
-.gc-heading { margin-bottom: 16px; display: flex; align-items: end; justify-content: space-between; gap: 18px; }
-.gc-heading h2 { margin: 3px 0 0; color: var(--gc-text); font-size: 24px; }
+.gc-section { margin: 18px 0 36px; }
+.gc-heading { margin-bottom: 18px; padding-bottom: 12px; display: flex; align-items: end; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--gc-line); }
+.gc-heading h2 { position: relative; margin: 3px 0 0; color: var(--gc-text); font-size: 22px; }
+.gc-heading h2::after { position: absolute; bottom: -14px; left: 0; width: 48px; height: 2px; background: var(--gc-blue); content: ''; }
 .gc-heading p { margin: 0; color: var(--gc-muted); font-size: 12px; }
 
 .gc-domains { border-top: 1px solid var(--gc-line); }
