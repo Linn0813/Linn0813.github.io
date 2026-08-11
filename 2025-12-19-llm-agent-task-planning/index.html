@@ -1,0 +1,474 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>复杂任务 Agent 怎么拆？任务规划与 Self-Correction | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="深入解析 Agent 任务规划：从任务分解、子任务生成到 Self-Correction，掌握如何让 Agent 把复杂任务拆成可执行步骤">
+<meta property="og:type" content="article">
+<meta property="og:title" content="复杂任务 Agent 怎么拆？任务规划与 Self-Correction">
+<meta property="og:url" content="https://linn0813.github.io/2025-12-19-llm-agent-task-planning/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="深入解析 Agent 任务规划：从任务分解、子任务生成到 Self-Correction，掌握如何让 Agent 把复杂任务拆成可执行步骤">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/llm-agent-task-planning.png">
+<meta property="article:published_time" content="2025-12-19T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-02T09:30:48.594Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Task Planning">
+<meta property="article:tag" content="任务规划">
+<meta property="article:tag" content="任务分解">
+<meta property="article:tag" content="Self-Correction">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/llm-agent-task-planning.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "复杂任务 Agent 怎么拆？任务规划与 Self-Correction",
+  "url": "https://linn0813.github.io/2025-12-19-llm-agent-task-planning/",
+  "image": "https://linn0813.github.io/img/llm-agent-task-planning.png",
+  "datePublished": "2025-12-19T10:00:00.000Z",
+  "dateModified": "2026-06-02T09:30:48.594Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2025-12-19-llm-agent-task-planning/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '复杂任务 Agent 怎么拆？任务规划与 Self-Correction',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/llm-agent-task-planning.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">复杂任务 Agent 怎么拆？任务规划与 Self-Correction</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">复杂任务 Agent 怎么拆？任务规划与 Self-Correction</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-19T10:00:00.000Z" title="发表于 2025-12-19 18:00:00">2025-12-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-02T09:30:48.594Z" title="更新于 2026-06-02 17:30:48">2026-06-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A4%96-Agent-%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%A5%E9%97%A8%E3%80%81%E8%83%BD%E5%8A%9B%E4%B8%8E%E6%B2%BB%E7%90%86/">🤖 Agent 系统：入门、能力与治理</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%A4%96-Agent-%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%A5%E9%97%A8%E3%80%81%E8%83%BD%E5%8A%9B%E4%B8%8E%E6%B2%BB%E7%90%86/%E8%83%BD%E5%8A%9B%E4%B8%8E%E7%BC%96%E6%8E%92/">能力与编排</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>“开发一个测试平台”——Agent 怎么拆？先设计数据库还是先写 API？某一步失败了怎么自动调整？</p>
+<p><strong>任务规划</strong>让 Agent 把大任务分解为可执行子任务，按序执行，出错时 Self-Correction。本篇解析任务分解、子任务生成、推理链与自我修正，掌握如何让 Agent 稳定完成复杂任务。</p>
+<p><strong>任务规划</strong> &#x3D; 把大任务拆成可执行子任务 + 确定顺序 + 出错时 Self-Correction。就像做项目：先需求分析，再数据库设计，再开发——顺序错了会白干，某步失败要能重试或换策略。</p>
+<hr>
+<h2 id="🎯-一、任务分解策略"><a href="#🎯-一、任务分解策略" class="headerlink" title="🎯 一、任务分解策略"></a>🎯 一、任务分解策略</h2><p>接到”自动处理电商退单”——先拆成查订单、验库存、退款项、发通知。拆到哪一层？<strong>拆到每个子任务都能直接调用工具执行为止</strong>。</p>
+<h3 id="1-1-基于目标的分解（Goal-Based-Decomposition）"><a href="#1-1-基于目标的分解（Goal-Based-Decomposition）" class="headerlink" title="1.1 基于目标的分解（Goal-Based Decomposition）"></a>1.1 基于目标的分解（Goal-Based Decomposition）</h3><p>根据任务目标递归分解，直到每个子目标都可直接执行。方法：</p>
+<blockquote>
+<ol>
+<li>分析任务目标</li>
+<li>识别关键步骤</li>
+<li>对每个步骤继续分解（如果需要）</li>
+<li>直到所有步骤都可以直接执行</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 基于目标的分解（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decompose_task</span>(<span class="params">task_description</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;分解任务&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 1. 分析任务目标</span></span><br><span class="line">    goal = analyze_goal(task_description)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 2. 识别关键步骤</span></span><br><span class="line">    steps = identify_steps(goal)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 递归分解（如果步骤太复杂）</span></span><br><span class="line">    subtasks = []</span><br><span class="line">    <span class="keyword">for</span> step <span class="keyword">in</span> steps:</span><br><span class="line">        <span class="keyword">if</span> is_complex(step):</span><br><span class="line">            <span class="comment"># 继续分解</span></span><br><span class="line">            subtasks.extend(decompose_task(step))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># 可以直接执行</span></span><br><span class="line">            subtasks.append(step)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> subtasks</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">task = <span class="string">&quot;开发一个测试平台&quot;</span></span><br><span class="line">subtasks = decompose_task(task)</span><br><span class="line"><span class="comment"># 输出：</span></span><br><span class="line"><span class="comment"># [</span></span><br><span class="line"><span class="comment">#   &quot;需求分析：确定功能需求&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;数据库设计：设计用户表、测试用例表&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;后端开发：开发用户API、测试用例API&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;前端开发：开发登录页面、测试用例管理页面&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;测试：编写单元测试、集成测试&quot;</span></span><br><span class="line"><span class="comment"># ]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-基于工作流的分解（Workflow-Based-Decomposition）"><a href="#1-2-基于工作流的分解（Workflow-Based-Decomposition）" class="headerlink" title="1.2 基于工作流的分解（Workflow-Based Decomposition）"></a>1.2 基于工作流的分解（Workflow-Based Decomposition）</h3><p>任务有固定流程时（如”查数据→分析→生成报告”），按流程拆。方法：</p>
+<blockquote>
+<ol>
+<li>识别工作流程</li>
+<li>确定流程步骤</li>
+<li>按流程顺序分解</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 基于工作流的分解（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decompose_by_workflow</span>(<span class="params">task_description</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;基于工作流分解任务&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 1. 识别工作流程类型</span></span><br><span class="line">    workflow_type = identify_workflow(task_description)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 2. 获取标准工作流</span></span><br><span class="line">    workflow = get_standard_workflow(workflow_type)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 根据工作流分解任务</span></span><br><span class="line">    subtasks = []</span><br><span class="line">    <span class="keyword">for</span> step <span class="keyword">in</span> workflow:</span><br><span class="line">        subtask = adapt_step_to_task(step, task_description)</span><br><span class="line">        subtasks.append(subtask)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> subtasks</span><br><span class="line"></span><br><span class="line"><span class="comment"># 标准工作流示例</span></span><br><span class="line">standard_workflows = &#123;</span><br><span class="line">    <span class="string">&quot;数据查询&quot;</span>: [<span class="string">&quot;连接数据库&quot;</span>, <span class="string">&quot;执行查询&quot;</span>, <span class="string">&quot;处理结果&quot;</span>, <span class="string">&quot;返回数据&quot;</span>],</span><br><span class="line">    <span class="string">&quot;报告生成&quot;</span>: [<span class="string">&quot;收集数据&quot;</span>, <span class="string">&quot;分析数据&quot;</span>, <span class="string">&quot;生成报告&quot;</span>, <span class="string">&quot;保存报告&quot;</span>],</span><br><span class="line">    <span class="string">&quot;测试执行&quot;</span>: [<span class="string">&quot;准备环境&quot;</span>, <span class="string">&quot;执行测试&quot;</span>, <span class="string">&quot;收集结果&quot;</span>, <span class="string">&quot;生成报告&quot;</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">task = <span class="string">&quot;查询用户数据并生成报告&quot;</span></span><br><span class="line">subtasks = decompose_by_workflow(task)</span><br><span class="line"><span class="comment"># 输出：</span></span><br><span class="line"><span class="comment"># [</span></span><br><span class="line"><span class="comment">#   &quot;连接数据库：建立数据库连接&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;执行查询：查询用户数据&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;处理结果：处理查询结果&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;收集数据：收集处理后的数据&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;分析数据：分析数据趋势&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;生成报告：生成PDF报告&quot;,</span></span><br><span class="line"><span class="comment">#   &quot;保存报告：保存到指定路径&quot;</span></span><br><span class="line"><span class="comment"># ]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-基于工具的分解（Tool-Based-Decomposition）"><a href="#1-3-基于工具的分解（Tool-Based-Decomposition）" class="headerlink" title="1.3 基于工具的分解（Tool-Based Decomposition）"></a>1.3 基于工具的分解（Tool-Based Decomposition）</h3><p>根据可用工具把任务拆成工具调用序列。方法：</p>
+<blockquote>
+<ol>
+<li>分析任务需求</li>
+<li>匹配可用工具</li>
+<li>确定工具调用顺序</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 基于工具的分解（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decompose_by_tools</span>(<span class="params">task_description, available_tools</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;基于工具分解任务&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 1. 分析任务需求</span></span><br><span class="line">    requirements = analyze_requirements(task_description)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 2. 匹配可用工具</span></span><br><span class="line">    tool_sequence = []</span><br><span class="line">    <span class="keyword">for</span> requirement <span class="keyword">in</span> requirements:</span><br><span class="line">        <span class="comment"># 找到匹配的工具</span></span><br><span class="line">        tool = find_matching_tool(requirement, available_tools)</span><br><span class="line">        <span class="keyword">if</span> tool:</span><br><span class="line">            tool_sequence.append(&#123;</span><br><span class="line">                <span class="string">&quot;tool&quot;</span>: tool,</span><br><span class="line">                <span class="string">&quot;requirement&quot;</span>: requirement</span><br><span class="line">            &#125;)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 确定工具调用顺序（考虑依赖关系）</span></span><br><span class="line">    ordered_sequence = order_tools_by_dependency(tool_sequence)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> ordered_sequence</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">task = <span class="string">&quot;查询用户数据并生成报告&quot;</span></span><br><span class="line">available_tools = [<span class="string">&quot;query_database&quot;</span>, <span class="string">&quot;process_data&quot;</span>, <span class="string">&quot;generate_report&quot;</span>]</span><br><span class="line"></span><br><span class="line">subtasks = decompose_by_tools(task, available_tools)</span><br><span class="line"><span class="comment"># 输出：</span></span><br><span class="line"><span class="comment"># [</span></span><br><span class="line"><span class="comment">#   &#123;&quot;tool&quot;: &quot;query_database&quot;, &quot;requirement&quot;: &quot;查询用户数据&quot;&#125;,</span></span><br><span class="line"><span class="comment">#   &#123;&quot;tool&quot;: &quot;process_data&quot;, &quot;requirement&quot;: &quot;处理数据&quot;&#125;,</span></span><br><span class="line"><span class="comment">#   &#123;&quot;tool&quot;: &quot;generate_report&quot;, &quot;requirement&quot;: &quot;生成报告&quot;&#125;</span></span><br><span class="line"><span class="comment"># ]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-三种分解策略对比"><a href="#1-4-三种分解策略对比" class="headerlink" title="1.4 三种分解策略对比"></a>1.4 三种分解策略对比</h3><table>
+<thead>
+<tr>
+<th>策略</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>基于目标</strong></td>
+<td>灵活，适应性强</td>
+<td>需要智能分析</td>
+<td>复杂、不确定的任务</td>
+</tr>
+<tr>
+<td><strong>基于工作流</strong></td>
+<td>标准化，可复用</td>
+<td>不够灵活</td>
+<td>有标准流程的任务</td>
+</tr>
+<tr>
+<td><strong>基于工具</strong></td>
+<td>直接可执行</td>
+<td>受限于工具集</td>
+<td>工具明确的任务</td>
+</tr>
+</tbody></table>
+<p><strong>选择指南</strong>：</p>
+<ul>
+<li>✅ <strong>复杂任务</strong>：使用基于目标的分解</li>
+<li>✅ <strong>标准流程</strong>：使用基于工作流的分解</li>
+<li>✅ <strong>工具明确</strong>：使用基于工具的分解</li>
+<li>✅ <strong>最佳实践</strong>：结合使用（如：先基于目标分解，再基于工具细化）</li>
+</ul>
+<hr>
+<h2 id="🔄-二、任务规划方法"><a href="#🔄-二、任务规划方法" class="headerlink" title="🔄 二、任务规划方法"></a>🔄 二、任务规划方法</h2><p>分解后要确定执行顺序——像做菜：先备料、再切、再炒、再装盘，顺序错了会乱。</p>
+<h3 id="2-1-顺序规划（Sequential-Planning）"><a href="#2-1-顺序规划（Sequential-Planning）" class="headerlink" title="2.1 顺序规划（Sequential Planning）"></a>2.1 顺序规划（Sequential Planning）</h3><p>按顺序执行，前一个完成再执行下一个。方法：</p>
+<blockquote>
+<ol>
+<li>确定任务顺序</li>
+<li>按顺序执行</li>
+<li>等待前一个任务完成再执行下一个</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 顺序规划（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SequentialPlanner</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">plan</span>(<span class="params">self, subtasks</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;顺序规划&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 1. 确定执行顺序（可以根据依赖关系排序）</span></span><br><span class="line">        ordered_tasks = <span class="variable language_">self</span>.order_tasks(subtasks)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 按顺序执行</span></span><br><span class="line">        results = []</span><br><span class="line">        <span class="keyword">for</span> task <span class="keyword">in</span> ordered_tasks:</span><br><span class="line">            result = <span class="variable language_">self</span>.execute_task(task)</span><br><span class="line">            results.append(result)</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 如果任务失败，停止执行</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> result[<span class="string">&quot;success&quot;</span>]:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> results</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">order_tasks</span>(<span class="params">self, subtasks</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;确定任务顺序&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 简单的按依赖关系排序（实际应该用拓扑排序）</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">sorted</span>(subtasks, key=<span class="keyword">lambda</span> x: x.get(<span class="string">&quot;order&quot;</span>, <span class="number">0</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">planner = SequentialPlanner()</span><br><span class="line">subtasks = [</span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;查询数据库&quot;</span>, <span class="string">&quot;order&quot;</span>: <span class="number">1</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;处理数据&quot;</span>, <span class="string">&quot;order&quot;</span>: <span class="number">2</span>, <span class="string">&quot;depends_on&quot;</span>: [<span class="string">&quot;查询数据库&quot;</span>]&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;生成报告&quot;</span>, <span class="string">&quot;order&quot;</span>: <span class="number">3</span>, <span class="string">&quot;depends_on&quot;</span>: [<span class="string">&quot;处理数据&quot;</span>]&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">results = planner.plan(subtasks)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-并行规划（Parallel-Planning）"><a href="#2-2-并行规划（Parallel-Planning）" class="headerlink" title="2.2 并行规划（Parallel Planning）"></a>2.2 并行规划（Parallel Planning）</h3><p>无依赖的任务可并行执行。方法：</p>
+<blockquote>
+<ol>
+<li>识别可以并行的任务</li>
+<li>并行执行</li>
+<li>等待所有任务完成</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 并行规划（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ParallelPlanner</span>:</span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">plan</span>(<span class="params">self, subtasks</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;并行规划&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 1. 识别可以并行的任务组</span></span><br><span class="line">        task_groups = <span class="variable language_">self</span>.group_parallel_tasks(subtasks)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 按组顺序执行，组内并行</span></span><br><span class="line">        results = []</span><br><span class="line">        <span class="keyword">for</span> group <span class="keyword">in</span> task_groups:</span><br><span class="line">            <span class="comment"># 并行执行组内任务</span></span><br><span class="line">            group_results = <span class="keyword">await</span> asyncio.gather(*[</span><br><span class="line">                <span class="variable language_">self</span>.execute_task_async(task) <span class="keyword">for</span> task <span class="keyword">in</span> group</span><br><span class="line">            ])</span><br><span class="line">            results.extend(group_results)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> results</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">group_parallel_tasks</span>(<span class="params">self, subtasks</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;分组：可以并行的任务放在一组&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 简单的分组逻辑（实际应该分析依赖关系）</span></span><br><span class="line">        groups = []</span><br><span class="line">        current_group = []</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> task <span class="keyword">in</span> subtasks:</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> task.get(<span class="string">&quot;depends_on&quot;</span>):</span><br><span class="line">                <span class="comment"># 没有依赖，可以并行</span></span><br><span class="line">                current_group.append(task)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># 有依赖，开始新组</span></span><br><span class="line">                <span class="keyword">if</span> current_group:</span><br><span class="line">                    groups.append(current_group)</span><br><span class="line">                groups.append([task])</span><br><span class="line">                current_group = []</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> current_group:</span><br><span class="line">            groups.append(current_group)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> groups</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">planner = ParallelPlanner()</span><br><span class="line">subtasks = [</span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;查询用户数据&quot;</span>, <span class="string">&quot;depends_on&quot;</span>: []&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;查询产品数据&quot;</span>, <span class="string">&quot;depends_on&quot;</span>: []&#125;,  <span class="comment"># 可以并行</span></span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;生成报告&quot;</span>, <span class="string">&quot;depends_on&quot;</span>: [<span class="string">&quot;查询用户数据&quot;</span>, <span class="string">&quot;查询产品数据&quot;</span>]&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">results = <span class="keyword">await</span> planner.plan(subtasks)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-条件规划（Conditional-Planning）"><a href="#2-3-条件规划（Conditional-Planning）" class="headerlink" title="2.3 条件规划（Conditional Planning）"></a>2.3 条件规划（Conditional Planning）</h3><p>根据执行结果动态调整后续任务。</p>
+<p><strong>方法</strong>：</p>
+<blockquote>
+<ol>
+<li>执行任务</li>
+<li>根据结果决定下一步</li>
+<li>动态调整计划</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 条件规划（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ConditionalPlanner</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">plan</span>(<span class="params">self, subtasks, context=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;条件规划&quot;&quot;&quot;</span></span><br><span class="line">        results = []</span><br><span class="line">        current_context = context <span class="keyword">or</span> &#123;&#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> task <span class="keyword">in</span> subtasks:</span><br><span class="line">            <span class="comment"># 1. 检查条件</span></span><br><span class="line">            <span class="keyword">if</span> <span class="variable language_">self</span>.should_execute(task, current_context):</span><br><span class="line">                <span class="comment"># 2. 执行任务</span></span><br><span class="line">                result = <span class="variable language_">self</span>.execute_task(task, current_context)</span><br><span class="line">                results.append(result)</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># 3. 更新上下文</span></span><br><span class="line">                current_context.update(result.get(<span class="string">&quot;context&quot;</span>, &#123;&#125;))</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># 4. 根据结果调整后续任务</span></span><br><span class="line">                <span class="keyword">if</span> result.get(<span class="string">&quot;should_skip_remaining&quot;</span>):</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># 跳过任务</span></span><br><span class="line">                results.append(&#123;<span class="string">&quot;skipped&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;task&quot;</span>: task&#125;)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> results</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">should_execute</span>(<span class="params">self, task, context</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;判断是否应该执行任务&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 检查条件（如：如果数据为空，跳过生成报告）</span></span><br><span class="line">        condition = task.get(<span class="string">&quot;condition&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> condition:</span><br><span class="line">            <span class="keyword">return</span> evaluate_condition(condition, context)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line">planner = ConditionalPlanner()</span><br><span class="line">subtasks = [</span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;查询数据&quot;</span>, <span class="string">&quot;condition&quot;</span>: <span class="literal">None</span>&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;生成报告&quot;</span>, <span class="string">&quot;condition&quot;</span>: <span class="string">&quot;data_count &gt; 0&quot;</span>&#125;  <span class="comment"># 只有数据不为空才生成报告</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">results = planner.plan(subtasks, context=&#123;&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔧-三、Self-Correction（自我修正）"><a href="#🔧-三、Self-Correction（自我修正）" class="headerlink" title="🔧 三、Self-Correction（自我修正）"></a>🔧 三、Self-Correction（自我修正）</h2><p>执行出错时分析原因并修正——如数据库查询失败，检查连接后重试。</p>
+<h3 id="3-1-错误检测（Error-Detection）"><a href="#3-1-错误检测（Error-Detection）" class="headerlink" title="3.1 错误检测（Error Detection）"></a>3.1 错误检测（Error Detection）</h3><p>检测执行是否出错。方法：</p>
+<blockquote>
+<ol>
+<li>检查执行结果</li>
+<li>识别错误类型</li>
+<li>记录错误信息</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 错误检测（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ErrorDetector</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">detect_error</span>(<span class="params">self, result</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;检测错误&quot;&quot;&quot;</span></span><br><span class="line">        errors = []</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 1. 检查执行结果</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> result.get(<span class="string">&quot;success&quot;</span>):</span><br><span class="line">            errors.append(&#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;execution_error&quot;</span>,</span><br><span class="line">                <span class="string">&quot;message&quot;</span>: result.get(<span class="string">&quot;error&quot;</span>),</span><br><span class="line">                <span class="string">&quot;severity&quot;</span>: <span class="string">&quot;high&quot;</span></span><br><span class="line">            &#125;)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 检查结果质量</span></span><br><span class="line">        <span class="keyword">if</span> result.get(<span class="string">&quot;quality_score&quot;</span>, <span class="number">1.0</span>) &lt; <span class="number">0.5</span>:</span><br><span class="line">            errors.append(&#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;quality_error&quot;</span>,</span><br><span class="line">                <span class="string">&quot;message&quot;</span>: <span class="string">&quot;结果质量不达标&quot;</span>,</span><br><span class="line">                <span class="string">&quot;severity&quot;</span>: <span class="string">&quot;medium&quot;</span></span><br><span class="line">            &#125;)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 3. 检查超时</span></span><br><span class="line">        <span class="keyword">if</span> result.get(<span class="string">&quot;timeout&quot;</span>):</span><br><span class="line">            errors.append(&#123;</span><br><span class="line">                <span class="string">&quot;type&quot;</span>: <span class="string">&quot;timeout_error&quot;</span>,</span><br><span class="line">                <span class="string">&quot;message&quot;</span>: <span class="string">&quot;任务执行超时&quot;</span>,</span><br><span class="line">                <span class="string">&quot;severity&quot;</span>: <span class="string">&quot;high&quot;</span></span><br><span class="line">            &#125;)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> errors</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-错误分析（Error-Analysis）"><a href="#3-2-错误分析（Error-Analysis）" class="headerlink" title="3.2 错误分析（Error Analysis）"></a>3.2 错误分析（Error Analysis）</h3><p>分析错误原因，定位问题。方法：</p>
+<blockquote>
+<ol>
+<li>分析错误类型</li>
+<li>识别根本原因</li>
+<li>评估影响范围</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 错误分析（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ErrorAnalyzer</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">analyze</span>(<span class="params">self, error, context</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;分析错误&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 1. 分析错误类型</span></span><br><span class="line">        error_type = error[<span class="string">&quot;type&quot;</span>]</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 识别根本原因</span></span><br><span class="line">        root_cause = <span class="variable language_">self</span>.identify_root_cause(error, context)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 3. 评估影响</span></span><br><span class="line">        impact = <span class="variable language_">self</span>.assess_impact(error, context)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">&quot;error_type&quot;</span>: error_type,</span><br><span class="line">            <span class="string">&quot;root_cause&quot;</span>: root_cause,</span><br><span class="line">            <span class="string">&quot;impact&quot;</span>: impact,</span><br><span class="line">            <span class="string">&quot;suggested_fix&quot;</span>: <span class="variable language_">self</span>.suggest_fix(error, root_cause)</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">identify_root_cause</span>(<span class="params">self, error, context</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;识别根本原因&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 使用 LLM 分析错误原因</span></span><br><span class="line">        prompt = <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        分析以下错误的原因：</span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string">        错误：<span class="subst">&#123;error[<span class="string">&quot;message&quot;</span>]&#125;</span></span></span><br><span class="line"><span class="string">        上下文：<span class="subst">&#123;context&#125;</span></span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string">        请分析根本原因。</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        </span><br><span class="line">        analysis = llm.analyze(prompt)</span><br><span class="line">        <span class="keyword">return</span> analysis</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-策略修正（Strategy-Correction）"><a href="#3-3-策略修正（Strategy-Correction）" class="headerlink" title="3.3 策略修正（Strategy Correction）"></a>3.3 策略修正（Strategy Correction）</h3><p>根据错误分析更新计划并重试。方法：</p>
+<blockquote>
+<ol>
+<li>根据错误分析生成修正方案</li>
+<li>更新任务计划</li>
+<li>重新执行</li>
+</ol>
+</blockquote>
+<p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 策略修正（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StrategyCorrector</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">correct</span>(<span class="params">self, error_analysis, current_plan</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;修正策略&quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 1. 生成修正方案</span></span><br><span class="line">        correction = <span class="variable language_">self</span>.generate_correction(error_analysis)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 更新任务计划</span></span><br><span class="line">        updated_plan = <span class="variable language_">self</span>.update_plan(current_plan, correction)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> updated_plan</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">generate_correction</span>(<span class="params">self, error_analysis</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;生成修正方案&quot;&quot;&quot;</span></span><br><span class="line">        root_cause = error_analysis[<span class="string">&quot;root_cause&quot;</span>]</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 根据根本原因生成修正方案</span></span><br><span class="line">        corrections = &#123;</span><br><span class="line">            <span class="string">&quot;connection_error&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;action&quot;</span>: <span class="string">&quot;retry&quot;</span>,</span><br><span class="line">                <span class="string">&quot;max_retries&quot;</span>: <span class="number">3</span>,</span><br><span class="line">                <span class="string">&quot;backoff&quot;</span>: <span class="string">&quot;exponential&quot;</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">&quot;data_error&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;action&quot;</span>: <span class="string">&quot;validate_input&quot;</span>,</span><br><span class="line">                <span class="string">&quot;validate_before_execute&quot;</span>: <span class="literal">True</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">&quot;timeout_error&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;action&quot;</span>: <span class="string">&quot;increase_timeout&quot;</span>,</span><br><span class="line">                <span class="string">&quot;timeout_multiplier&quot;</span>: <span class="number">2.0</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> corrections.get(root_cause, &#123;<span class="string">&quot;action&quot;</span>: <span class="string">&quot;skip&quot;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-完整的-Self-Correction-流程"><a href="#3-4-完整的-Self-Correction-流程" class="headerlink" title="3.4 完整的 Self-Correction 流程"></a>3.4 完整的 Self-Correction 流程</h3><p><strong>代码示例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 完整的 Self-Correction 流程（伪代码）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SelfCorrectingPlanner</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.error_detector = ErrorDetector()</span><br><span class="line">        <span class="variable language_">self</span>.error_analyzer = ErrorAnalyzer()</span><br><span class="line">        <span class="variable language_">self</span>.strategy_corrector = StrategyCorrector()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">execute_with_correction</span>(<span class="params">self, plan</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;执行计划，带自我修正&quot;&quot;&quot;</span></span><br><span class="line">        max_corrections = <span class="number">3</span></span><br><span class="line">        correction_count = <span class="number">0</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> correction_count &lt; max_corrections:</span><br><span class="line">            <span class="comment"># 1. 执行计划</span></span><br><span class="line">            results = <span class="variable language_">self</span>.execute_plan(plan)</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 2. 检测错误</span></span><br><span class="line">            errors = []</span><br><span class="line">            <span class="keyword">for</span> result <span class="keyword">in</span> results:</span><br><span class="line">                detected_errors = <span class="variable language_">self</span>.error_detector.detect_error(result)</span><br><span class="line">                errors.extend(detected_errors)</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 3. 如果没有错误，返回结果</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> errors:</span><br><span class="line">                <span class="keyword">return</span> &#123;<span class="string">&quot;success&quot;</span>: <span class="literal">True</span>, <span class="string">&quot;results&quot;</span>: results&#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 4. 分析错误</span></span><br><span class="line">            error_analysis = <span class="variable language_">self</span>.error_analyzer.analyze(errors[<span class="number">0</span>], &#123;<span class="string">&quot;results&quot;</span>: results&#125;)</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 5. 修正策略</span></span><br><span class="line">            plan = <span class="variable language_">self</span>.strategy_corrector.correct(error_analysis, plan)</span><br><span class="line">            </span><br><span class="line">            correction_count += <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 如果修正次数超过限制，返回失败</span></span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;success&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;error&quot;</span>: <span class="string">&quot;无法修正错误&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🔍-总结：任务规划是-Agent-处理复杂任务的关键"><a href="#🔍-总结：任务规划是-Agent-处理复杂任务的关键" class="headerlink" title="🔍 总结：任务规划是 Agent 处理复杂任务的关键"></a>🔍 总结：任务规划是 Agent 处理复杂任务的关键</h2><h3 id="💡-快速回顾：你学到了什么？"><a href="#💡-快速回顾：你学到了什么？" class="headerlink" title="💡 快速回顾：你学到了什么？"></a>💡 快速回顾：你学到了什么？</h3><ol>
+<li><strong>任务分解策略</strong>：基于目标、基于工作流、基于工具</li>
+<li><strong>任务规划方法</strong>：顺序规划、并行规划、条件规划</li>
+<li><strong>Self-Correction</strong>：错误检测、错误分析、策略修正</li>
+<li><strong>工程实践</strong>：如何实现完整的任务规划系统</li>
+</ol>
+<h3 id="任务规划的核心作用"><a href="#任务规划的核心作用" class="headerlink" title="任务规划的核心作用"></a>任务规划的核心作用</h3><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>作用</th>
+<th>简单理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>任务分解</strong></td>
+<td>把大任务拆成小步骤</td>
+<td>化整为零</td>
+</tr>
+<tr>
+<td><strong>任务规划</strong></td>
+<td>确定执行顺序</td>
+<td>有序执行</td>
+</tr>
+<tr>
+<td><strong>Self-Correction</strong></td>
+<td>检测错误并修正</td>
+<td>自我修正</td>
+</tr>
+</tbody></table>
+<p><strong>生活化理解</strong>：</p>
+<blockquote>
+<p>就像做项目：</p>
+<ul>
+<li><strong>任务分解</strong>：把”开发测试平台”拆成”需求分析 → 数据库设计 → 后端开发 → 前端开发 → 测试”</li>
+<li><strong>任务规划</strong>：确定先做什么，后做什么（必须先设计数据库，才能开发后端）</li>
+<li><strong>Self-Correction</strong>：如果某个步骤失败，分析原因并修正（如数据库连接失败，检查连接后重试）</li>
+</ul>
+</blockquote>
+<h3 id="设计原则总结"><a href="#设计原则总结" class="headerlink" title="设计原则总结"></a>设计原则总结</h3><table>
+<thead>
+<tr>
+<th>原则</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>可分解性</strong></td>
+<td>任务可以分解成子任务</td>
+<td>✅ “开发平台” → “设计数据库” + “开发API”<br>❌ “思考”（无法分解）</td>
+</tr>
+<tr>
+<td><strong>可执行性</strong></td>
+<td>每个子任务都可以直接执行</td>
+<td>✅ “查询数据库”<br>❌ “做得好”（太模糊）</td>
+</tr>
+<tr>
+<td><strong>可修正性</strong></td>
+<td>出错时可以修正</td>
+<td>✅ 检测错误并重试<br>❌ 直接放弃</td>
+</tr>
+</tbody></table>
+<h3 id="实战建议"><a href="#实战建议" class="headerlink" title="实战建议"></a>实战建议</h3><ol>
+<li><strong>从简单开始</strong>：先实现顺序规划，再逐步优化</li>
+<li><strong>重视错误处理</strong>：错误检测、分析、修正，一个都不能少</li>
+<li><strong>优化执行效率</strong>：识别可以并行的任务，提高效率</li>
+<li><strong>完善日志记录</strong>：记录任务执行过程，便于调试和优化</li>
+</ol>
+<blockquote>
+<p>💡 <strong>核心理解</strong>：<br>任务规划是 Agent 处理复杂任务的关键能力，好的任务规划能让 Agent 更高效、更可靠地完成任务。</p>
+<p>就像项目管理一样，好的任务规划能让 Agent 像项目经理一样，把复杂任务拆解、规划、执行、修正，最终完成任务。</p>
+</blockquote>
+<hr>
+<h2 id="📚-延伸阅读（含可直接访问链接）"><a href="#📚-延伸阅读（含可直接访问链接）" class="headerlink" title="📚 延伸阅读（含可直接访问链接）"></a>📚 延伸阅读（含可直接访问链接）</h2><p>以下资源按主题分类，每个资源都附有简要说明，帮助你选择合适的学习材料。</p>
+<h3 id="🎯-任务规划"><a href="#🎯-任务规划" class="headerlink" title="🎯 任务规划"></a>🎯 任务规划</h3><ul>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.15000"><strong>Task Planning for LLM Agents（LLM Agent 任务规划）</strong></a>：任务规划的研究论文。适合想了解任务规划理论的读者。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/agents/agent_types/plan-and-execute/"><strong>LangChain Planning（LangChain 规划）</strong></a>：LangChain 的任务规划实现。适合使用 LangChain 的开发者。</p>
+</li>
+</ul>
+<h3 id="🔄-Self-Correction"><a href="#🔄-Self-Correction" class="headerlink" title="🔄 Self-Correction"></a>🔄 Self-Correction</h3><ul>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2303.08896"><strong>Self-Correction in LLM Agents（LLM Agent 自我修正）</strong></a>：Self-Correction 的研究论文。适合想了解自我修正机制的读者。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2303.11366"><strong>Reflexion: Language Agents with Verbal Reinforcement Learning（Reflexion 论文）</strong></a>：Reflexion 框架，展示了如何实现自我修正。<strong>强烈推荐</strong>，适合想实现 Self-Correction 的开发者。</p>
+</li>
+</ul>
+<h3 id="🔧-任务分解"><a href="#🔧-任务分解" class="headerlink" title="🔧 任务分解"></a>🔧 任务分解</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.promptingguide.ai/techniques/task_decomposition"><strong>Task Decomposition Strategies（任务分解策略）</strong></a>：任务分解的最佳实践。适合想优化任务分解的开发者。</li>
+</ul>
+<hr>
+<h2 id="🔔-系列说明"><a href="#🔔-系列说明" class="headerlink" title="🔔 系列说明"></a>🔔 系列说明</h2><blockquote>
+<p>本文是<a href="/categories/%F0%9F%A4%96-Agent-%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%A5%E9%97%A8%E3%80%81%E8%83%BD%E5%8A%9B%E4%B8%8E%E6%B2%BB%E7%90%86/">《🧠 LLM&#x2F;Agent 从入门到精通：告别浅尝辄止》</a>系列第 8 篇。上一篇：<a href="/2025-12-16-llm-agent-decision-engine/">Agent 怎么”想”和”做”？ReAct 决策引擎代码级拆解</a>。下一篇：<a href="/2025-12-17-llm-agent-memory-management/">Agent 聊着聊着就忘了？记忆管理如何突破 Context Window</a>。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2025-12-19-llm-agent-task-planning/">https://linn0813.github.io/2025-12-19-llm-agent-task-planning/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LLM/">LLM</a><a class="post-meta__tags" href="/tags/Agent/">Agent</a><a class="post-meta__tags" href="/tags/Task-Planning/">Task Planning</a><a class="post-meta__tags" href="/tags/%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%92/">任务规划</a><a class="post-meta__tags" href="/tags/%E4%BB%BB%E5%8A%A1%E5%88%86%E8%A7%A3/">任务分解</a><a class="post-meta__tags" href="/tags/Self-Correction/">Self-Correction</a></div><div class="post-share"><div class="social-share" data-image="/img/llm-agent-task-planning.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025-12-18-llm-agent-tool-system/" title="Agent 怎么查数据库、调 API？Function Calling 与工具封装"><img class="cover" src="/img/llm-agent-tool-system.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Agent 怎么查数据库、调 API？Function Calling 与工具封装</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 工具系统：从 Function Calling 机制、工具封装规范化设计到安全权限治理，让 Agent 拥有连接外部世界的能力</div></div></div></a><a class="pagination-related" href="/2025-12-20-llm-agent-framework-comparison/" title="LangChain、LlamaIndex、AutoGPT 怎么选？Agent 框架对比"><img class="cover" src="/img/llm-agent-framework-comparison.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">LangChain、LlamaIndex、AutoGPT 怎么选？Agent 框架对比</div></div><div class="info-2"><div class="info-item-1">深入对比主流 Agent 框架：LangChain、AutoGPT、LlamaIndex，掌握各框架的特点、优缺点和适用场景，帮你选择合适的框架</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-10-21-llm-agent-guide/" title="🧠 LLM 与智能体（Agent）知识记录"><img class="cover" src="/img/LLM-Agent.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-21</div><div class="info-item-2">🧠 LLM 与智能体（Agent）知识记录</div></div><div class="info-2"><div class="info-item-1">系统梳理 LLM 与 Agent 的概念、组成、原理与实践要点，配套学习路线与清单，助你快速上手智能体开发与应用</div></div></div></a><a class="pagination-related" href="/2025-10-27-langchain-framework/" title="🧠 LangChain：让大语言模型真正“动起来”的框架"><img class="cover" src="/img/langchain.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-27</div><div class="info-item-2">🧠 LangChain：让大语言模型真正“动起来”的框架</div></div><div class="info-2"><div class="info-item-1">从 Prompt 到 Agent、从单轮问答到任务编排——这篇文章帮你彻底理解 LangChain 的核心思想与实践路径。</div></div></div></a><a class="pagination-related" href="/2025-11-29-llm-agent-core-concepts-guide/" title="学了那么多术语，为什么还是不理解？LLM&#x2F;Agent 学习路线图"><img class="cover" src="/img/llm-agent-core-concepts-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-29</div><div class="info-item-2">学了那么多术语，为什么还是不理解？LLM&#x2F;Agent 学习路线图</div></div><div class="info-2"><div class="info-item-1">Prompt、Token、RAG、ReAct…学了一堆术语却还是不理解？这份路线图帮你从「会用」走到「真懂」，系统掌握 LLM 与 Agent。</div></div></div></a><a class="pagination-related" href="/2025-12-08-llm-rag-deep-integration/" title="模型一本正经地胡说八道？RAG 如何让 LLM 有据可查"><img class="cover" src="/img/llm-rag-deep-integration.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-08</div><div class="info-item-2">模型一本正经地胡说八道？RAG 如何让 LLM 有据可查</div></div><div class="info-2"><div class="info-item-1">深入解析 RAG 机制：从三阶段工作流、核心组件到进阶优化策略，构建高精度、可追溯的知识增强系统，突破 LLM 的知识时效性和幻觉问题</div></div></div></a><a class="pagination-related" href="/2025-12-10-llm-agent-concept-overview/" title="只会聊天不够用？Agent 如何让 LLM 能做事、会思考、能修正"><img class="cover" src="/img/llm-agent-concept-overview.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-10</div><div class="info-item-2">只会聊天不够用？Agent 如何让 LLM 能做事、会思考、能修正</div></div><div class="info-2"><div class="info-item-1">系统理解 Agent 的本质：从 LLM 到智能体的进化路径，深入解析 Agent 的核心构成、生命周期和关键模块，构建完整的 Agent 系统架构</div></div></div></a><a class="pagination-related" href="/2025-12-16-llm-agent-decision-engine/" title="Agent 怎么&quot;想&quot;和&quot;做&quot;？ReAct 决策引擎代码级拆解"><img class="cover" src="/img/llm-agent-decision-engine.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-16</div><div class="info-item-2">Agent 怎么&quot;想&quot;和&quot;做&quot;？ReAct 决策引擎代码级拆解</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 的决策引擎：代码级拆解 ReAct 范式，掌握如何设计 Prompt 模板、实现工具调用和错误处理，对比 Self-Ask 和 Tree of Thoughts 等策略</div></div></div></a><a class="pagination-related" href="/2025-12-17-llm-agent-memory-management/" title="Agent 聊着聊着就忘了？记忆管理如何突破 Context Window"><img class="cover" src="/img/llm-agent-memory-management.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-17</div><div class="info-item-2">Agent 聊着聊着就忘了？记忆管理如何突破 Context Window</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 的记忆管理：从分层记忆架构、短期记忆管理策略到长期记忆存储检索，打造长期且健忘的智能体系统</div></div></div></a><a class="pagination-related" href="/2025-12-18-llm-agent-tool-system/" title="Agent 怎么查数据库、调 API？Function Calling 与工具封装"><img class="cover" src="/img/llm-agent-tool-system.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-18</div><div class="info-item-2">Agent 怎么查数据库、调 API？Function Calling 与工具封装</div></div><div class="info-2"><div class="info-item-1">深入解析 Agent 工具系统：从 Function Calling 机制、工具封装规范化设计到安全权限治理，让 Agent 拥有连接外部世界的能力</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">yuxiaoling</div><div class="author-info-description">AI 系统测试与测试工程化｜大模型质量评估、Prompt 回归、Agent 链路测试｜自动化与平台实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Linn0813"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Linn0813" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yuxiaoling.yxl@qq.com" target="_blank" title="Email"><i class="fa fa-envelope-open-text"></i></a><a class="social-icon" href="javascript:alert('微信公众号：Linn的技术笔记')" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">开启新阶段：深入学习海外版社区论坛测试方案，覆盖功能、海外化、合规、安全、性能、AI 辅助测试</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%AF-%E4%B8%80%E3%80%81%E4%BB%BB%E5%8A%A1%E5%88%86%E8%A7%A3%E7%AD%96%E7%95%A5"><span class="toc-number">1.</span> <span class="toc-text">🎯 一、任务分解策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%9F%BA%E4%BA%8E%E7%9B%AE%E6%A0%87%E7%9A%84%E5%88%86%E8%A7%A3%EF%BC%88Goal-Based-Decomposition%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 基于目标的分解（Goal-Based Decomposition）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%9F%BA%E4%BA%8E%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%9A%84%E5%88%86%E8%A7%A3%EF%BC%88Workflow-Based-Decomposition%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 基于工作流的分解（Workflow-Based Decomposition）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E5%9F%BA%E4%BA%8E%E5%B7%A5%E5%85%B7%E7%9A%84%E5%88%86%E8%A7%A3%EF%BC%88Tool-Based-Decomposition%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 基于工具的分解（Tool-Based Decomposition）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E4%B8%89%E7%A7%8D%E5%88%86%E8%A7%A3%E7%AD%96%E7%95%A5%E5%AF%B9%E6%AF%94"><span class="toc-number">1.4.</span> <span class="toc-text">1.4 三种分解策略对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%84-%E4%BA%8C%E3%80%81%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%92%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">🔄 二、任务规划方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E9%A1%BA%E5%BA%8F%E8%A7%84%E5%88%92%EF%BC%88Sequential-Planning%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 顺序规划（Sequential Planning）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%B9%B6%E8%A1%8C%E8%A7%84%E5%88%92%EF%BC%88Parallel-Planning%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 并行规划（Parallel Planning）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%9D%A1%E4%BB%B6%E8%A7%84%E5%88%92%EF%BC%88Conditional-Planning%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 条件规划（Conditional Planning）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%A7-%E4%B8%89%E3%80%81Self-Correction%EF%BC%88%E8%87%AA%E6%88%91%E4%BF%AE%E6%AD%A3%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">🔧 三、Self-Correction（自我修正）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E9%94%99%E8%AF%AF%E6%A3%80%E6%B5%8B%EF%BC%88Error-Detection%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 错误检测（Error Detection）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%94%99%E8%AF%AF%E5%88%86%E6%9E%90%EF%BC%88Error-Analysis%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 错误分析（Error Analysis）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E7%AD%96%E7%95%A5%E4%BF%AE%E6%AD%A3%EF%BC%88Strategy-Correction%EF%BC%89"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 策略修正（Strategy Correction）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%AE%8C%E6%95%B4%E7%9A%84-Self-Correction-%E6%B5%81%E7%A8%8B"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 完整的 Self-Correction 流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-%E6%80%BB%E7%BB%93%EF%BC%9A%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%92%E6%98%AF-Agent-%E5%A4%84%E7%90%86%E5%A4%8D%E6%9D%82%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%85%B3%E9%94%AE"><span class="toc-number">4.</span> <span class="toc-text">🔍 总结：任务规划是 Agent 处理复杂任务的关键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%A1-%E5%BF%AB%E9%80%9F%E5%9B%9E%E9%A1%BE%EF%BC%9A%E4%BD%A0%E5%AD%A6%E5%88%B0%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">4.1.</span> <span class="toc-text">💡 快速回顾：你学到了什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%92%E7%9A%84%E6%A0%B8%E5%BF%83%E4%BD%9C%E7%94%A8"><span class="toc-number">4.2.</span> <span class="toc-text">任务规划的核心作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99%E6%80%BB%E7%BB%93"><span class="toc-number">4.3.</span> <span class="toc-text">设计原则总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E6%88%98%E5%BB%BA%E8%AE%AE"><span class="toc-number">4.4.</span> <span class="toc-text">实战建议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB%EF%BC%88%E5%90%AB%E5%8F%AF%E7%9B%B4%E6%8E%A5%E8%AE%BF%E9%97%AE%E9%93%BE%E6%8E%A5%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">📚 延伸阅读（含可直接访问链接）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%AF-%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%92"><span class="toc-number">5.1.</span> <span class="toc-text">🎯 任务规划</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%84-Self-Correction"><span class="toc-number">5.2.</span> <span class="toc-text">🔄 Self-Correction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%A7-%E4%BB%BB%E5%8A%A1%E5%88%86%E8%A7%A3"><span class="toc-number">5.3.</span> <span class="toc-text">🔧 任务分解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%94-%E7%B3%BB%E5%88%97%E8%AF%B4%E6%98%8E"><span class="toc-number">6.</span> <span class="toc-text">🔔 系列说明</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026-05-20-overseas-forum-ai-testing-guide/" title="学习笔记：海外社区论坛 - AI 辅助测试与提效入门"><img src="/img/overseas-forum-ai-testing-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - AI 辅助测试与提效入门"/></a><div class="content"><a class="title" href="/2026-05-20-overseas-forum-ai-testing-guide/" title="学习笔记：海外社区论坛 - AI 辅助测试与提效入门">学习笔记：海外社区论坛 - AI 辅助测试与提效入门</a><time datetime="2026-05-20T02:00:00.000Z" title="发表于 2026-05-20 10:00:00">2026-05-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-19-overseas-forum-release-regression-guide/" title="学习笔记：海外社区论坛 - 上线验收与回归测试入门"><img src="/img/overseas-forum-release-regression-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 上线验收与回归测试入门"/></a><div class="content"><a class="title" href="/2026-05-19-overseas-forum-release-regression-guide/" title="学习笔记：海外社区论坛 - 上线验收与回归测试入门">学习笔记：海外社区论坛 - 上线验收与回归测试入门</a><time datetime="2026-05-19T02:00:00.000Z" title="发表于 2026-05-19 10:00:00">2026-05-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-18-overseas-forum-test-plan-guide/" title="学习笔记：海外社区论坛 - 测试计划与测试方案入门"><img src="/img/overseas-forum-test-plan-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 测试计划与测试方案入门"/></a><div class="content"><a class="title" href="/2026-05-18-overseas-forum-test-plan-guide/" title="学习笔记：海外社区论坛 - 测试计划与测试方案入门">学习笔记：海外社区论坛 - 测试计划与测试方案入门</a><time datetime="2026-05-18T02:00:00.000Z" title="发表于 2026-05-18 10:00:00">2026-05-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-17-overseas-forum-automation-guide/" title="学习笔记：海外社区论坛 - 自动化测试入门"><img src="/img/overseas-forum-automation-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 自动化测试入门"/></a><div class="content"><a class="title" href="/2026-05-17-overseas-forum-automation-guide/" title="学习笔记：海外社区论坛 - 自动化测试入门">学习笔记：海外社区论坛 - 自动化测试入门</a><time datetime="2026-05-17T02:00:00.000Z" title="发表于 2026-05-17 10:00:00">2026-05-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-16-overseas-forum-security-guide/" title="学习笔记：海外社区论坛 - 安全测试入门"><img src="/img/overseas-forum-security-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 安全测试入门"/></a><div class="content"><a class="title" href="/2026-05-16-overseas-forum-security-guide/" title="学习笔记：海外社区论坛 - 安全测试入门">学习笔记：海外社区论坛 - 安全测试入门</a><time datetime="2026-05-16T02:00:00.000Z" title="发表于 2026-05-16 10:00:00">2026-05-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -1,0 +1,995 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - AI 辅助测试与提效入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="海外社区论坛测试中 AI 的定位与边界、按场景的提效用法、可复用提示词模板，以及保密、校验与常见误区。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - AI 辅助测试与提效入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-20-overseas-forum-ai-testing-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="海外社区论坛测试中 AI 的定位与边界、按场景的提效用法、可复用提示词模板，以及保密、校验与常见误区。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-ai-testing-guide.png">
+<meta property="article:published_time" content="2026-05-20T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-20T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="海外社区">
+<meta property="article:tag" content="AI 测试">
+<meta property="article:tag" content="提示词">
+<meta property="article:tag" content="提效">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-ai-testing-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - AI 辅助测试与提效入门",
+  "url": "https://linn0813.github.io/2026-05-20-overseas-forum-ai-testing-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-ai-testing-guide.png",
+  "datePublished": "2026-05-20T02:00:00.000Z",
+  "dateModified": "2026-05-20T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-20-overseas-forum-ai-testing-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - AI 辅助测试与提效入门',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-ai-testing-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - AI 辅助测试与提效入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - AI 辅助测试与提效入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-20T02:00:00.000Z" title="发表于 2026-05-20 10:00:00">2026-05-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-20T02:00:00.000Z" title="更新于 2026-05-20 10:00:00">2026-05-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/AI-%E8%BE%85%E5%8A%A9%E6%B5%8B%E8%AF%95%E4%B8%8E%E6%8F%90%E6%95%88/">AI 辅助测试与提效</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>24分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>学习记录</strong>：把<strong>海外社区论坛</strong>测试场景下如何用 <strong>AI 提效</strong>整理成一篇入门笔记，结合个人实践，并与 AI 一起补全结构与模板，便于按场景查阅。</p>
+<p>若你已在用对话式模型辅助测试设计，希望这篇能帮你收敛用法、提示词口径与人工校验习惯。</p>
+<blockquote>
+<p><strong>适合对象</strong>：希望在授权与保密前提下，把 AI 用在需求理解、用例与报告等环节的同学；文中不默认你已固定某一工具或模型。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文按「基础认知 → 论坛场景实战 → 提示词模板 → 风险与校验」四块展开；配合页面 <strong>TOC</strong> 或下方折叠目录跳转。<strong>第 10～22 章</strong>按工作流拆场景，<strong>第 23～32 章</strong>可直接对照改写为你的项目口径。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 39 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-ai-ch-01">为什么测试同学要学习 AI 提效</a></li>
+<li><a href="#forum-ai-ch-02">AI 在测试工作中能帮什么</a></li>
+<li><a href="#forum-ai-ch-03">AI 在测试工作中不能替代什么</a></li>
+<li><a href="#forum-ai-ch-04">哪些测试工作最适合用 AI 辅助</a></li>
+<li><a href="#forum-ai-ch-05">哪些测试工作不适合完全交给 AI</a></li>
+<li><a href="#forum-ai-ch-06">AI 辅助测试的基本使用流程</a></li>
+<li><a href="#forum-ai-ch-07">使用 AI 时需要给它哪些信息</a></li>
+<li><a href="#forum-ai-ch-08">AI 输出内容为什么必须人工校验</a></li>
+<li><a href="#forum-ai-ch-09">海外社区论坛项目适合哪些 AI 应用场景</a></li>
+<li><a href="#forum-ai-ch-10">AI 辅助需求理解怎么用</a></li>
+<li><a href="#forum-ai-ch-11">AI 辅助测试点拆解怎么用</a></li>
+<li><a href="#forum-ai-ch-12">AI 辅助测试用例生成怎么用</a></li>
+<li><a href="#forum-ai-ch-13">AI 辅助功能测试怎么用</a></li>
+<li><a href="#forum-ai-ch-14">AI 辅助接口测试怎么用</a></li>
+<li><a href="#forum-ai-ch-15">AI 辅助权限测试怎么用</a></li>
+<li><a href="#forum-ai-ch-16">AI 辅助风控审核测试怎么用</a></li>
+<li><a href="#forum-ai-ch-17">AI 辅助国际化测试怎么用</a></li>
+<li><a href="#forum-ai-ch-18">AI 辅助兼容性测试怎么用</a></li>
+<li><a href="#forum-ai-ch-19">AI 辅助安全测试怎么用</a></li>
+<li><a href="#forum-ai-ch-20">AI 辅助自动化测试怎么用</a></li>
+<li><a href="#forum-ai-ch-21">AI 辅助 Bug 编写与严重程度分析怎么用</a></li>
+<li><a href="#forum-ai-ch-22">AI 辅助测试总结和复盘怎么用</a></li>
+<li><a href="#forum-ai-ch-23">需求分析提示词模板</a></li>
+<li><a href="#forum-ai-ch-24">测试点拆解提示词模板</a></li>
+<li><a href="#forum-ai-ch-25">测试用例生成提示词模板</a></li>
+<li><a href="#forum-ai-ch-26">接口测试提示词模板</a></li>
+<li><a href="#forum-ai-ch-27">权限测试提示词模板</a></li>
+<li><a href="#forum-ai-ch-28">风控审核测试提示词模板</a></li>
+<li><a href="#forum-ai-ch-29">国际化测试提示词模板</a></li>
+<li><a href="#forum-ai-ch-30">Bug 优化提示词模板</a></li>
+<li><a href="#forum-ai-ch-31">测试报告提示词模板</a></li>
+<li><a href="#forum-ai-ch-32">自动化脚本辅助提示词模板</a></li>
+<li><a href="#forum-ai-ch-33">AI 使用工作流怎么搭建</a></li>
+<li><a href="#forum-ai-ch-34">AI 辅助测试的风险有哪些</a></li>
+<li><a href="#forum-ai-ch-35">哪些信息不能直接给 AI</a></li>
+<li><a href="#forum-ai-ch-36">AI 生成用例如何人工校验</a></li>
+<li><a href="#forum-ai-ch-37">AI 生成 Bug 如何人工校验</a></li>
+<li><a href="#forum-ai-ch-38">AI 提效常见误区</a></li>
+<li><a href="#forum-ai-ch-39">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<h2 id="第一部分：AI-辅助测试基础概念"><a href="#第一部分：AI-辅助测试基础概念" class="headerlink" title="第一部分：AI 辅助测试基础概念"></a>第一部分：AI 辅助测试基础概念</h2><blockquote>
+<p>如果你是第一次系统学习 AI 提效，建议先完整学习这一部分。</p>
+<p>如果你已经有 AI 使用经验，可以直接跳到 <strong>第二部分：海外社区论坛项目 AI 提效实战</strong>。</p>
+</blockquote>
+<hr>
+<p><a id="forum-ai-ch-01"></a></p>
+<h2 id="1-为什么测试同学要学习-AI-提效"><a href="#1-为什么测试同学要学习-AI-提效" class="headerlink" title="1. 为什么测试同学要学习 AI 提效"></a>1. 为什么测试同学要学习 AI 提效</h2><p>测试工作里有很多内容是重复的、整理性的、结构化的。</p>
+<p>例如：</p>
+<ul>
+<li>阅读需求文档</li>
+<li>拆测试点</li>
+<li>写测试用例</li>
+<li>补充异常场景</li>
+<li>设计权限矩阵</li>
+<li>整理接口测试点</li>
+<li>优化 Bug 描述</li>
+<li>写测试日报</li>
+<li>写测试总结</li>
+<li>生成 Checklist</li>
+<li>梳理上线风险</li>
+</ul>
+<p>这些工作不是完全没有价值，但非常耗时间。</p>
+<p>AI 可以帮助你更快完成初稿，让你把更多精力放在：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">理解业务</span><br><span class="line">判断风险</span><br><span class="line">验证真实结果</span><br><span class="line">发现隐藏问题</span><br><span class="line">和产品开发沟通</span><br><span class="line">形成测试结论</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="1-1-AI-对测试新手的最大帮助"><a href="#1-1-AI-对测试新手的最大帮助" class="headerlink" title="1.1 AI 对测试新手的最大帮助"></a>1.1 AI 对测试新手的最大帮助</h3><p>对测试新手来说，AI 最大的帮助不是“帮你偷懒”，而是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">帮你打开思路</span><br><span class="line">帮你补充遗漏</span><br><span class="line">帮你建立结构</span><br><span class="line">帮你学习表达</span><br><span class="line">帮你把零散想法整理成文档</span><br></pre></td></tr></table></figure>
+
+<p>例如你拿到一个“社区发帖审核需求”，你可能一开始只想到：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">正常发帖</span><br><span class="line">违规发帖</span><br><span class="line">审核通过</span><br><span class="line">审核拒绝</span><br></pre></td></tr></table></figure>
+
+<p>但 AI 可以帮你补充：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">游客能不能发帖</span><br><span class="line">禁言用户能不能发帖</span><br><span class="line">审核中内容谁可见</span><br><span class="line">审核失败后搜索是否可见</span><br><span class="line">Feed 是否展示审核中内容</span><br><span class="line">后台审核日志是否记录</span><br><span class="line">多语言违规内容是否能审核</span><br><span class="line">图片违规时整帖怎么处理</span><br><span class="line">审核拒绝通知是否发送</span><br></pre></td></tr></table></figure>
+
+<p>这就是 AI 对测试思路的提升。</p>
+<hr>
+<p><a id="forum-ai-ch-02"></a></p>
+<h2 id="2-AI-在测试工作中能帮什么"><a href="#2-AI-在测试工作中能帮什么" class="headerlink" title="2. AI 在测试工作中能帮什么"></a>2. AI 在测试工作中能帮什么</h2><p>AI 更适合辅助这些工作：</p>
+<table>
+<thead>
+<tr>
+<th>工作</th>
+<th>AI 可以怎么帮</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>需求理解</td>
+<td>帮你总结需求目标、流程、角色、规则</td>
+</tr>
+<tr>
+<td>测试点拆解</td>
+<td>按模块、角色、状态、异常、边界拆测试点</td>
+</tr>
+<tr>
+<td>用例生成</td>
+<td>根据测试点生成结构化测试用例</td>
+</tr>
+<tr>
+<td>接口测试</td>
+<td>帮你分析接口参数、异常场景、断言点</td>
+</tr>
+<tr>
+<td>权限测试</td>
+<td>帮你设计角色矩阵和越权场景</td>
+</tr>
+<tr>
+<td>风控审核</td>
+<td>帮你补充内容审核、举报、封禁场景</td>
+</tr>
+<tr>
+<td>国际化</td>
+<td>帮你列多语言、时区、RTL、格式测试点</td>
+</tr>
+<tr>
+<td>Bug 编写</td>
+<td>帮你把口语化描述改成清晰 Bug</td>
+</tr>
+<tr>
+<td>测试报告</td>
+<td>帮你整理测试结果、风险和结论</td>
+</tr>
+<tr>
+<td>自动化</td>
+<td>帮你生成脚本初稿、断言思路、数据驱动结构</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="2-1-AI-更擅长的内容"><a href="#2-1-AI-更擅长的内容" class="headerlink" title="2.1 AI 更擅长的内容"></a>2.1 AI 更擅长的内容</h3><p>AI 擅长：</p>
+<ul>
+<li>归纳总结</li>
+<li>结构化表达</li>
+<li>补充常见场景</li>
+<li>生成模板</li>
+<li>改写文档</li>
+<li>提供思路</li>
+<li>解释概念</li>
+<li>生成示例</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请帮我把以下需求拆成功能测试点、接口测试点、权限测试点、数据一致性测试点。</span><br></pre></td></tr></table></figure>
+
+<p>AI 很适合做这种结构化分析。</p>
+<hr>
+<p><a id="forum-ai-ch-03"></a></p>
+<h2 id="3-AI-在测试工作中不能替代什么"><a href="#3-AI-在测试工作中不能替代什么" class="headerlink" title="3. AI 在测试工作中不能替代什么"></a>3. AI 在测试工作中不能替代什么</h2><p>AI 不能完全替代测试同学。</p>
+<p>因为 AI 不一定知道：</p>
+<ul>
+<li>你们公司真实业务规则</li>
+<li>当前版本真实实现</li>
+<li>接口是否已经开发完成</li>
+<li>测试环境是否可用</li>
+<li>产品最终确认的预期</li>
+<li>开发实际改了哪些代码</li>
+<li>线上真实用户数据</li>
+<li>内部风控策略细节</li>
+</ul>
+<p>所以 AI 不能替代你做最终判断。</p>
+<hr>
+<h3 id="3-1-AI-不能替代的工作"><a href="#3-1-AI-不能替代的工作" class="headerlink" title="3.1 AI 不能替代的工作"></a>3.1 AI 不能替代的工作</h3><table>
+<thead>
+<tr>
+<th>工作</th>
+<th>为什么不能完全交给 AI</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>判断需求是否合理</td>
+<td>需要结合产品目标和业务背景</td>
+</tr>
+<tr>
+<td>确认真实预期</td>
+<td>需要产品、开发确认</td>
+</tr>
+<tr>
+<td>执行真实测试</td>
+<td>需要在环境中操作和验证</td>
+</tr>
+<tr>
+<td>判断 Bug 严重性</td>
+<td>需要结合业务影响和上线风险</td>
+</tr>
+<tr>
+<td>做上线结论</td>
+<td>需要基于真实测试结果</td>
+</tr>
+<tr>
+<td>处理敏感数据</td>
+<td>需要遵守公司安全规范</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="3-2-正确理解-AI-的角色"><a href="#3-2-正确理解-AI-的角色" class="headerlink" title="3.2 正确理解 AI 的角色"></a>3.2 正确理解 AI 的角色</h3><p>你可以把 AI 当成：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">测试助教</span><br><span class="line">测试文档助手</span><br><span class="line">测试点补充助手</span><br><span class="line">表达优化助手</span><br><span class="line">脚本初稿助手</span><br><span class="line">复盘总结助手</span><br></pre></td></tr></table></figure>
+
+<p>但不能把 AI 当成：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">最终决策人</span><br><span class="line">产品预期确认人</span><br><span class="line">真实测试执行人</span><br><span class="line">安全责任承担人</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-04"></a></p>
+<h2 id="4-哪些测试工作最适合用-AI-辅助"><a href="#4-哪些测试工作最适合用-AI-辅助" class="headerlink" title="4. 哪些测试工作最适合用 AI 辅助"></a>4. 哪些测试工作最适合用 AI 辅助</h2><p>最适合 AI 辅助的工作通常有这些特点：</p>
+<ul>
+<li>文档型工作</li>
+<li>结构化工作</li>
+<li>重复整理工作</li>
+<li>模板化表达工作</li>
+<li>思路扩展工作</li>
+<li>初稿生成工作</li>
+</ul>
+<hr>
+<h3 id="4-1-高价值-AI-使用场景"><a href="#4-1-高价值-AI-使用场景" class="headerlink" title="4.1 高价值 AI 使用场景"></a>4.1 高价值 AI 使用场景</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐程度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>根据 PRD 拆测试点</td>
+<td>很推荐</td>
+</tr>
+<tr>
+<td>根据接口文档生成接口测试点</td>
+<td>很推荐</td>
+</tr>
+<tr>
+<td>根据 Bug 现象优化 Bug 描述</td>
+<td>很推荐</td>
+</tr>
+<tr>
+<td>根据模块生成 Checklist</td>
+<td>很推荐</td>
+</tr>
+<tr>
+<td>根据测试结果写测试报告初稿</td>
+<td>很推荐</td>
+</tr>
+<tr>
+<td>生成自动化脚本初稿</td>
+<td>推荐，但要人工修改</td>
+</tr>
+<tr>
+<td>解释技术概念</td>
+<td>推荐</td>
+</tr>
+<tr>
+<td>判断最终上线结论</td>
+<td>不建议完全依赖</td>
+</tr>
+<tr>
+<td>处理敏感数据</td>
+<td>不建议直接使用</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ai-ch-05"></a></p>
+<h2 id="5-哪些测试工作不适合完全交给-AI"><a href="#5-哪些测试工作不适合完全交给-AI" class="headerlink" title="5. 哪些测试工作不适合完全交给 AI"></a>5. 哪些测试工作不适合完全交给 AI</h2><p>以下内容不能完全交给 AI：</p>
+<ul>
+<li>真实环境验证</li>
+<li>生产环境问题判断</li>
+<li>安全漏洞最终确认</li>
+<li>需求最终预期确认</li>
+<li>未公开业务规则判断</li>
+<li>涉及用户隐私数据分析</li>
+<li>涉及公司敏感策略内容</li>
+<li>高风险上线决策</li>
+</ul>
+<hr>
+<h3 id="5-1-举个例子"><a href="#5-1-举个例子" class="headerlink" title="5.1 举个例子"></a>5.1 举个例子</h3><p>AI 可以帮你写：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">被禁言用户不能发帖的测试用例</span><br></pre></td></tr></table></figure>
+
+<p>但 AI 不能替你确认：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">你们产品规则里，被禁言用户是否还能编辑历史帖子？</span><br></pre></td></tr></table></figure>
+
+<p>这个必须看需求或问产品确认。</p>
+<hr>
+<p><a id="forum-ai-ch-06"></a></p>
+<h2 id="6-AI-辅助测试的基本使用流程"><a href="#6-AI-辅助测试的基本使用流程" class="headerlink" title="6. AI 辅助测试的基本使用流程"></a>6. AI 辅助测试的基本使用流程</h2><p>推荐流程：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">输入背景</span><br><span class="line">  ↓</span><br><span class="line">输入需求或问题</span><br><span class="line">  ↓</span><br><span class="line">说明你想要的输出格式</span><br><span class="line">  ↓</span><br><span class="line">让 AI 生成初稿</span><br><span class="line">  ↓</span><br><span class="line">人工审核和补充</span><br><span class="line">  ↓</span><br><span class="line">和需求/开发确认预期</span><br><span class="line">  ↓</span><br><span class="line">落到测试用例或文档</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="6-1-给-AI-信息要具体"><a href="#6-1-给-AI-信息要具体" class="headerlink" title="6.1 给 AI 信息要具体"></a>6.1 给 AI 信息要具体</h3><p>不好的提问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">帮我写测试点。</span><br></pre></td></tr></table></figure>
+
+<p>更好的提问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试一个海外社区论坛的发帖审核功能，用户可以发布文本和图片帖子，系统会对内容进行机器审核，审核通过后公开展示，审核拒绝后作者可以看到失败原因。请从功能、接口、权限、数据一致性、风控审核、国际化、兼容性、安全角度帮我拆测试点，用表格输出。</span><br></pre></td></tr></table></figure>
+
+<p>信息越完整，AI 输出越有用。</p>
+<hr>
+<p><a id="forum-ai-ch-07"></a></p>
+<h2 id="7-使用-AI-时需要给它哪些信息"><a href="#7-使用-AI-时需要给它哪些信息" class="headerlink" title="7. 使用 AI 时需要给它哪些信息"></a>7. 使用 AI 时需要给它哪些信息</h2><p>建议给 AI 这些信息：</p>
+<ul>
+<li>项目类型</li>
+<li>功能背景</li>
+<li>用户角色</li>
+<li>功能流程</li>
+<li>业务规则</li>
+<li>输入输出</li>
+<li>异常情况</li>
+<li>当前你想要的结果</li>
+<li>输出格式要求</li>
+</ul>
+<hr>
+<h3 id="7-1-示例输入结构"><a href="#7-1-示例输入结构" class="headerlink" title="7.1 示例输入结构"></a>7.1 示例输入结构</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">项目背景：海外社区论坛</span><br><span class="line">功能模块：发帖审核</span><br><span class="line">用户角色：普通用户、禁言用户、管理员、游客</span><br><span class="line">核心流程：用户发帖 → 系统审核 → 通过后展示 → 拒绝后不展示</span><br><span class="line">规则：审核中仅作者可见，审核拒绝后作者可看到原因</span><br><span class="line">我的需求：请帮我拆测试点</span><br><span class="line">输出格式：按功能测试、接口测试、权限测试、数据一致性、风控审核分类输出</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-08"></a></p>
+<h2 id="8-AI-输出内容为什么必须人工校验"><a href="#8-AI-输出内容为什么必须人工校验" class="headerlink" title="8. AI 输出内容为什么必须人工校验"></a>8. AI 输出内容为什么必须人工校验</h2><p>AI 可能出现：</p>
+<ul>
+<li>编造不存在的规则</li>
+<li>误解需求</li>
+<li>输出过于泛泛</li>
+<li>漏掉项目特有逻辑</li>
+<li>给出不符合你们系统的预期</li>
+<li>生成无法执行的用例</li>
+<li>代码有错误</li>
+<li>Bug 严重程度判断不准确</li>
+</ul>
+<p>所以 AI 生成的内容只能作为初稿。</p>
+<hr>
+<h3 id="8-1-人工校验重点"><a href="#8-1-人工校验重点" class="headerlink" title="8.1 人工校验重点"></a>8.1 人工校验重点</h3><p>你需要检查：</p>
+<ul>
+<li>是否符合真实需求</li>
+<li>是否符合项目规则</li>
+<li>是否有不适用场景</li>
+<li>是否漏掉核心流程</li>
+<li>是否可以执行</li>
+<li>预期结果是否准确</li>
+<li>是否有敏感信息</li>
+<li>是否需要产品或开发确认</li>
+</ul>
+<hr>
+<p><a id="forum-ai-ch-09"></a></p>
+<h2 id="9-海外社区论坛项目适合哪些-AI-应用场景"><a href="#9-海外社区论坛项目适合哪些-AI-应用场景" class="headerlink" title="9. 海外社区论坛项目适合哪些 AI 应用场景"></a>9. 海外社区论坛项目适合哪些 AI 应用场景</h2><p>海外社区论坛非常适合用 AI 辅助，因为它模块多、规则多、专项多。</p>
+<p>适合场景包括：</p>
+<ul>
+<li>用户体系测试点拆解</li>
+<li>发帖评论测试点拆解</li>
+<li>权限矩阵生成</li>
+<li>内容审核测试点生成</li>
+<li>多语言测试数据生成</li>
+<li>接口测试用例生成</li>
+<li>Bug 文案优化</li>
+<li>测试报告总结</li>
+<li>上线 Checklist 生成</li>
+<li>自动化脚本初稿生成</li>
+</ul>
+<hr>
+<h2 id="第二部分：海外社区论坛项目-AI-提效实战"><a href="#第二部分：海外社区论坛项目-AI-提效实战" class="headerlink" title="第二部分：海外社区论坛项目 AI 提效实战"></a>第二部分：海外社区论坛项目 AI 提效实战</h2><blockquote>
+<p>这一部分开始进入项目实战。</p>
+<p>重点不是介绍 AI 概念，而是告诉你：在真实测试工作中，每一步可以怎么用 AI 提效。</p>
+</blockquote>
+<hr>
+<p><a id="forum-ai-ch-10"></a></p>
+<h2 id="10-AI-辅助需求理解怎么用"><a href="#10-AI-辅助需求理解怎么用" class="headerlink" title="10. AI 辅助需求理解怎么用"></a>10. AI 辅助需求理解怎么用</h2><p>当你拿到需求文档后，可以先让 AI 帮你总结。</p>
+<hr>
+<h3 id="10-1-AI-可以帮你总结什么"><a href="#10-1-AI-可以帮你总结什么" class="headerlink" title="10.1 AI 可以帮你总结什么"></a>10.1 AI 可以帮你总结什么</h3><ul>
+<li>需求目标</li>
+<li>涉及模块</li>
+<li>用户角色</li>
+<li>主流程</li>
+<li>异常流程</li>
+<li>状态流转</li>
+<li>权限规则</li>
+<li>可能的风险点</li>
+<li>需要向产品确认的问题</li>
+</ul>
+<hr>
+<h3 id="10-2-示例提示词"><a href="#10-2-示例提示词" class="headerlink" title="10.2 示例提示词"></a>10.2 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试一个海外社区论坛项目。下面是需求内容：</span><br><span class="line">【粘贴需求】</span><br><span class="line"></span><br><span class="line">请你帮我做需求分析，输出以下内容：</span><br><span class="line">1. 需求目标</span><br><span class="line">2. 涉及的用户角色</span><br><span class="line">3. 核心业务流程</span><br><span class="line">4. 可能的状态流转</span><br><span class="line">5. 需要重点测试的模块</span><br><span class="line">6. 可能存在的风险点</span><br><span class="line">7. 需要向产品确认的问题</span><br><span class="line">请用清晰的小标题和表格输出。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="10-3-人工需要检查什么"><a href="#10-3-人工需要检查什么" class="headerlink" title="10.3 人工需要检查什么"></a>10.3 人工需要检查什么</h3><p>AI 总结后，你要检查：</p>
+<ul>
+<li>有没有误解需求</li>
+<li>有没有把未说明内容当成事实</li>
+<li>是否漏掉隐藏规则</li>
+<li>需要确认的问题是否合理</li>
+<li>是否需要补充项目背景</li>
+</ul>
+<hr>
+<p><a id="forum-ai-ch-11"></a></p>
+<h2 id="11-AI-辅助测试点拆解怎么用"><a href="#11-AI-辅助测试点拆解怎么用" class="headerlink" title="11. AI 辅助测试点拆解怎么用"></a>11. AI 辅助测试点拆解怎么用</h2><p>测试点拆解是 AI 最适合辅助的场景之一。</p>
+<hr>
+<h3 id="11-1-按测试类型拆解"><a href="#11-1-按测试类型拆解" class="headerlink" title="11.1 按测试类型拆解"></a>11.1 按测试类型拆解</h3><p>你可以让 AI 按这些维度拆：</p>
+<ul>
+<li>功能测试</li>
+<li>接口测试</li>
+<li>数据一致性</li>
+<li>权限测试</li>
+<li>风控审核</li>
+<li>国际化</li>
+<li>兼容性</li>
+<li>性能</li>
+<li>安全</li>
+<li>自动化回归</li>
+</ul>
+<hr>
+<h3 id="11-2-示例提示词"><a href="#11-2-示例提示词" class="headerlink" title="11.2 示例提示词"></a>11.2 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试海外社区论坛的【评论功能】。</span><br><span class="line">评论功能包括：发表评论、回复评论、删除评论、评论审核、评论通知、评论数更新。</span><br><span class="line"></span><br><span class="line">请帮我从以下维度拆测试点：</span><br><span class="line">1. 功能测试</span><br><span class="line">2. 接口测试</span><br><span class="line">3. 数据一致性测试</span><br><span class="line">4. 权限测试</span><br><span class="line">5. 风控审核测试</span><br><span class="line">6. 国际化测试</span><br><span class="line">7. 兼容性测试</span><br><span class="line">8. 安全测试</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 适合测试新手理解</span><br><span class="line">- 每个测试点说明为什么要测</span><br><span class="line">- 用表格输出</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-12"></a></p>
+<h2 id="12-AI-辅助测试用例生成怎么用"><a href="#12-AI-辅助测试用例生成怎么用" class="headerlink" title="12. AI 辅助测试用例生成怎么用"></a>12. AI 辅助测试用例生成怎么用</h2><p>AI 可以根据测试点生成测试用例初稿。</p>
+<hr>
+<h3 id="12-1-适合生成的用例"><a href="#12-1-适合生成的用例" class="headerlink" title="12.1 适合生成的用例"></a>12.1 适合生成的用例</h3><p>适合 AI 生成：</p>
+<ul>
+<li>正常流程用例</li>
+<li>异常流程用例</li>
+<li>参数校验用例</li>
+<li>权限用例</li>
+<li>数据一致性用例</li>
+<li>接口用例</li>
+<li>Checklist 型用例</li>
+</ul>
+<p>不建议直接让 AI 生成最终版本，需要人工修改。</p>
+<hr>
+<h3 id="12-2-示例提示词"><a href="#12-2-示例提示词" class="headerlink" title="12.2 示例提示词"></a>12.2 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请基于以下测试点，生成测试用例表格。</span><br><span class="line"></span><br><span class="line">测试点：</span><br><span class="line">1. 普通用户发表评论成功</span><br><span class="line">2. 游客发表评论失败</span><br><span class="line">3. 被禁言用户发表评论失败</span><br><span class="line">4. 评论成功后评论数 +1</span><br><span class="line">5. 评论成功后作者收到通知</span><br><span class="line"></span><br><span class="line">输出字段：</span><br><span class="line">用例编号、模块、用例标题、前置条件、测试步骤、预期结果、优先级。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-13"></a></p>
+<h2 id="13-AI-辅助功能测试怎么用"><a href="#13-AI-辅助功能测试怎么用" class="headerlink" title="13. AI 辅助功能测试怎么用"></a>13. AI 辅助功能测试怎么用</h2><p>功能测试中，AI 可以帮你补充正常、异常、边界、流程联动场景。</p>
+<hr>
+<h3 id="13-1-示例：发帖功能"><a href="#13-1-示例：发帖功能" class="headerlink" title="13.1 示例：发帖功能"></a>13.1 示例：发帖功能</h3><p>你可以问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">海外社区论坛的发帖功能支持文本、图片、视频、草稿、审核。</span><br><span class="line">请帮我补充功能测试点，要求覆盖：正常场景、异常场景、边界场景、状态流转、前后台联动。</span><br></pre></td></tr></table></figure>
+
+<p>AI 可能会补充：</p>
+<ul>
+<li>标题为空</li>
+<li>标题超长</li>
+<li>内容为空</li>
+<li>图片上传失败</li>
+<li>视频转码中</li>
+<li>草稿保存</li>
+<li>审核中仅作者可见</li>
+<li>审核失败原因展示</li>
+<li>删除后 Feed 不展示</li>
+</ul>
+<hr>
+<p><a id="forum-ai-ch-14"></a></p>
+<h2 id="14-AI-辅助接口测试怎么用"><a href="#14-AI-辅助接口测试怎么用" class="headerlink" title="14. AI 辅助接口测试怎么用"></a>14. AI 辅助接口测试怎么用</h2><p>接口测试中，AI 可以帮助你分析：</p>
+<ul>
+<li>参数校验</li>
+<li>Header 校验</li>
+<li>Token 校验</li>
+<li>权限校验</li>
+<li>幂等性</li>
+<li>分页</li>
+<li>错误码</li>
+<li>断言点</li>
+</ul>
+<hr>
+<h3 id="14-1-示例提示词"><a href="#14-1-示例提示词" class="headerlink" title="14.1 示例提示词"></a>14.1 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">下面是一个创建帖子接口：</span><br><span class="line">POST /api/posts</span><br><span class="line">Body:</span><br><span class="line">&#123;</span><br><span class="line">  &quot;title&quot;: &quot;string&quot;,</span><br><span class="line">  &quot;content&quot;: &quot;string&quot;,</span><br><span class="line">  &quot;topicId&quot;: &quot;string&quot;,</span><br><span class="line">  &quot;mediaIds&quot;: [&quot;string&quot;]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">请帮我设计接口测试点，覆盖：</span><br><span class="line">1. 正常场景</span><br><span class="line">2. 必填参数</span><br><span class="line">3. 参数类型</span><br><span class="line">4. 参数长度</span><br><span class="line">5. 权限校验</span><br><span class="line">6. 幂等性</span><br><span class="line">7. 数据一致性断言</span><br><span class="line">8. 安全风险</span><br><span class="line">请用表格输出。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-15"></a></p>
+<h2 id="15-AI-辅助权限测试怎么用"><a href="#15-AI-辅助权限测试怎么用" class="headerlink" title="15. AI 辅助权限测试怎么用"></a>15. AI 辅助权限测试怎么用</h2><p>权限测试很适合用 AI 生成矩阵。</p>
+<hr>
+<h3 id="15-1-示例提示词"><a href="#15-1-示例提示词" class="headerlink" title="15.1 示例提示词"></a>15.1 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试海外社区论坛的帖子管理权限。</span><br><span class="line">角色包括：游客、普通用户、作者、被禁言用户、版主、管理员。</span><br><span class="line">操作包括：查看帖子、发帖、编辑帖子、删除帖子、审核帖子、举报帖子。</span><br><span class="line"></span><br><span class="line">请帮我生成权限矩阵，并标出高风险越权场景。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="15-2-AI-输出后怎么用"><a href="#15-2-AI-输出后怎么用" class="headerlink" title="15.2 AI 输出后怎么用"></a>15.2 AI 输出后怎么用</h3><p>AI 生成矩阵后，你需要：</p>
+<ul>
+<li>和需求确认权限规则</li>
+<li>标记 P0 权限场景</li>
+<li>转成测试用例</li>
+<li>重点做接口越权验证</li>
+</ul>
+<hr>
+<p><a id="forum-ai-ch-16"></a></p>
+<h2 id="16-AI-辅助风控审核测试怎么用"><a href="#16-AI-辅助风控审核测试怎么用" class="headerlink" title="16. AI 辅助风控审核测试怎么用"></a>16. AI 辅助风控审核测试怎么用</h2><p>风控审核涉及大量风险类型，AI 可以帮你补充分类。</p>
+<hr>
+<h3 id="16-1-示例提示词"><a href="#16-1-示例提示词" class="headerlink" title="16.1 示例提示词"></a>16.1 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试海外社区论坛的内容审核功能。</span><br><span class="line">审核对象包括：帖子、评论、图片、视频、私信、昵称、头像、简介。</span><br><span class="line"></span><br><span class="line">请帮我从以下风险类型设计测试点：</span><br><span class="line">Spam、Harassment、Hate Speech、NSFW、Scam、Phishing、Violence、Privacy Violation。</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 不输出真实违规内容</span><br><span class="line">- 使用安全的测试占位符示例</span><br><span class="line">- 输出每类风险应该验证的功能点和后台处理点。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-17"></a></p>
+<h2 id="17-AI-辅助国际化测试怎么用"><a href="#17-AI-辅助国际化测试怎么用" class="headerlink" title="17. AI 辅助国际化测试怎么用"></a>17. AI 辅助国际化测试怎么用</h2><p>国际化测试中，AI 可以帮你补充语言、地区、时区、格式场景。</p>
+<hr>
+<h3 id="17-1-示例提示词"><a href="#17-1-示例提示词" class="headerlink" title="17.1 示例提示词"></a>17.1 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试海外社区论坛的国际化功能。</span><br><span class="line">支持语言包括英文、日文、韩文、阿拉伯语、德语。</span><br><span class="line">核心模块包括注册登录、发帖、评论、搜索、通知、私信。</span><br><span class="line"></span><br><span class="line">请帮我设计国际化测试点，覆盖：</span><br><span class="line">多语言文案、长文案 UI、RTL、Emoji、重音字符、时区、夏令时、日期格式、搜索。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="17-2-AI-可以生成测试数据"><a href="#17-2-AI-可以生成测试数据" class="headerlink" title="17.2 AI 可以生成测试数据"></a>17.2 AI 可以生成测试数据</h3><p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请给我生成一组用于测试多语言输入的安全文本数据，包含英文、中文、日文、韩文、阿拉伯语、德语长单词、Emoji、重音字符。</span><br></pre></td></tr></table></figure>
+
+<p>你可以把这些作为昵称、简介、帖子标题、评论内容的测试数据。</p>
+<hr>
+<p><a id="forum-ai-ch-18"></a></p>
+<h2 id="18-AI-辅助兼容性测试怎么用"><a href="#18-AI-辅助兼容性测试怎么用" class="headerlink" title="18. AI 辅助兼容性测试怎么用"></a>18. AI 辅助兼容性测试怎么用</h2><p>兼容性测试需要设备矩阵和场景组合，AI 可以帮你整理。</p>
+<hr>
+<h3 id="18-1-示例提示词"><a href="#18-1-示例提示词" class="headerlink" title="18.1 示例提示词"></a>18.1 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我需要测试海外社区论坛的兼容性。</span><br><span class="line">产品包括 iOS App、Android App、Web 和 H5。</span><br><span class="line">核心功能包括登录、发帖、图片上传、视频播放、Feed、评论、Push 通知。</span><br><span class="line"></span><br><span class="line">请帮我设计兼容性测试矩阵，覆盖：</span><br><span class="line">设备、系统版本、浏览器、屏幕尺寸、网络环境、文件格式。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-19"></a></p>
+<h2 id="19-AI-辅助安全测试怎么用"><a href="#19-AI-辅助安全测试怎么用" class="headerlink" title="19. AI 辅助安全测试怎么用"></a>19. AI 辅助安全测试怎么用</h2><p>安全测试中，AI 可以帮你列安全检查点，但不能直接让 AI 生成破坏性攻击内容。</p>
+<hr>
+<h3 id="19-1-示例提示词"><a href="#19-1-示例提示词" class="headerlink" title="19.1 示例提示词"></a>19.1 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在授权测试环境中测试海外社区论坛的安全风险。</span><br><span class="line">请帮我从测试人员视角列出安全测试检查点，覆盖：</span><br><span class="line">认证、鉴权、越权、用户输入安全、文件上传安全、敏感信息泄露、接口防刷、错误信息泄露、后台权限。</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 不提供攻击教程</span><br><span class="line">- 不生成危险 payload</span><br><span class="line">- 输出适合测试用例设计的检查点</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-20"></a></p>
+<h2 id="20-AI-辅助自动化测试怎么用"><a href="#20-AI-辅助自动化测试怎么用" class="headerlink" title="20. AI 辅助自动化测试怎么用"></a>20. AI 辅助自动化测试怎么用</h2><p>AI 可以辅助自动化，但生成的脚本必须人工检查和运行验证。</p>
+<hr>
+<h3 id="20-1-AI-可以帮什么"><a href="#20-1-AI-可以帮什么" class="headerlink" title="20.1 AI 可以帮什么"></a>20.1 AI 可以帮什么</h3><ul>
+<li>生成接口自动化脚本初稿</li>
+<li>生成 pytest 用例结构</li>
+<li>生成断言思路</li>
+<li>生成测试数据构造方法</li>
+<li>优化代码结构</li>
+<li>解释报错原因</li>
+<li>生成 README 或使用说明</li>
+</ul>
+<hr>
+<h3 id="20-2-示例提示词"><a href="#20-2-示例提示词" class="headerlink" title="20.2 示例提示词"></a>20.2 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请帮我用 Python pytest + requests 写一个接口自动化脚本初稿。</span><br><span class="line">场景：</span><br><span class="line">1. 登录获取 Token</span><br><span class="line">2. 创建帖子</span><br><span class="line">3. 查询帖子详情</span><br><span class="line">4. 断言标题和正文正确</span><br><span class="line">5. 删除测试帖子</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 使用配置变量保存 base_url</span><br><span class="line">- 使用函数封装登录和发帖</span><br><span class="line">- 添加基本异常处理</span><br><span class="line">- 代码中写清楚注释</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-21"></a></p>
+<h2 id="21-AI-辅助-Bug-编写与严重程度分析怎么用"><a href="#21-AI-辅助-Bug-编写与严重程度分析怎么用" class="headerlink" title="21. AI 辅助 Bug 编写与严重程度分析怎么用"></a>21. AI 辅助 Bug 编写与严重程度分析怎么用</h2><p>Bug 描述是测试同学非常重要的表达能力。</p>
+<p>AI 可以帮你把口语化描述变成清晰 Bug。</p>
+<hr>
+<h3 id="21-1-示例输入"><a href="#21-1-示例输入" class="headerlink" title="21.1 示例输入"></a>21.1 示例输入</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我发现一个问题：用户已经被禁言了，但是他用接口还是能评论成功，页面上评论按钮是灰色的，但是接口直接调可以成功，评论列表也新增了。</span><br><span class="line">请帮我整理成标准 Bug，包含标题、环境、前置条件、步骤、实际结果、预期结果、严重程度和原因。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="21-2-AI-输出后要检查"><a href="#21-2-AI-输出后要检查" class="headerlink" title="21.2 AI 输出后要检查"></a>21.2 AI 输出后要检查</h3><ul>
+<li>严重程度是否合理</li>
+<li>复现步骤是否准确</li>
+<li>是否需要补接口请求和响应</li>
+<li>是否夸大风险</li>
+<li>是否缺少环境和账号信息</li>
+</ul>
+<hr>
+<p><a id="forum-ai-ch-22"></a></p>
+<h2 id="22-AI-辅助测试总结和复盘怎么用"><a href="#22-AI-辅助测试总结和复盘怎么用" class="headerlink" title="22. AI 辅助测试总结和复盘怎么用"></a>22. AI 辅助测试总结和复盘怎么用</h2><p>测试结束后，AI 可以帮你整理测试总结。</p>
+<hr>
+<h3 id="22-1-可以让-AI-总结什么"><a href="#22-1-可以让-AI-总结什么" class="headerlink" title="22.1 可以让 AI 总结什么"></a>22.1 可以让 AI 总结什么</h3><ul>
+<li>测试范围</li>
+<li>测试执行情况</li>
+<li>Bug 分类</li>
+<li>高风险问题</li>
+<li>遗留风险</li>
+<li>质量结论</li>
+<li>后续改进建议</li>
+<li>自动化沉淀建议</li>
+</ul>
+<hr>
+<h3 id="22-2-示例提示词"><a href="#22-2-示例提示词" class="headerlink" title="22.2 示例提示词"></a>22.2 示例提示词</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">下面是本次版本测试数据：</span><br><span class="line">测试用例总数：120</span><br><span class="line">通过：105</span><br><span class="line">失败：15</span><br><span class="line">Bug 总数：18</span><br><span class="line">Critical：2</span><br><span class="line">Major：6</span><br><span class="line">Minor：10</span><br><span class="line">遗留 Bug：2</span><br><span class="line">主要问题集中在评论通知、审核状态同步、Safari 第三方登录。</span><br><span class="line"></span><br><span class="line">请帮我生成一份测试总结，包含：测试范围、执行结果、问题分析、风险说明、上线建议、后续改进建议。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第三部分：AI-提效方法与提示词模板"><a href="#第三部分：AI-提效方法与提示词模板" class="headerlink" title="第三部分：AI 提效方法与提示词模板"></a>第三部分：AI 提效方法与提示词模板</h2><blockquote>
+<p>这一部分可以当作日常工作中的提示词工具箱。</p>
+<p>你可以根据具体项目替换里面的模块名称、需求内容、角色和规则。</p>
+</blockquote>
+<hr>
+<p><a id="forum-ai-ch-23"></a></p>
+<h2 id="23-需求分析提示词模板"><a href="#23-需求分析提示词模板" class="headerlink" title="23. 需求分析提示词模板"></a>23. 需求分析提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试一个【项目类型】项目，当前需求是【需求名称】。</span><br><span class="line">下面是需求内容：</span><br><span class="line">【粘贴需求】</span><br><span class="line"></span><br><span class="line">请帮我做需求分析，输出：</span><br><span class="line">1. 需求目标</span><br><span class="line">2. 涉及模块</span><br><span class="line">3. 涉及用户角色</span><br><span class="line">4. 主流程</span><br><span class="line">5. 异常流程</span><br><span class="line">6. 状态流转</span><br><span class="line">7. 权限规则</span><br><span class="line">8. 需要重点测试的风险点</span><br><span class="line">9. 需要向产品/开发确认的问题</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 不要编造需求中没有的信息</span><br><span class="line">- 不确定的地方标注“需确认”</span><br><span class="line">- 用表格和清晰小标题输出</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-24"></a></p>
+<h2 id="24-测试点拆解提示词模板"><a href="#24-测试点拆解提示词模板" class="headerlink" title="24. 测试点拆解提示词模板"></a>24. 测试点拆解提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试【项目】的【功能模块】。</span><br><span class="line">功能说明：</span><br><span class="line">【输入功能说明】</span><br><span class="line"></span><br><span class="line">请帮我拆测试点，覆盖：</span><br><span class="line">1. 功能测试</span><br><span class="line">2. 接口测试</span><br><span class="line">3. 数据一致性测试</span><br><span class="line">4. 权限测试</span><br><span class="line">5. 风控/审核测试</span><br><span class="line">6. 国际化测试</span><br><span class="line">7. 兼容性测试</span><br><span class="line">8. 安全测试</span><br><span class="line">9. 自动化回归建议</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 每个测试点说明验证目的</span><br><span class="line">- 标注优先级 P0/P1/P2</span><br><span class="line">- 用表格输出</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-25"></a></p>
+<h2 id="25-测试用例生成提示词模板"><a href="#25-测试用例生成提示词模板" class="headerlink" title="25. 测试用例生成提示词模板"></a>25. 测试用例生成提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请根据以下测试点生成测试用例：</span><br><span class="line">【粘贴测试点】</span><br><span class="line"></span><br><span class="line">输出字段：</span><br><span class="line">用例编号、模块、用例标题、前置条件、测试步骤、预期结果、优先级、备注。</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 步骤要适合测试新手执行</span><br><span class="line">- 预期结果要具体</span><br><span class="line">- 不要只写“结果正确”</span><br><span class="line">- 区分正常场景、异常场景、权限场景、数据一致性场景</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-26"></a></p>
+<h2 id="26-接口测试提示词模板"><a href="#26-接口测试提示词模板" class="headerlink" title="26. 接口测试提示词模板"></a>26. 接口测试提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">下面是接口信息：</span><br><span class="line">接口名称：【接口名称】</span><br><span class="line">请求方法：【GET/POST/PUT/PATCH/DELETE】</span><br><span class="line">接口地址：【接口地址】</span><br><span class="line">Header：【Header 信息】</span><br><span class="line">请求参数：【参数说明】</span><br><span class="line">响应示例：【响应示例】</span><br><span class="line"></span><br><span class="line">请帮我设计接口测试点，覆盖：</span><br><span class="line">1. 正常场景</span><br><span class="line">2. 必填参数</span><br><span class="line">3. 参数类型</span><br><span class="line">4. 边界值</span><br><span class="line">5. 权限校验</span><br><span class="line">6. Token 校验</span><br><span class="line">7. 幂等性</span><br><span class="line">8. 数据一致性断言</span><br><span class="line">9. 错误码校验</span><br><span class="line">10. 安全风险</span><br><span class="line"></span><br><span class="line">要求：用表格输出。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-27"></a></p>
+<h2 id="27-权限测试提示词模板"><a href="#27-权限测试提示词模板" class="headerlink" title="27. 权限测试提示词模板"></a>27. 权限测试提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试【功能模块】权限。</span><br><span class="line">角色包括：【游客、普通用户、作者、禁言用户、版主、管理员等】</span><br><span class="line">操作包括：【查看、新增、编辑、删除、审核、举报等】</span><br><span class="line">资源包括：【帖子、评论、私信、通知、后台记录等】</span><br><span class="line"></span><br><span class="line">请帮我生成：</span><br><span class="line">1. 权限矩阵</span><br><span class="line">2. 水平越权测试点</span><br><span class="line">3. 垂直越权测试点</span><br><span class="line">4. 高风险权限场景</span><br><span class="line">5. 可转成测试用例的场景列表</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-28"></a></p>
+<h2 id="28-风控审核测试提示词模板"><a href="#28-风控审核测试提示词模板" class="headerlink" title="28. 风控审核测试提示词模板"></a>28. 风控审核测试提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试海外社区论坛的【内容审核/用户风控】功能。</span><br><span class="line">审核对象包括：【帖子、评论、图片、视频、私信、昵称、头像、简介】。</span><br><span class="line"></span><br><span class="line">请帮我设计测试点，覆盖：</span><br><span class="line">1. 正常内容放行</span><br><span class="line">2. 风险内容拦截</span><br><span class="line">3. 可疑内容进入审核</span><br><span class="line">4. 举报处理闭环</span><br><span class="line">5. 后台审核通过/拒绝/删除</span><br><span class="line">6. 用户处罚：禁言、封禁、限流</span><br><span class="line">7. 审核状态前后台同步</span><br><span class="line">8. 误杀和漏审</span><br><span class="line">9. 多语言内容审核</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 使用安全测试占位符，不输出真实违规内容</span><br><span class="line">- 用表格输出</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-29"></a></p>
+<h2 id="29-国际化测试提示词模板"><a href="#29-国际化测试提示词模板" class="headerlink" title="29. 国际化测试提示词模板"></a>29. 国际化测试提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我在测试海外社区论坛的国际化与本地化。</span><br><span class="line">支持语言：【英文、日文、韩文、阿拉伯语、德语等】</span><br><span class="line">支持地区：【美国、日本、欧洲、中东等】</span><br><span class="line">核心模块：【注册登录、发帖、评论、搜索、通知、私信】</span><br><span class="line"></span><br><span class="line">请帮我设计测试点，覆盖：</span><br><span class="line">1. 多语言文案</span><br><span class="line">2. 多语言输入</span><br><span class="line">3. 长文案 UI</span><br><span class="line">4. RTL 布局</span><br><span class="line">5. Emoji 和特殊字符</span><br><span class="line">6. 多语言搜索</span><br><span class="line">7. 时区切换</span><br><span class="line">8. 夏令时</span><br><span class="line">9. 日期、数字、货币格式</span><br><span class="line">10. 合规入口本地化</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-30"></a></p>
+<h2 id="30-Bug-优化提示词模板"><a href="#30-Bug-优化提示词模板" class="headerlink" title="30. Bug 优化提示词模板"></a>30. Bug 优化提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">下面是我发现的 Bug 现象：</span><br><span class="line">【粘贴口语化描述】</span><br><span class="line"></span><br><span class="line">请帮我整理成标准 Bug，包含：</span><br><span class="line">1. 标题</span><br><span class="line">2. 测试环境</span><br><span class="line">3. 前置条件</span><br><span class="line">4. 复现步骤</span><br><span class="line">5. 实际结果</span><br><span class="line">6. 预期结果</span><br><span class="line">7. 严重程度建议</span><br><span class="line">8. 严重程度原因</span><br><span class="line">9. 需要补充的证据</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 标题清晰</span><br><span class="line">- 步骤可复现</span><br><span class="line">- 实际结果和预期结果分开</span><br><span class="line">- 不要夸大问题</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-31"></a></p>
+<h2 id="31-测试报告提示词模板"><a href="#31-测试报告提示词模板" class="headerlink" title="31. 测试报告提示词模板"></a>31. 测试报告提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请根据以下测试数据生成测试报告：</span><br><span class="line">项目名称：【项目名】</span><br><span class="line">测试范围：【范围】</span><br><span class="line">测试环境：【环境】</span><br><span class="line">用例总数：【数量】</span><br><span class="line">通过数：【数量】</span><br><span class="line">失败数：【数量】</span><br><span class="line">Bug 总数：【数量】</span><br><span class="line">Critical：【数量】</span><br><span class="line">Major：【数量】</span><br><span class="line">Minor：【数量】</span><br><span class="line">遗留问题：【说明】</span><br><span class="line">主要风险：【说明】</span><br><span class="line"></span><br><span class="line">请输出：</span><br><span class="line">1. 测试概述</span><br><span class="line">2. 测试范围</span><br><span class="line">3. 执行结果</span><br><span class="line">4. Bug 分析</span><br><span class="line">5. 遗留风险</span><br><span class="line">6. 上线建议</span><br><span class="line">7. 后续改进建议</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-32"></a></p>
+<h2 id="32-自动化脚本辅助提示词模板"><a href="#32-自动化脚本辅助提示词模板" class="headerlink" title="32. 自动化脚本辅助提示词模板"></a>32. 自动化脚本辅助提示词模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">我想写接口自动化脚本。</span><br><span class="line">技术栈：【Python + pytest + requests】</span><br><span class="line">场景：【例如登录 → 发帖 → 查询详情 → 删除帖子】</span><br><span class="line">接口信息：【粘贴接口信息】</span><br><span class="line"></span><br><span class="line">请帮我生成脚本初稿，要求：</span><br><span class="line">1. 使用 base_url 配置</span><br><span class="line">2. 登录后自动保存 Token</span><br><span class="line">3. 每个接口封装成函数</span><br><span class="line">4. 测试用例中包含断言</span><br><span class="line">5. 测试结束后清理数据</span><br><span class="line">6. 代码加注释</span><br><span class="line"></span><br><span class="line">注意：生成的是初稿，我会人工检查和运行。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-33"></a></p>
+<h2 id="33-AI-使用工作流怎么搭建"><a href="#33-AI-使用工作流怎么搭建" class="headerlink" title="33. AI 使用工作流怎么搭建"></a>33. AI 使用工作流怎么搭建</h2><p>建议你把 AI 融入测试工作的固定流程。</p>
+<hr>
+<h3 id="33-1-推荐工作流"><a href="#33-1-推荐工作流" class="headerlink" title="33.1 推荐工作流"></a>33.1 推荐工作流</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">需求评审前：让 AI 预分析需求，生成疑问清单</span><br><span class="line">需求评审后：让 AI 根据确认后的规则拆测试点</span><br><span class="line">用例设计阶段：让 AI 生成用例初稿，再人工补充</span><br><span class="line">执行测试阶段：遇到问题让 AI 帮助整理定位思路</span><br><span class="line">提交 Bug 阶段：让 AI 优化 Bug 表达</span><br><span class="line">回归阶段：让 AI 帮你生成回归 Checklist</span><br><span class="line">测试结束后：让 AI 生成测试总结初稿</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="33-2-AI-输出如何沉淀"><a href="#33-2-AI-输出如何沉淀" class="headerlink" title="33.2 AI 输出如何沉淀"></a>33.2 AI 输出如何沉淀</h3><p>可以沉淀成：</p>
+<ul>
+<li>测试点库</li>
+<li>用例模板</li>
+<li>Bug 模板</li>
+<li>Checklist 模板</li>
+<li>提示词库</li>
+<li>项目复盘文档</li>
+<li>自动化脚本模板</li>
+</ul>
+<p>这样每次项目都会越来越快。</p>
+<hr>
+<h2 id="第四部分：AI-使用风险、规范与总结"><a href="#第四部分：AI-使用风险、规范与总结" class="headerlink" title="第四部分：AI 使用风险、规范与总结"></a>第四部分：AI 使用风险、规范与总结</h2><blockquote>
+<p>AI 很有用，但不能盲目信。</p>
+<p>测试同学要学会用 AI 提效，也要学会校验 AI 输出。</p>
+</blockquote>
+<hr>
+<p><a id="forum-ai-ch-34"></a></p>
+<h2 id="34-AI-辅助测试的风险有哪些"><a href="#34-AI-辅助测试的风险有哪些" class="headerlink" title="34. AI 辅助测试的风险有哪些"></a>34. AI 辅助测试的风险有哪些</h2><table>
+<thead>
+<tr>
+<th>风险</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>编造规则</td>
+<td>AI 假设“审核中作者可见”，但需求没有说明</td>
+</tr>
+<tr>
+<td>漏掉项目特性</td>
+<td>AI 忽略你们特有的风控规则</td>
+</tr>
+<tr>
+<td>输出太泛</td>
+<td>测试点看起来多，但不能执行</td>
+</tr>
+<tr>
+<td>预期错误</td>
+<td>AI 给出的预期和产品真实规则不一致</td>
+</tr>
+<tr>
+<td>脚本不可运行</td>
+<td>生成代码语法或接口参数错误</td>
+</tr>
+<tr>
+<td>泄露敏感信息</td>
+<td>把真实用户数据、内部接口、Token 发给 AI</td>
+</tr>
+<tr>
+<td>过度依赖</td>
+<td>不再自己思考测试风险</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ai-ch-35"></a></p>
+<h2 id="35-哪些信息不能直接给-AI"><a href="#35-哪些信息不能直接给-AI" class="headerlink" title="35. 哪些信息不能直接给 AI"></a>35. 哪些信息不能直接给 AI</h2><p>使用 AI 时要遵守公司数据安全要求。</p>
+<p>一般不建议直接输入：</p>
+<ul>
+<li>真实用户个人信息</li>
+<li>真实手机号、邮箱、地址</li>
+<li>真实 Token、Cookie、密钥</li>
+<li>生产数据库数据</li>
+<li>未脱敏日志</li>
+<li>内部安全策略细节</li>
+<li>公司未公开商业机密</li>
+<li>未授权的源代码或配置</li>
+</ul>
+<p>如果需要分析，应该先脱敏。</p>
+<hr>
+<h3 id="35-1-脱敏示例"><a href="#35-1-脱敏示例" class="headerlink" title="35.1 脱敏示例"></a>35.1 脱敏示例</h3><p>不要这样输入：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户手机号是 138xxxx，Token 是 eyJhbGciOi...</span><br></pre></td></tr></table></figure>
+
+<p>可以这样输入：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A手机号字段返回了完整手机号，Token 字段出现在接口响应中。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-36"></a></p>
+<h2 id="36-AI-生成用例如何人工校验"><a href="#36-AI-生成用例如何人工校验" class="headerlink" title="36. AI 生成用例如何人工校验"></a>36. AI 生成用例如何人工校验</h2><p>AI 生成用例后，你要检查：</p>
+<ul>
+<li>是否符合真实需求</li>
+<li>是否可执行</li>
+<li>前置条件是否完整</li>
+<li>步骤是否清楚</li>
+<li>预期是否具体</li>
+<li>是否覆盖核心流程</li>
+<li>是否覆盖异常和权限</li>
+<li>是否有重复用例</li>
+<li>是否有不适用场景</li>
+</ul>
+<hr>
+<h3 id="36-1-校验清单"><a href="#36-1-校验清单" class="headerlink" title="36.1 校验清单"></a>36.1 校验清单</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">这个用例真的需要测吗？</span><br><span class="line">这个用例本期需求涉及吗？</span><br><span class="line">测试账号和数据能准备吗？</span><br><span class="line">预期结果产品确认了吗？</span><br><span class="line">这个用例是否能发现高价值问题？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ai-ch-37"></a></p>
+<h2 id="37-AI-生成-Bug-如何人工校验"><a href="#37-AI-生成-Bug-如何人工校验" class="headerlink" title="37. AI 生成 Bug 如何人工校验"></a>37. AI 生成 Bug 如何人工校验</h2><p>AI 优化 Bug 后，你要检查：</p>
+<ul>
+<li>标题是否准确</li>
+<li>复现步骤是否真实</li>
+<li>实际结果是否和你观察一致</li>
+<li>预期结果是否符合需求</li>
+<li>严重程度是否合理</li>
+<li>是否缺少环境、账号、接口信息</li>
+<li>是否泄露敏感数据</li>
+<li>是否需要补截图、录屏、日志</li>
+</ul>
+<hr>
+<p><a id="forum-ai-ch-38"></a></p>
+<h2 id="38-AI-提效常见误区"><a href="#38-AI-提效常见误区" class="headerlink" title="38. AI 提效常见误区"></a>38. AI 提效常见误区</h2><h3 id="38-1-直接复制-AI-结果"><a href="#38-1-直接复制-AI-结果" class="headerlink" title="38.1 直接复制 AI 结果"></a>38.1 直接复制 AI 结果</h3><p>AI 输出只能作为初稿。</p>
+<p>一定要人工确认。</p>
+<hr>
+<h3 id="38-2-提问太简单"><a href="#38-2-提问太简单" class="headerlink" title="38.2 提问太简单"></a>38.2 提问太简单</h3><p>提问越模糊，输出越泛。</p>
+<p>要提供背景、规则、角色、输出格式。</p>
+<hr>
+<h3 id="38-3-不告诉-AI-输出格式"><a href="#38-3-不告诉-AI-输出格式" class="headerlink" title="38.3 不告诉 AI 输出格式"></a>38.3 不告诉 AI 输出格式</h3><p>如果你想要测试用例表格，就明确说字段。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">请按“用例编号、前置条件、步骤、预期结果、优先级”输出。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="38-4-让-AI-决定最终预期"><a href="#38-4-让-AI-决定最终预期" class="headerlink" title="38.4 让 AI 决定最终预期"></a>38.4 让 AI 决定最终预期</h3><p>AI 可以建议预期，但最终预期要以需求、产品、开发确认为准。</p>
+<hr>
+<h3 id="38-5-只用-AI-写文档，不用-AI-复盘"><a href="#38-5-只用-AI-写文档，不用-AI-复盘" class="headerlink" title="38.5 只用 AI 写文档，不用 AI 复盘"></a>38.5 只用 AI 写文档，不用 AI 复盘</h3><p>AI 不仅能写用例，还能帮你复盘：</p>
+<ul>
+<li>这次 Bug 集中在哪些模块</li>
+<li>哪些测试点漏了</li>
+<li>哪些用例可以自动化</li>
+<li>下次测试方案怎么优化</li>
+</ul>
+<hr>
+<p><a id="forum-ai-ch-39"></a></p>
+<h2 id="39-最后总结"><a href="#39-最后总结" class="headerlink" title="39. 最后总结"></a>39. 最后总结</h2><p>AI 在测试中的核心价值不是替代测试同学，而是帮助你：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">更快理解需求</span><br><span class="line">更系统拆测试点</span><br><span class="line">更完整补充异常场景</span><br><span class="line">更清晰编写测试用例</span><br><span class="line">更专业提交 Bug</span><br><span class="line">更高效整理报告</span><br><span class="line">更快生成自动化脚本初稿</span><br><span class="line">更好沉淀测试经验</span><br></pre></td></tr></table></figure>
+
+<p>对于海外社区论坛项目，最适合使用 AI 提效的方向是：</p>
+<ul>
+<li>需求分析</li>
+<li>测试点拆解</li>
+<li>测试用例生成</li>
+<li>接口测试点生成</li>
+<li>权限矩阵设计</li>
+<li>风控审核场景补充</li>
+<li>国际化测试数据生成</li>
+<li>兼容性测试矩阵设计</li>
+<li>Bug 描述优化</li>
+<li>测试报告总结</li>
+<li>自动化脚本初稿</li>
+<li>上线 Checklist 生成</li>
+</ul>
+<p>你可以记住一个万能 AI 提效公式：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">清晰背景 + 具体任务 + 明确规则 + 指定输出格式 + 人工校验 = 高质量 AI 辅助测试</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">项目背景：海外社区论坛</span><br><span class="line">任务：拆发帖审核测试点</span><br><span class="line">规则：审核中仅作者可见，审核拒绝后作者可见原因</span><br><span class="line">输出：按功能、接口、权限、数据一致性、风控审核分类表格输出</span><br><span class="line">校验：人工对照 PRD 和产品确认最终预期</span><br></pre></td></tr></table></figure>
+
+<p>只要你学会正确提问、正确校验、正确沉淀，AI 就会成为你测试</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-20-overseas-forum-ai-testing-guide/">https://linn0813.github.io/2026-05-20-overseas-forum-ai-testing-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a><a class="post-meta__tags" href="/tags/AI-%E6%B5%8B%E8%AF%95/">AI 测试</a><a class="post-meta__tags" href="/tags/%E6%8F%90%E7%A4%BA%E8%AF%8D/">提示词</a><a class="post-meta__tags" href="/tags/%E6%8F%90%E6%95%88/">提效</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-ai-testing-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026-05-19-overseas-forum-release-regression-guide/" title="学习笔记：海外社区论坛 - 上线验收与回归测试入门"><img class="cover" src="/img/overseas-forum-release-regression-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 上线验收与回归测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛上线验收与回归入门：冒烟与灰度、各模块验收要点、Bug/链路/自动化回归及 Checklist 与记录模板。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-10</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-09-overseas-forum-api-testing-guide/" title="学习笔记：海外社区论坛 - 接口测试入门"><img class="cover" src="/img/overseas-forum-api-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-09</div><div class="info-item-2">学习笔记：海外社区论坛 - 接口测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-12</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-07-overseas-forum-functional-testing-guide/" title="学习笔记：海外社区论坛 - 功能测试入门"><img class="cover" src="/img/overseas-forum-functional-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-07</div><div class="info-item-2">学习笔记：海外社区论坛 - 功能测试入门</div></div><div class="info-2"><div class="info-item-1">结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。</div></div></div></a><a class="pagination-related" href="/2026-05-11-overseas-forum-permission-testing-guide/" title="学习笔记：海外社区论坛 - 权限测试专项入门"><img class="cover" src="/img/overseas-forum-permission-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-11</div><div class="info-item-2">学习笔记：海外社区论坛 - 权限测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛权限测试专项入门：角色与状态、前后端权限、越权与权限矩阵、按模块实战及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-13-overseas-forum-i18n-l10n-guide/" title="学习笔记：海外社区论坛 - 国际化与本地化专项入门"><img class="cover" src="/img/overseas-forum-i18n-l10n-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-13</div><div class="info-item-2">学习笔记：海外社区论坛 - 国际化与本地化专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛国际化与本地化专项入门：I18N/L10N 基础、各模块实战、文案布局与时区等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-14</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-15-overseas-forum-performance-guide/" title="学习笔记：海外社区论坛 - 性能测试入门"><img class="cover" src="/img/overseas-forum-performance-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-15</div><div class="info-item-2">学习笔记：海外社区论坛 - 性能测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9AAI-%E8%BE%85%E5%8A%A9%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">第一部分：AI 辅助测试基础概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B5%8B%E8%AF%95%E5%90%8C%E5%AD%A6%E8%A6%81%E5%AD%A6%E4%B9%A0-AI-%E6%8F%90%E6%95%88"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么测试同学要学习 AI 提效</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-AI-%E5%AF%B9%E6%B5%8B%E8%AF%95%E6%96%B0%E6%89%8B%E7%9A%84%E6%9C%80%E5%A4%A7%E5%B8%AE%E5%8A%A9"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 AI 对测试新手的最大帮助</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-AI-%E5%9C%A8%E6%B5%8B%E8%AF%95%E5%B7%A5%E4%BD%9C%E4%B8%AD%E8%83%BD%E5%B8%AE%E4%BB%80%E4%B9%88"><span class="toc-number">3.</span> <span class="toc-text">2. AI 在测试工作中能帮什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-AI-%E6%9B%B4%E6%93%85%E9%95%BF%E7%9A%84%E5%86%85%E5%AE%B9"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 AI 更擅长的内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-AI-%E5%9C%A8%E6%B5%8B%E8%AF%95%E5%B7%A5%E4%BD%9C%E4%B8%AD%E4%B8%8D%E8%83%BD%E6%9B%BF%E4%BB%A3%E4%BB%80%E4%B9%88"><span class="toc-number">4.</span> <span class="toc-text">3. AI 在测试工作中不能替代什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-AI-%E4%B8%8D%E8%83%BD%E6%9B%BF%E4%BB%A3%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 AI 不能替代的工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%AD%A3%E7%A1%AE%E7%90%86%E8%A7%A3-AI-%E7%9A%84%E8%A7%92%E8%89%B2"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 正确理解 AI 的角色</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%93%AA%E4%BA%9B%E6%B5%8B%E8%AF%95%E5%B7%A5%E4%BD%9C%E6%9C%80%E9%80%82%E5%90%88%E7%94%A8-AI-%E8%BE%85%E5%8A%A9"><span class="toc-number">5.</span> <span class="toc-text">4. 哪些测试工作最适合用 AI 辅助</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E9%AB%98%E4%BB%B7%E5%80%BC-AI-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 高价值 AI 使用场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%93%AA%E4%BA%9B%E6%B5%8B%E8%AF%95%E5%B7%A5%E4%BD%9C%E4%B8%8D%E9%80%82%E5%90%88%E5%AE%8C%E5%85%A8%E4%BA%A4%E7%BB%99-AI"><span class="toc-number">6.</span> <span class="toc-text">5. 哪些测试工作不适合完全交给 AI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 举个例子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-AI-%E8%BE%85%E5%8A%A9%E6%B5%8B%E8%AF%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">7.</span> <span class="toc-text">6. AI 辅助测试的基本使用流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E7%BB%99-AI-%E4%BF%A1%E6%81%AF%E8%A6%81%E5%85%B7%E4%BD%93"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 给 AI 信息要具体</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%BD%BF%E7%94%A8-AI-%E6%97%B6%E9%9C%80%E8%A6%81%E7%BB%99%E5%AE%83%E5%93%AA%E4%BA%9B%E4%BF%A1%E6%81%AF"><span class="toc-number">8.</span> <span class="toc-text">7. 使用 AI 时需要给它哪些信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%85%A5%E7%BB%93%E6%9E%84"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 示例输入结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-AI-%E8%BE%93%E5%87%BA%E5%86%85%E5%AE%B9%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BF%85%E9%A1%BB%E4%BA%BA%E5%B7%A5%E6%A0%A1%E9%AA%8C"><span class="toc-number">9.</span> <span class="toc-text">8. AI 输出内容为什么必须人工校验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E4%BA%BA%E5%B7%A5%E6%A0%A1%E9%AA%8C%E9%87%8D%E7%82%B9"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 人工校验重点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E9%A1%B9%E7%9B%AE%E9%80%82%E5%90%88%E5%93%AA%E4%BA%9B-AI-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">10.</span> <span class="toc-text">9. 海外社区论坛项目适合哪些 AI 应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E9%A1%B9%E7%9B%AE-AI-%E6%8F%90%E6%95%88%E5%AE%9E%E6%88%98"><span class="toc-number">11.</span> <span class="toc-text">第二部分：海外社区论坛项目 AI 提效实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-AI-%E8%BE%85%E5%8A%A9%E9%9C%80%E6%B1%82%E7%90%86%E8%A7%A3%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">12.</span> <span class="toc-text">10. AI 辅助需求理解怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-AI-%E5%8F%AF%E4%BB%A5%E5%B8%AE%E4%BD%A0%E6%80%BB%E7%BB%93%E4%BB%80%E4%B9%88"><span class="toc-number">12.1.</span> <span class="toc-text">10.1 AI 可以帮你总结什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">12.2.</span> <span class="toc-text">10.2 示例提示词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E4%BA%BA%E5%B7%A5%E9%9C%80%E8%A6%81%E6%A3%80%E6%9F%A5%E4%BB%80%E4%B9%88"><span class="toc-number">12.3.</span> <span class="toc-text">10.3 人工需要检查什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-AI-%E8%BE%85%E5%8A%A9%E6%B5%8B%E8%AF%95%E7%82%B9%E6%8B%86%E8%A7%A3%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">13.</span> <span class="toc-text">11. AI 辅助测试点拆解怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E6%8C%89%E6%B5%8B%E8%AF%95%E7%B1%BB%E5%9E%8B%E6%8B%86%E8%A7%A3"><span class="toc-number">13.1.</span> <span class="toc-text">11.1 按测试类型拆解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">13.2.</span> <span class="toc-text">11.2 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-AI-%E8%BE%85%E5%8A%A9%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%94%9F%E6%88%90%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">14.</span> <span class="toc-text">12. AI 辅助测试用例生成怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E9%80%82%E5%90%88%E7%94%9F%E6%88%90%E7%9A%84%E7%94%A8%E4%BE%8B"><span class="toc-number">14.1.</span> <span class="toc-text">12.1 适合生成的用例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">14.2.</span> <span class="toc-text">12.2 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-AI-%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">15.</span> <span class="toc-text">13. AI 辅助功能测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E5%8F%91%E5%B8%96%E5%8A%9F%E8%83%BD"><span class="toc-number">15.1.</span> <span class="toc-text">13.1 示例：发帖功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-AI-%E8%BE%85%E5%8A%A9%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">16.</span> <span class="toc-text">14. AI 辅助接口测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">16.1.</span> <span class="toc-text">14.1 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-AI-%E8%BE%85%E5%8A%A9%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">17.</span> <span class="toc-text">15. AI 辅助权限测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">17.1.</span> <span class="toc-text">15.1 示例提示词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-AI-%E8%BE%93%E5%87%BA%E5%90%8E%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">17.2.</span> <span class="toc-text">15.2 AI 输出后怎么用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-AI-%E8%BE%85%E5%8A%A9%E9%A3%8E%E6%8E%A7%E5%AE%A1%E6%A0%B8%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">18.</span> <span class="toc-text">16. AI 辅助风控审核测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">18.1.</span> <span class="toc-text">16.1 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-AI-%E8%BE%85%E5%8A%A9%E5%9B%BD%E9%99%85%E5%8C%96%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">19.</span> <span class="toc-text">17. AI 辅助国际化测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">19.1.</span> <span class="toc-text">17.1 示例提示词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-AI-%E5%8F%AF%E4%BB%A5%E7%94%9F%E6%88%90%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="toc-number">19.2.</span> <span class="toc-text">17.2 AI 可以生成测试数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-AI-%E8%BE%85%E5%8A%A9%E5%85%BC%E5%AE%B9%E6%80%A7%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">20.</span> <span class="toc-text">18. AI 辅助兼容性测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#18-1-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">20.1.</span> <span class="toc-text">18.1 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-AI-%E8%BE%85%E5%8A%A9%E5%AE%89%E5%85%A8%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">21.</span> <span class="toc-text">19. AI 辅助安全测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">21.1.</span> <span class="toc-text">19.1 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-AI-%E8%BE%85%E5%8A%A9%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">22.</span> <span class="toc-text">20. AI 辅助自动化测试怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#20-1-AI-%E5%8F%AF%E4%BB%A5%E5%B8%AE%E4%BB%80%E4%B9%88"><span class="toc-number">22.1.</span> <span class="toc-text">20.1 AI 可以帮什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-2-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">22.2.</span> <span class="toc-text">20.2 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-AI-%E8%BE%85%E5%8A%A9-Bug-%E7%BC%96%E5%86%99%E4%B8%8E%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6%E5%88%86%E6%9E%90%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">23.</span> <span class="toc-text">21. AI 辅助 Bug 编写与严重程度分析怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-%E7%A4%BA%E4%BE%8B%E8%BE%93%E5%85%A5"><span class="toc-number">23.1.</span> <span class="toc-text">21.1 示例输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-AI-%E8%BE%93%E5%87%BA%E5%90%8E%E8%A6%81%E6%A3%80%E6%9F%A5"><span class="toc-number">23.2.</span> <span class="toc-text">21.2 AI 输出后要检查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-AI-%E8%BE%85%E5%8A%A9%E6%B5%8B%E8%AF%95%E6%80%BB%E7%BB%93%E5%92%8C%E5%A4%8D%E7%9B%98%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">24.</span> <span class="toc-text">22. AI 辅助测试总结和复盘怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E5%8F%AF%E4%BB%A5%E8%AE%A9-AI-%E6%80%BB%E7%BB%93%E4%BB%80%E4%B9%88"><span class="toc-number">24.1.</span> <span class="toc-text">22.1 可以让 AI 总结什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E7%A4%BA%E4%BE%8B%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-number">24.2.</span> <span class="toc-text">22.2 示例提示词</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9AAI-%E6%8F%90%E6%95%88%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">25.</span> <span class="toc-text">第三部分：AI 提效方法与提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">26.</span> <span class="toc-text">23. 需求分析提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E6%B5%8B%E8%AF%95%E7%82%B9%E6%8B%86%E8%A7%A3%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">27.</span> <span class="toc-text">24. 测试点拆解提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%94%9F%E6%88%90%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">28.</span> <span class="toc-text">25. 测试用例生成提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">29.</span> <span class="toc-text">26. 接口测试提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">30.</span> <span class="toc-text">27. 权限测试提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E9%A3%8E%E6%8E%A7%E5%AE%A1%E6%A0%B8%E6%B5%8B%E8%AF%95%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">31.</span> <span class="toc-text">28. 风控审核测试提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E5%9B%BD%E9%99%85%E5%8C%96%E6%B5%8B%E8%AF%95%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">32.</span> <span class="toc-text">29. 国际化测试提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-Bug-%E4%BC%98%E5%8C%96%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">33.</span> <span class="toc-text">30. Bug 优化提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">34.</span> <span class="toc-text">31. 测试报告提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC%E8%BE%85%E5%8A%A9%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">35.</span> <span class="toc-text">32. 自动化脚本辅助提示词模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-AI-%E4%BD%BF%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E6%80%8E%E4%B9%88%E6%90%AD%E5%BB%BA"><span class="toc-number">36.</span> <span class="toc-text">33. AI 使用工作流怎么搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#33-1-%E6%8E%A8%E8%8D%90%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">36.1.</span> <span class="toc-text">33.1 推荐工作流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-2-AI-%E8%BE%93%E5%87%BA%E5%A6%82%E4%BD%95%E6%B2%89%E6%B7%80"><span class="toc-number">36.2.</span> <span class="toc-text">33.2 AI 输出如何沉淀</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9AAI-%E4%BD%BF%E7%94%A8%E9%A3%8E%E9%99%A9%E3%80%81%E8%A7%84%E8%8C%83%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">37.</span> <span class="toc-text">第四部分：AI 使用风险、规范与总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-AI-%E8%BE%85%E5%8A%A9%E6%B5%8B%E8%AF%95%E7%9A%84%E9%A3%8E%E9%99%A9%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">38.</span> <span class="toc-text">34. AI 辅助测试的风险有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-%E5%93%AA%E4%BA%9B%E4%BF%A1%E6%81%AF%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E7%BB%99-AI"><span class="toc-number">39.</span> <span class="toc-text">35. 哪些信息不能直接给 AI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#35-1-%E8%84%B1%E6%95%8F%E7%A4%BA%E4%BE%8B"><span class="toc-number">39.1.</span> <span class="toc-text">35.1 脱敏示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-AI-%E7%94%9F%E6%88%90%E7%94%A8%E4%BE%8B%E5%A6%82%E4%BD%95%E4%BA%BA%E5%B7%A5%E6%A0%A1%E9%AA%8C"><span class="toc-number">40.</span> <span class="toc-text">36. AI 生成用例如何人工校验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#36-1-%E6%A0%A1%E9%AA%8C%E6%B8%85%E5%8D%95"><span class="toc-number">40.1.</span> <span class="toc-text">36.1 校验清单</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-AI-%E7%94%9F%E6%88%90-Bug-%E5%A6%82%E4%BD%95%E4%BA%BA%E5%B7%A5%E6%A0%A1%E9%AA%8C"><span class="toc-number">41.</span> <span class="toc-text">37. AI 生成 Bug 如何人工校验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#38-AI-%E6%8F%90%E6%95%88%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">42.</span> <span class="toc-text">38. AI 提效常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#38-1-%E7%9B%B4%E6%8E%A5%E5%A4%8D%E5%88%B6-AI-%E7%BB%93%E6%9E%9C"><span class="toc-number">42.1.</span> <span class="toc-text">38.1 直接复制 AI 结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-2-%E6%8F%90%E9%97%AE%E5%A4%AA%E7%AE%80%E5%8D%95"><span class="toc-number">42.2.</span> <span class="toc-text">38.2 提问太简单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-3-%E4%B8%8D%E5%91%8A%E8%AF%89-AI-%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F"><span class="toc-number">42.3.</span> <span class="toc-text">38.3 不告诉 AI 输出格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-4-%E8%AE%A9-AI-%E5%86%B3%E5%AE%9A%E6%9C%80%E7%BB%88%E9%A2%84%E6%9C%9F"><span class="toc-number">42.4.</span> <span class="toc-text">38.4 让 AI 决定最终预期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-5-%E5%8F%AA%E7%94%A8-AI-%E5%86%99%E6%96%87%E6%A1%A3%EF%BC%8C%E4%B8%8D%E7%94%A8-AI-%E5%A4%8D%E7%9B%98"><span class="toc-number">42.5.</span> <span class="toc-text">38.5 只用 AI 写文档，不用 AI 复盘</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#39-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">43.</span> <span class="toc-text">39. 最后总结</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

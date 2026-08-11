@@ -1,0 +1,1541 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - 自动化测试入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="海外社区论坛自动化测试入门：适合与不适合的场景、各模块实战、数据与断言及 CI 稳定性，附用例与失败问题提交示例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - 自动化测试入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-17-overseas-forum-automation-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="海外社区论坛自动化测试入门：适合与不适合的场景、各模块实战、数据与断言及 CI 稳定性，附用例与失败问题提交示例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-automation-guide.png">
+<meta property="article:published_time" content="2026-05-17T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-17T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="自动化测试">
+<meta property="article:tag" content="pytest">
+<meta property="article:tag" content="海外社区">
+<meta property="article:tag" content="接口自动化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-automation-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - 自动化测试入门",
+  "url": "https://linn0813.github.io/2026-05-17-overseas-forum-automation-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-automation-guide.png",
+  "datePublished": "2026-05-17T02:00:00.000Z",
+  "dateModified": "2026-05-17T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-17-overseas-forum-automation-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - 自动化测试入门',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-automation-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - 自动化测试入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - 自动化测试入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-17T02:00:00.000Z" title="发表于 2026-05-17 10:00:00">2026-05-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-17T02:00:00.000Z" title="更新于 2026-05-17 10:00:00">2026-05-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/">自动化测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>26分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>学习记录</strong>：把海外社区论坛场景下的<strong>自动化测试</strong>整理成一篇入门笔记，结合个人实践，并与 AI 一起补全结构，便于按模块与方法查阅。</p>
+<p>若你在测需要长期回归的社区类产品，希望这篇能当落地路线图用。</p>
+<blockquote>
+<p><strong>适合对象</strong>：准备从接口自动化起步、逐步搭建稳定回归的同学；文中不默认你已熟悉某一框架或 CI 流水线细节。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文按「基础概念 → 论坛自动化实战 → 专项方法 → 用例、脚本与总结」四块展开；配合页面 <strong>TOC</strong> 或下方折叠目录跳转。<strong>第 11～22 章</strong>对应登录、发帖、互动、Feed、搜索与通知私信等主链路，宜优先沉淀接口层断言与数据清理策略。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 38 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-auto-ch-01">为什么要学习自动化测试</a></li>
+<li><a href="#forum-auto-ch-02">什么是自动化测试</a></li>
+<li><a href="#forum-auto-ch-03">自动化测试和手工测试有什么区别</a></li>
+<li><a href="#forum-auto-ch-04">自动化测试适合测什么</a></li>
+<li><a href="#forum-auto-ch-05">自动化测试不适合测什么</a></li>
+<li><a href="#forum-auto-ch-06">接口自动化、UI 自动化、单元测试分别是什么</a></li>
+<li><a href="#forum-auto-ch-07">自动化测试的基本流程是什么</a></li>
+<li><a href="#forum-auto-ch-08">自动化测试需要准备什么</a></li>
+<li><a href="#forum-auto-ch-09">自动化测试常用工具有哪些</a></li>
+<li><a href="#forum-auto-ch-10">新手应该从哪里开始学自动化</a></li>
+<li><a href="#forum-auto-ch-11">社区论坛哪些场景适合自动化</a></li>
+<li><a href="#forum-auto-ch-12">注册登录自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-13">用户资料自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-14">发帖自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-15">评论与回复自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-16">点赞、收藏、关注自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-17">Feed 信息流自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-18">搜索自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-19">通知消息自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-20">私信自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-21">举报与审核自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-22">多语言和时区接口自动化怎么做</a></li>
+<li><a href="#forum-auto-ch-23">接口自动化怎么入门</a></li>
+<li><a href="#forum-auto-ch-24">UI 自动化怎么入门</a></li>
+<li><a href="#forum-auto-ch-25">自动化用例怎么设计</a></li>
+<li><a href="#forum-auto-ch-26">自动化断言怎么写</a></li>
+<li><a href="#forum-auto-ch-27">自动化测试数据怎么准备</a></li>
+<li><a href="#forum-auto-ch-28">环境变量和 Token 怎么管理</a></li>
+<li><a href="#forum-auto-ch-29">自动化测试报告怎么看</a></li>
+<li><a href="#forum-auto-ch-30">自动化脚本失败怎么定位</a></li>
+<li><a href="#forum-auto-ch-31">自动化测试如何接入 CI&#x2F;CD</a></li>
+<li><a href="#forum-auto-ch-32">自动化测试如何维护稳定性</a></li>
+<li><a href="#forum-auto-ch-33">自动化测试的风险和注意事项</a></li>
+<li><a href="#forum-auto-ch-34">自动化测试用例怎么写</a></li>
+<li><a href="#forum-auto-ch-35">自动化脚本设计思路</a></li>
+<li><a href="#forum-auto-ch-36">自动化失败问题怎么提交</a></li>
+<li><a href="#forum-auto-ch-37">新手常见误区</a></li>
+<li><a href="#forum-auto-ch-38">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<h2 id="第一部分：自动化测试基础概念"><a href="#第一部分：自动化测试基础概念" class="headerlink" title="第一部分：自动化测试基础概念"></a>第一部分：自动化测试基础概念</h2><blockquote>
+<p>如果你是自动化测试新手，建议先完整学习这一部分。</p>
+<p>如果你已经了解接口自动化和 UI 自动化，可以直接跳到 <strong>第二部分：海外社区论坛自动化测试实战</strong>。</p>
+</blockquote>
+<hr>
+<p><a id="forum-auto-ch-01"></a></p>
+<h2 id="1-为什么要学习自动化测试"><a href="#1-为什么要学习自动化测试" class="headerlink" title="1. 为什么要学习自动化测试"></a>1. 为什么要学习自动化测试</h2><p>前面你已经学习了很多测试内容：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">功能测试</span><br><span class="line">接口测试</span><br><span class="line">数据一致性测试</span><br><span class="line">权限测试</span><br><span class="line">风控审核测试</span><br><span class="line">国际化测试</span><br><span class="line">兼容性测试</span><br><span class="line">性能测试</span><br><span class="line">安全测试</span><br></pre></td></tr></table></figure>
+
+<p>这些内容里，有些需要人工判断，有些可以交给脚本重复执行。</p>
+<p>例如每次版本发布前，都要验证：</p>
+<ul>
+<li>用户能否登录</li>
+<li>用户能否发帖</li>
+<li>用户能否评论</li>
+<li>用户能否点赞</li>
+<li>未登录不能发帖</li>
+<li>普通用户不能删除别人帖子</li>
+<li>Feed 接口能正常返回</li>
+<li>搜索接口能正常返回</li>
+</ul>
+<p>这些场景稳定、重复、规则明确，就适合做自动化测试。</p>
+<hr>
+<h3 id="1-1-自动化测试能解决什么问题"><a href="#1-1-自动化测试能解决什么问题" class="headerlink" title="1.1 自动化测试能解决什么问题"></a>1.1 自动化测试能解决什么问题</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>自动化能带来的价值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每次版本都要重复回归</td>
+<td>脚本自动执行，减少重复劳动</td>
+</tr>
+<tr>
+<td>核心流程容易漏测</td>
+<td>自动化固定覆盖核心路径</td>
+</tr>
+<tr>
+<td>接口数量很多</td>
+<td>批量执行接口用例</td>
+</tr>
+<tr>
+<td>回归时间太长</td>
+<td>缩短回归周期</td>
+</tr>
+<tr>
+<td>改动频繁</td>
+<td>快速发现基础功能是否被影响</td>
+</tr>
+<tr>
+<td>线上前风险验证</td>
+<td>发布前快速跑冒烟测试</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="1-2-自动化测试不能解决所有问题"><a href="#1-2-自动化测试不能解决所有问题" class="headerlink" title="1.2 自动化测试不能解决所有问题"></a>1.2 自动化测试不能解决所有问题</h3><p>自动化不是万能的。</p>
+<p>它更适合验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">确定性的、重复的、稳定的、可断言的场景</span><br></pre></td></tr></table></figure>
+
+<p>不适合完全替代：</p>
+<ul>
+<li>新需求理解</li>
+<li>复杂体验判断</li>
+<li>UI 美观判断</li>
+<li>探索性测试</li>
+<li>一次性临时功能测试</li>
+<li>强依赖人工判断的内容审核结果</li>
+</ul>
+<p>所以自动化测试不是替代手工测试，而是帮助测试同学把重复工作沉淀下来。</p>
+<hr>
+<p><a id="forum-auto-ch-02"></a></p>
+<h2 id="2-什么是自动化测试"><a href="#2-什么是自动化测试" class="headerlink" title="2. 什么是自动化测试"></a>2. 什么是自动化测试</h2><p>自动化测试就是：</p>
+<blockquote>
+<p>使用工具或代码代替人工执行测试步骤，并自动判断测试结果是否符合预期。</p>
+</blockquote>
+<p>简单理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">手工测试：人一步一步操作和判断</span><br><span class="line">自动化测试：脚本一步一步操作和判断</span><br></pre></td></tr></table></figure>
+
+<p>例如接口自动化可以做到：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">调用登录接口</span><br><span class="line">  ↓</span><br><span class="line">保存 Token</span><br><span class="line">  ↓</span><br><span class="line">调用发帖接口</span><br><span class="line">  ↓</span><br><span class="line">断言返回成功</span><br><span class="line">  ↓</span><br><span class="line">调用详情接口</span><br><span class="line">  ↓</span><br><span class="line">断言帖子内容正确</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="2-1-自动化测试的核心"><a href="#2-1-自动化测试的核心" class="headerlink" title="2.1 自动化测试的核心"></a>2.1 自动化测试的核心</h3><p>自动化测试核心不是“会写代码”，而是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">知道哪些用例值得自动化</span><br><span class="line">知道如何准备数据</span><br><span class="line">知道如何执行步骤</span><br><span class="line">知道如何判断结果</span><br><span class="line">知道失败后如何定位</span><br><span class="line">知道如何长期维护</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-auto-ch-03"></a></p>
+<h2 id="3-自动化测试和手工测试有什么区别"><a href="#3-自动化测试和手工测试有什么区别" class="headerlink" title="3. 自动化测试和手工测试有什么区别"></a>3. 自动化测试和手工测试有什么区别</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>手工测试</th>
+<th>自动化测试</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>执行方式</td>
+<td>人操作</td>
+<td>脚本执行</td>
+</tr>
+<tr>
+<td>适合场景</td>
+<td>新功能、复杂判断、探索测试</td>
+<td>稳定流程、重复回归、接口验证</td>
+</tr>
+<tr>
+<td>成本特点</td>
+<td>初始成本低，重复成本高</td>
+<td>初始成本高，重复成本低</td>
+</tr>
+<tr>
+<td>结果判断</td>
+<td>人判断</td>
+<td>断言判断</td>
+</tr>
+<tr>
+<td>维护成本</td>
+<td>用例文档维护</td>
+<td>脚本、数据、环境维护</td>
+</tr>
+<tr>
+<td>常见风险</td>
+<td>漏测、效率低</td>
+<td>脚本不稳定、维护困难</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="3-1-举个例子：发帖功能"><a href="#3-1-举个例子：发帖功能" class="headerlink" title="3.1 举个例子：发帖功能"></a>3.1 举个例子：发帖功能</h3><p>手工测试：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">打开 App</span><br><span class="line">登录账号</span><br><span class="line">进入发帖页</span><br><span class="line">输入标题和正文</span><br><span class="line">点击发布</span><br><span class="line">查看帖子详情</span><br><span class="line">人工判断是否成功</span><br></pre></td></tr></table></figure>
+
+<p>接口自动化：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">调用登录接口</span><br><span class="line">调用创建帖子接口</span><br><span class="line">断言 code=0</span><br><span class="line">断言返回 postId</span><br><span class="line">调用帖子详情接口</span><br><span class="line">断言标题和正文正确</span><br></pre></td></tr></table></figure>
+
+<p>UI 自动化：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">启动 App 或浏览器</span><br><span class="line">自动输入账号密码</span><br><span class="line">自动点击发帖按钮</span><br><span class="line">自动输入标题正文</span><br><span class="line">自动点击发布</span><br><span class="line">自动检查页面是否出现帖子标题</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-auto-ch-04"></a></p>
+<h2 id="4-自动化测试适合测什么"><a href="#4-自动化测试适合测什么" class="headerlink" title="4. 自动化测试适合测什么"></a>4. 自动化测试适合测什么</h2><p>适合自动化的场景通常有这些特点：</p>
+<ul>
+<li>流程稳定</li>
+<li>结果明确</li>
+<li>经常回归</li>
+<li>不需要复杂人工判断</li>
+<li>数据可准备</li>
+<li>环境可控</li>
+<li>执行成本高但重复频率高</li>
+</ul>
+<hr>
+<h3 id="4-1-社区论坛适合自动化的场景"><a href="#4-1-社区论坛适合自动化的场景" class="headerlink" title="4.1 社区论坛适合自动化的场景"></a>4.1 社区论坛适合自动化的场景</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>是否适合</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登录接口</td>
+<td>适合</td>
+<td>稳定、基础、经常回归</td>
+</tr>
+<tr>
+<td>发帖接口</td>
+<td>适合</td>
+<td>核心流程，结果可断言</td>
+</tr>
+<tr>
+<td>评论接口</td>
+<td>适合</td>
+<td>高频核心功能</td>
+</tr>
+<tr>
+<td>点赞接口</td>
+<td>适合</td>
+<td>幂等和状态可验证</td>
+</tr>
+<tr>
+<td>Feed 接口</td>
+<td>适合</td>
+<td>核心接口，回归价值高</td>
+</tr>
+<tr>
+<td>搜索接口</td>
+<td>适合</td>
+<td>可验证返回结构和基础结果</td>
+</tr>
+<tr>
+<td>权限接口</td>
+<td>适合</td>
+<td>越权结果明确</td>
+</tr>
+<tr>
+<td>图片上传</td>
+<td>部分适合</td>
+<td>接口可测，UI 上传稳定性稍差</td>
+</tr>
+<tr>
+<td>复杂 UI 动画</td>
+<td>不太适合</td>
+<td>结果难断言，脚本易不稳定</td>
+</tr>
+<tr>
+<td>内容审核准确性</td>
+<td>部分适合</td>
+<td>流程可测，判断质量需人工或固定样本</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-auto-ch-05"></a></p>
+<h2 id="5-自动化测试不适合测什么"><a href="#5-自动化测试不适合测什么" class="headerlink" title="5. 自动化测试不适合测什么"></a>5. 自动化测试不适合测什么</h2><p>以下场景不建议一开始就自动化：</p>
+<ul>
+<li>需求还不稳定的功能</li>
+<li>页面经常改版的功能</li>
+<li>需要人工判断美观的 UI</li>
+<li>只测试一次的临时功能</li>
+<li>第三方授权非常不稳定的 UI 链路</li>
+<li>复杂图片&#x2F;视频内容人工判断</li>
+<li>强依赖短信、邮箱、真实第三方环境的流程</li>
+</ul>
+<hr>
+<h3 id="5-1-新手容易误解的点"><a href="#5-1-新手容易误解的点" class="headerlink" title="5.1 新手容易误解的点"></a>5.1 新手容易误解的点</h3><p>不是所有手工用例都要变成自动化用例。</p>
+<p>自动化用例应该优先选择：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">核心流程 + 高频回归 + 稳定接口 + 明确断言</span><br></pre></td></tr></table></figure>
+
+<p>不要一开始就追求覆盖所有页面，否则脚本会非常难维护。</p>
+<hr>
+<p><a id="forum-auto-ch-06"></a></p>
+<h2 id="6-接口自动化、UI-自动化、单元测试分别是什么"><a href="#6-接口自动化、UI-自动化、单元测试分别是什么" class="headerlink" title="6. 接口自动化、UI 自动化、单元测试分别是什么"></a>6. 接口自动化、UI 自动化、单元测试分别是什么</h2><hr>
+<h3 id="6-1-接口自动化"><a href="#6-1-接口自动化" class="headerlink" title="6.1 接口自动化"></a>6.1 接口自动化</h3><p>接口自动化是直接调用接口并判断返回结果。</p>
+<p>适合：</p>
+<ul>
+<li>登录</li>
+<li>发帖</li>
+<li>评论</li>
+<li>点赞</li>
+<li>权限校验</li>
+<li>参数校验</li>
+<li>分页</li>
+<li>数据一致性基础检查</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>稳定性高</li>
+<li>执行快</li>
+<li>维护成本相对低</li>
+<li>不依赖页面</li>
+</ul>
+<p>建议新手优先从接口自动化开始。</p>
+<hr>
+<h3 id="6-2-UI-自动化"><a href="#6-2-UI-自动化" class="headerlink" title="6.2 UI 自动化"></a>6.2 UI 自动化</h3><p>UI 自动化是模拟用户在页面或 App 上操作。</p>
+<p>适合：</p>
+<ul>
+<li>冒烟测试</li>
+<li>核心主流程</li>
+<li>登录发帖等关键路径</li>
+<li>Web 后台简单回归</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>脚本容易受页面变化影响</li>
+<li>执行较慢</li>
+<li>定位问题比接口自动化复杂</li>
+</ul>
+<hr>
+<h3 id="6-3-单元测试"><a href="#6-3-单元测试" class="headerlink" title="6.3 单元测试"></a>6.3 单元测试</h3><p>单元测试一般由开发同学编写，用于测试某个函数或方法是否正确。</p>
+<p>测试同学可以了解，但不一定作为第一阶段重点。</p>
+<hr>
+<p><a id="forum-auto-ch-07"></a></p>
+<h2 id="7-自动化测试的基本流程是什么"><a href="#7-自动化测试的基本流程是什么" class="headerlink" title="7. 自动化测试的基本流程是什么"></a>7. 自动化测试的基本流程是什么</h2><p>自动化测试通常包括这些步骤：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">选择自动化场景</span><br><span class="line">  ↓</span><br><span class="line">设计自动化用例</span><br><span class="line">  ↓</span><br><span class="line">准备测试数据</span><br><span class="line">  ↓</span><br><span class="line">编写脚本</span><br><span class="line">  ↓</span><br><span class="line">执行脚本</span><br><span class="line">  ↓</span><br><span class="line">生成测试报告</span><br><span class="line">  ↓</span><br><span class="line">分析失败原因</span><br><span class="line">  ↓</span><br><span class="line">维护脚本</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="7-1-自动化不是写完就结束"><a href="#7-1-自动化不是写完就结束" class="headerlink" title="7.1 自动化不是写完就结束"></a>7.1 自动化不是写完就结束</h3><p>自动化脚本需要长期维护。</p>
+<p>例如：</p>
+<ul>
+<li>接口字段变了，要更新脚本</li>
+<li>页面元素变了，要更新定位</li>
+<li>测试账号失效，要更新数据</li>
+<li>环境地址变了，要更新配置</li>
+<li>业务规则变了，要更新断言</li>
+</ul>
+<p>所以自动化测试不是一次性工作，而是一套持续维护的资产。</p>
+<hr>
+<p><a id="forum-auto-ch-08"></a></p>
+<h2 id="8-自动化测试需要准备什么"><a href="#8-自动化测试需要准备什么" class="headerlink" title="8. 自动化测试需要准备什么"></a>8. 自动化测试需要准备什么</h2><hr>
+<h3 id="8-1-准备接口文档和稳定环境"><a href="#8-1-准备接口文档和稳定环境" class="headerlink" title="8.1 准备接口文档和稳定环境"></a>8.1 准备接口文档和稳定环境</h3><p>需要：</p>
+<ul>
+<li>测试环境地址</li>
+<li>接口文档</li>
+<li>测试账号</li>
+<li>管理员账号，按需求</li>
+<li>测试数据</li>
+<li>是否有验证码绕过方案</li>
+<li>是否有稳定的测试 Token 获取方式</li>
+<li>是否有测试数据库或清理数据方式</li>
+</ul>
+<hr>
+<h3 id="8-2-准备工具和语言"><a href="#8-2-准备工具和语言" class="headerlink" title="8.2 准备工具和语言"></a>8.2 准备工具和语言</h3><p>常见选择：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>工具</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>接口调试</td>
+<td>Postman、Apifox</td>
+</tr>
+<tr>
+<td>接口自动化</td>
+<td>Postman Runner、Apifox 自动化、pytest、requests、JMeter、k6</td>
+</tr>
+<tr>
+<td>Web UI 自动化</td>
+<td>Selenium、Playwright、Cypress</td>
+</tr>
+<tr>
+<td>App UI 自动化</td>
+<td>Appium、Airtest</td>
+</tr>
+<tr>
+<td>测试报告</td>
+<td>Allure、HTML Report、平台自带报告</td>
+</tr>
+<tr>
+<td>CI&#x2F;CD</td>
+<td>Jenkins、GitHub Actions、GitLab CI</td>
+</tr>
+</tbody></table>
+<p>新手建议路线：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Apifox/Postman 调试接口</span><br><span class="line">  ↓</span><br><span class="line">Apifox/Postman 简单自动化</span><br><span class="line">  ↓</span><br><span class="line">Python + pytest + requests</span><br><span class="line">  ↓</span><br><span class="line">接入 Jenkins 或 CI</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-auto-ch-09"></a></p>
+<h2 id="9-自动化测试常用工具有哪些"><a href="#9-自动化测试常用工具有哪些" class="headerlink" title="9. 自动化测试常用工具有哪些"></a>9. 自动化测试常用工具有哪些</h2><h3 id="9-1-Postman-Apifox"><a href="#9-1-Postman-Apifox" class="headerlink" title="9.1 Postman &#x2F; Apifox"></a>9.1 Postman &#x2F; Apifox</h3><p>适合新手入门接口自动化。</p>
+<p>能做：</p>
+<ul>
+<li>保存接口集合</li>
+<li>设置环境变量</li>
+<li>设置前置脚本和后置断言</li>
+<li>批量运行接口</li>
+<li>生成简单报告</li>
+</ul>
+<hr>
+<h3 id="9-2-Python-pytest-requests"><a href="#9-2-Python-pytest-requests" class="headerlink" title="9.2 Python + pytest + requests"></a>9.2 Python + pytest + requests</h3><p>适合进一步系统化接口自动化。</p>
+<p>优点：</p>
+<ul>
+<li>灵活</li>
+<li>易扩展</li>
+<li>适合数据驱动</li>
+<li>适合接入 CI</li>
+<li>适合生成报告</li>
+</ul>
+<hr>
+<h3 id="9-3-Playwright-Selenium"><a href="#9-3-Playwright-Selenium" class="headerlink" title="9.3 Playwright &#x2F; Selenium"></a>9.3 Playwright &#x2F; Selenium</h3><p>适合 Web UI 自动化。</p>
+<p>例如：</p>
+<ul>
+<li>Web 登录</li>
+<li>Web 发帖</li>
+<li>后台审核</li>
+<li>后台列表查询</li>
+</ul>
+<hr>
+<h3 id="9-4-Appium-Airtest"><a href="#9-4-Appium-Airtest" class="headerlink" title="9.4 Appium &#x2F; Airtest"></a>9.4 Appium &#x2F; Airtest</h3><p>适合 App UI 自动化。</p>
+<p>例如：</p>
+<ul>
+<li>App 登录</li>
+<li>App 发帖</li>
+<li>App 评论</li>
+<li>App 私信</li>
+</ul>
+<p>但 App UI 自动化维护成本较高，新手不建议一开始就大规模做。</p>
+<hr>
+<p><a id="forum-auto-ch-10"></a></p>
+<h2 id="10-新手应该从哪里开始学自动化"><a href="#10-新手应该从哪里开始学自动化" class="headerlink" title="10. 新手应该从哪里开始学自动化"></a>10. 新手应该从哪里开始学自动化</h2><p>建议从接口自动化开始。</p>
+<p>原因：</p>
+<ul>
+<li>你已经学过接口测试</li>
+<li>接口结果更容易断言</li>
+<li>接口脚本比 UI 脚本稳定</li>
+<li>执行速度快</li>
+<li>更适合回归测试</li>
+</ul>
+<p>推荐学习路径：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 熟练用 Apifox/Postman 调接口</span><br><span class="line">2. 学会设置环境变量</span><br><span class="line">3. 学会保存 Token</span><br><span class="line">4. 学会写简单断言</span><br><span class="line">5. 学会批量运行接口集合</span><br><span class="line">6. 学会用 Python requests 调接口</span><br><span class="line">7. 学会 pytest 组织用例</span><br><span class="line">8. 学会生成报告</span><br><span class="line">9. 学会接入 CI</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第二部分：海外社区论坛自动化测试实战"><a href="#第二部分：海外社区论坛自动化测试实战" class="headerlink" title="第二部分：海外社区论坛自动化测试实战"></a>第二部分：海外社区论坛自动化测试实战</h2><blockquote>
+<p>这一部分开始进入项目实战。</p>
+<p>社区论坛自动化不要一开始追求“大而全”，建议先覆盖核心稳定流程，再逐步扩展。</p>
+</blockquote>
+<hr>
+<p><a id="forum-auto-ch-11"></a></p>
+<h2 id="11-社区论坛哪些场景适合自动化"><a href="#11-社区论坛哪些场景适合自动化" class="headerlink" title="11. 社区论坛哪些场景适合自动化"></a>11. 社区论坛哪些场景适合自动化</h2><p>优先自动化这些场景：</p>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>场景</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P0</td>
+<td>登录、刷新 Token、退出登录</td>
+<td>所有功能基础</td>
+</tr>
+<tr>
+<td>P0</td>
+<td>发帖、帖子详情查询</td>
+<td>社区核心链路</td>
+</tr>
+<tr>
+<td>P0</td>
+<td>评论、回复</td>
+<td>高频互动</td>
+</tr>
+<tr>
+<td>P0</td>
+<td>点赞、取消点赞</td>
+<td>高频且易回归</td>
+</tr>
+<tr>
+<td>P0</td>
+<td>权限越权接口</td>
+<td>风险高，结果明确</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Feed 列表</td>
+<td>核心浏览入口</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>搜索</td>
+<td>高频入口</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>通知未读数</td>
+<td>易出现数据问题</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>关注、收藏</td>
+<td>高频互动</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>私信</td>
+<td>受环境和实时链路影响，逐步覆盖</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>举报审核</td>
+<td>流程长，但回归价值高</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-auto-ch-12"></a></p>
+<h2 id="12-注册登录自动化怎么做"><a href="#12-注册登录自动化怎么做" class="headerlink" title="12. 注册登录自动化怎么做"></a>12. 注册登录自动化怎么做</h2><p>注册登录自动化要谨慎，因为它经常涉及验证码、邮箱、短信、第三方授权。</p>
+<hr>
+<h3 id="12-1-登录接口自动化"><a href="#12-1-登录接口自动化" class="headerlink" title="12.1 登录接口自动化"></a>12.1 登录接口自动化</h3><p>适合优先做。</p>
+<p>流程：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">调用登录接口</span><br><span class="line">  ↓</span><br><span class="line">断言登录成功</span><br><span class="line">  ↓</span><br><span class="line">保存 accessToken</span><br><span class="line">  ↓</span><br><span class="line">调用用户信息接口</span><br><span class="line">  ↓</span><br><span class="line">断言当前用户信息正确</span><br></pre></td></tr></table></figure>
+
+<p>断言点：</p>
+<ul>
+<li>HTTP 状态码正确</li>
+<li>业务 code 成功</li>
+<li>返回 Token 不为空</li>
+<li>返回 userId 正确</li>
+<li>使用 Token 能访问登录态接口</li>
+</ul>
+<hr>
+<h3 id="12-2-注册自动化"><a href="#12-2-注册自动化" class="headerlink" title="12.2 注册自动化"></a>12.2 注册自动化</h3><p>注册自动化要考虑测试数据清理。</p>
+<p>适合场景：</p>
+<ul>
+<li>邮箱格式校验</li>
+<li>密码规则校验</li>
+<li>重复注册校验</li>
+<li>验证码错误校验</li>
+</ul>
+<p>不建议频繁自动创建大量真实账号，除非有清理机制。</p>
+<hr>
+<h3 id="12-3-第三方登录自动化"><a href="#12-3-第三方登录自动化" class="headerlink" title="12.3 第三方登录自动化"></a>12.3 第三方登录自动化</h3><p>第三方登录 UI 自动化通常不稳定。</p>
+<p>建议优先自动化后端接口层：</p>
+<ul>
+<li>授权 code 为空失败</li>
+<li>授权 code 错误失败</li>
+<li>已绑定账号登录成功，使用模拟或测试桩，按项目条件</li>
+</ul>
+<p>真实 Google &#x2F; Apple 授权流程不建议作为高频自动化回归主链路。</p>
+<hr>
+<p><a id="forum-auto-ch-13"></a></p>
+<h2 id="13-用户资料自动化怎么做"><a href="#13-用户资料自动化怎么做" class="headerlink" title="13. 用户资料自动化怎么做"></a>13. 用户资料自动化怎么做</h2><p>用户资料接口适合自动化。</p>
+<hr>
+<h3 id="13-1-修改资料自动化流程"><a href="#13-1-修改资料自动化流程" class="headerlink" title="13.1 修改资料自动化流程"></a>13.1 修改资料自动化流程</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录用户A</span><br><span class="line">  ↓</span><br><span class="line">修改昵称和简介</span><br><span class="line">  ↓</span><br><span class="line">查询用户A资料</span><br><span class="line">  ↓</span><br><span class="line">断言昵称和简介已更新</span><br><span class="line">  ↓</span><br><span class="line">恢复测试数据</span><br></pre></td></tr></table></figure>
+
+<p>断言点：</p>
+<ul>
+<li>修改接口返回成功</li>
+<li>查询接口返回新昵称</li>
+<li>用户B不能修改用户A资料</li>
+<li>超长昵称修改失败</li>
+<li>特殊字符昵称按规则处理</li>
+</ul>
+<hr>
+<h3 id="13-2-注意事项"><a href="#13-2-注意事项" class="headerlink" title="13.2 注意事项"></a>13.2 注意事项</h3><p>自动化修改资料后，最好恢复原数据，避免影响其他用例。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">测试前记录原昵称</span><br><span class="line">测试中修改昵称</span><br><span class="line">测试后恢复原昵称</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-auto-ch-14"></a></p>
+<h2 id="14-发帖自动化怎么做"><a href="#14-发帖自动化怎么做" class="headerlink" title="14. 发帖自动化怎么做"></a>14. 发帖自动化怎么做</h2><p>发帖是最适合接口自动化的核心链路之一。</p>
+<hr>
+<h3 id="14-1-发帖成功链路"><a href="#14-1-发帖成功链路" class="headerlink" title="14.1 发帖成功链路"></a>14.1 发帖成功链路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录用户A</span><br><span class="line">  ↓</span><br><span class="line">调用创建帖子接口</span><br><span class="line">  ↓</span><br><span class="line">断言返回 postId</span><br><span class="line">  ↓</span><br><span class="line">调用帖子详情接口</span><br><span class="line">  ↓</span><br><span class="line">断言标题、正文、作者正确</span><br><span class="line">  ↓</span><br><span class="line">删除测试帖子或标记清理</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="14-2-发帖异常自动化"><a href="#14-2-发帖异常自动化" class="headerlink" title="14.2 发帖异常自动化"></a>14.2 发帖异常自动化</h3><p>适合自动化的异常场景：</p>
+<ul>
+<li>title 为空失败</li>
+<li>title 超长失败</li>
+<li>topicId 不存在失败</li>
+<li>未登录发帖失败</li>
+<li>被禁言用户发帖失败</li>
+<li>用户B不能编辑用户A帖子</li>
+<li>重复提交按规则处理</li>
+</ul>
+<hr>
+<h3 id="14-3-测试数据清理"><a href="#14-3-测试数据清理" class="headerlink" title="14.3 测试数据清理"></a>14.3 测试数据清理</h3><p>自动化发帖会产生测试数据。</p>
+<p>需要考虑：</p>
+<ul>
+<li>用例结束后删除帖子</li>
+<li>使用测试专用板块</li>
+<li>标题加自动化标识，例如 <code>AUTO_TEST_POST_时间戳</code></li>
+<li>定期清理自动化数据</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-15"></a></p>
+<h2 id="15-评论与回复自动化怎么做"><a href="#15-评论与回复自动化怎么做" class="headerlink" title="15. 评论与回复自动化怎么做"></a>15. 评论与回复自动化怎么做</h2><p>评论自动化要依赖已有帖子。</p>
+<hr>
+<h3 id="15-1-评论成功链路"><a href="#15-1-评论成功链路" class="headerlink" title="15.1 评论成功链路"></a>15.1 评论成功链路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录用户A创建帖子</span><br><span class="line">  ↓</span><br><span class="line">登录用户B发表评论</span><br><span class="line">  ↓</span><br><span class="line">查询评论列表</span><br><span class="line">  ↓</span><br><span class="line">断言评论内容存在</span><br><span class="line">  ↓</span><br><span class="line">查询帖子详情</span><br><span class="line">  ↓</span><br><span class="line">断言评论数增加</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="15-2-回复成功链路"><a href="#15-2-回复成功链路" class="headerlink" title="15.2 回复成功链路"></a>15.2 回复成功链路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户B评论帖子</span><br><span class="line">  ↓</span><br><span class="line">用户C回复用户B评论</span><br><span class="line">  ↓</span><br><span class="line">查询回复列表</span><br><span class="line">  ↓</span><br><span class="line">断言 parentId、replyToUserId 正确</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="15-3-异常场景"><a href="#15-3-异常场景" class="headerlink" title="15.3 异常场景"></a>15.3 异常场景</h3><ul>
+<li>空评论失败</li>
+<li>超长评论失败</li>
+<li>未登录评论失败</li>
+<li>被禁言用户评论失败</li>
+<li>评论已删除帖子失败</li>
+<li>用户A不能删除用户B评论，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-16"></a></p>
+<h2 id="16-点赞、收藏、关注自动化怎么做"><a href="#16-点赞、收藏、关注自动化怎么做" class="headerlink" title="16. 点赞、收藏、关注自动化怎么做"></a>16. 点赞、收藏、关注自动化怎么做</h2><p>这些接口非常适合自动化，因为结果明确。</p>
+<hr>
+<h3 id="16-1-点赞自动化"><a href="#16-1-点赞自动化" class="headerlink" title="16.1 点赞自动化"></a>16.1 点赞自动化</h3><p>流程：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">准备帖子 P001</span><br><span class="line">  ↓</span><br><span class="line">用户A点赞 P001</span><br><span class="line">  ↓</span><br><span class="line">查询帖子详情</span><br><span class="line">  ↓</span><br><span class="line">断言 likeStatus=true</span><br><span class="line">  ↓</span><br><span class="line">断言 likeCount 增加</span><br><span class="line">  ↓</span><br><span class="line">用户A取消点赞</span><br><span class="line">  ↓</span><br><span class="line">断言 likeStatus=false</span><br></pre></td></tr></table></figure>
+
+<p>重点断言：</p>
+<ul>
+<li>重复点赞不重复加数</li>
+<li>重复取消不出现负数</li>
+<li>未登录点赞失败</li>
+<li>已删除帖子点赞失败</li>
+</ul>
+<hr>
+<h3 id="16-2-收藏自动化"><a href="#16-2-收藏自动化" class="headerlink" title="16.2 收藏自动化"></a>16.2 收藏自动化</h3><p>断言点：</p>
+<ul>
+<li>收藏成功</li>
+<li>收藏列表包含该帖子</li>
+<li>取消收藏成功</li>
+<li>收藏列表不再包含该帖子</li>
+<li>重复收藏不重复生成记录</li>
+</ul>
+<hr>
+<h3 id="16-3-关注自动化"><a href="#16-3-关注自动化" class="headerlink" title="16.3 关注自动化"></a>16.3 关注自动化</h3><p>断言点：</p>
+<ul>
+<li>用户A关注用户B成功</li>
+<li>用户A关注列表包含用户B</li>
+<li>用户B粉丝列表包含用户A</li>
+<li>不能关注自己</li>
+<li>重复关注不重复增加数量</li>
+<li>取消关注后列表更新</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-17"></a></p>
+<h2 id="17-Feed-信息流自动化怎么做"><a href="#17-Feed-信息流自动化怎么做" class="headerlink" title="17. Feed 信息流自动化怎么做"></a>17. Feed 信息流自动化怎么做</h2><p>Feed 自动化要注意：推荐流结果可能不稳定。</p>
+<hr>
+<h3 id="17-1-适合自动化的断言"><a href="#17-1-适合自动化的断言" class="headerlink" title="17.1 适合自动化的断言"></a>17.1 适合自动化的断言</h3><p>Feed 不适合强断言“某条帖子一定排第一”，除非是测试环境固定数据。</p>
+<p>适合断言：</p>
+<ul>
+<li>接口返回成功</li>
+<li>list 是数组</li>
+<li>字段完整</li>
+<li>pageSize 生效</li>
+<li>nextCursor 存在或为空符合规则</li>
+<li>不返回已删除帖子</li>
+<li>不返回审核失败帖子</li>
+<li>分页之间无重复，按测试数据判断</li>
+</ul>
+<hr>
+<h3 id="17-2-推荐流注意事项"><a href="#17-2-推荐流注意事项" class="headerlink" title="17.2 推荐流注意事项"></a>17.2 推荐流注意事项</h3><p>推荐流可能受算法影响，不稳定。</p>
+<p>自动化中不要过度依赖推荐排序。</p>
+<p>更适合测试：</p>
+<ul>
+<li>最新流</li>
+<li>关注流</li>
+<li>指定板块流</li>
+<li>测试专用数据流</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-18"></a></p>
+<h2 id="18-搜索自动化怎么做"><a href="#18-搜索自动化怎么做" class="headerlink" title="18. 搜索自动化怎么做"></a>18. 搜索自动化怎么做</h2><p>搜索自动化适合使用唯一关键词。</p>
+<hr>
+<h3 id="18-1-搜索成功链路"><a href="#18-1-搜索成功链路" class="headerlink" title="18.1 搜索成功链路"></a>18.1 搜索成功链路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">创建标题唯一的帖子：AUTO_SEARCH_时间戳</span><br><span class="line">  ↓</span><br><span class="line">等待搜索索引同步，按需求</span><br><span class="line">  ↓</span><br><span class="line">调用搜索接口</span><br><span class="line">  ↓</span><br><span class="line">断言结果中包含该帖子</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="18-2-搜索异常场景"><a href="#18-2-搜索异常场景" class="headerlink" title="18.2 搜索异常场景"></a>18.2 搜索异常场景</h3><ul>
+<li>keyword 为空</li>
+<li>keyword 为空格</li>
+<li>keyword 超长</li>
+<li>特殊字符搜索</li>
+<li>无结果搜索</li>
+<li>分页查询</li>
+<li>多语言关键词搜索</li>
+</ul>
+<hr>
+<h3 id="18-3-注意事项"><a href="#18-3-注意事项" class="headerlink" title="18.3 注意事项"></a>18.3 注意事项</h3><p>搜索可能有索引延迟。</p>
+<p>自动化中要避免立即强断言，可以：</p>
+<ul>
+<li>等待固定短时间</li>
+<li>重试几次</li>
+<li>查询接口确认索引状态，按项目能力</li>
+<li>使用已有稳定搜索数据</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-19"></a></p>
+<h2 id="19-通知消息自动化怎么做"><a href="#19-通知消息自动化怎么做" class="headerlink" title="19. 通知消息自动化怎么做"></a>19. 通知消息自动化怎么做</h2><p>通知自动化要关注异步延迟。</p>
+<hr>
+<h3 id="19-1-评论通知自动化流程"><a href="#19-1-评论通知自动化流程" class="headerlink" title="19.1 评论通知自动化流程"></a>19.1 评论通知自动化流程</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A创建帖子</span><br><span class="line">  ↓</span><br><span class="line">用户B评论帖子</span><br><span class="line">  ↓</span><br><span class="line">用户A查询通知列表</span><br><span class="line">  ↓</span><br><span class="line">断言存在评论通知</span><br><span class="line">  ↓</span><br><span class="line">标记通知已读</span><br><span class="line">  ↓</span><br><span class="line">断言未读数减少</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="19-2-注意事项"><a href="#19-2-注意事项" class="headerlink" title="19.2 注意事项"></a>19.2 注意事项</h3><p>通知可能异步生成。</p>
+<p>自动化中可以设置：</p>
+<ul>
+<li>等待重试</li>
+<li>最大等待时间</li>
+<li>超时后失败</li>
+</ul>
+<p>不要只立即查一次就判断失败。</p>
+<hr>
+<p><a id="forum-auto-ch-20"></a></p>
+<h2 id="20-私信自动化怎么做"><a href="#20-私信自动化怎么做" class="headerlink" title="20. 私信自动化怎么做"></a>20. 私信自动化怎么做</h2><p>私信自动化可以先从接口层做。</p>
+<hr>
+<h3 id="20-1-发送消息链路"><a href="#20-1-发送消息链路" class="headerlink" title="20.1 发送消息链路"></a>20.1 发送消息链路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A发送消息给用户B</span><br><span class="line">  ↓</span><br><span class="line">用户B查询会话列表</span><br><span class="line">  ↓</span><br><span class="line">断言最近消息正确</span><br><span class="line">  ↓</span><br><span class="line">用户B查询消息列表</span><br><span class="line">  ↓</span><br><span class="line">断言消息内容正确</span><br><span class="line">  ↓</span><br><span class="line">用户B标记已读</span><br><span class="line">  ↓</span><br><span class="line">断言未读数变化</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="20-2-实时消息自动化"><a href="#20-2-实时消息自动化" class="headerlink" title="20.2 实时消息自动化"></a>20.2 实时消息自动化</h3><p>WebSocket 或实时消息自动化更复杂，可以作为后续提升。</p>
+<p>新手阶段先覆盖：</p>
+<ul>
+<li>发送接口</li>
+<li>会话列表接口</li>
+<li>消息列表接口</li>
+<li>未读状态接口</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-21"></a></p>
+<h2 id="21-举报与审核自动化怎么做"><a href="#21-举报与审核自动化怎么做" class="headerlink" title="21. 举报与审核自动化怎么做"></a>21. 举报与审核自动化怎么做</h2><p>举报审核流程较长，但核心链路适合自动化。</p>
+<hr>
+<h3 id="21-1-举报自动化流程"><a href="#21-1-举报自动化流程" class="headerlink" title="21.1 举报自动化流程"></a>21.1 举报自动化流程</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A创建帖子</span><br><span class="line">  ↓</span><br><span class="line">用户B举报该帖子</span><br><span class="line">  ↓</span><br><span class="line">查询后台举报列表</span><br><span class="line">  ↓</span><br><span class="line">断言生成举报记录</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="21-2-审核自动化流程"><a href="#21-2-审核自动化流程" class="headerlink" title="21.2 审核自动化流程"></a>21.2 审核自动化流程</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A发布待审核内容</span><br><span class="line">  ↓</span><br><span class="line">管理员查询待审核列表</span><br><span class="line">  ↓</span><br><span class="line">管理员审核通过或拒绝</span><br><span class="line">  ↓</span><br><span class="line">用户侧查询内容状态</span><br><span class="line">  ↓</span><br><span class="line">断言前台展示符合审核结果</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="21-3-注意事项"><a href="#21-3-注意事项" class="headerlink" title="21.3 注意事项"></a>21.3 注意事项</h3><p>审核自动化要注意不要影响真实审核数据。</p>
+<p>建议：</p>
+<ul>
+<li>使用测试专用板块</li>
+<li>使用测试专用风险词</li>
+<li>使用测试审核员账号</li>
+<li>自动化数据加明显标识</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-22"></a></p>
+<h2 id="22-多语言和时区接口自动化怎么做"><a href="#22-多语言和时区接口自动化怎么做" class="headerlink" title="22. 多语言和时区接口自动化怎么做"></a>22. 多语言和时区接口自动化怎么做</h2><p>海外项目可以把多语言和时区能力沉淀成接口自动化。</p>
+<hr>
+<h3 id="22-1-多语言-Header-自动化"><a href="#22-1-多语言-Header-自动化" class="headerlink" title="22.1 多语言 Header 自动化"></a>22.1 多语言 Header 自动化</h3><p>测试：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>en-US</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>ja-JP</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>ar-SA</span><br></pre></td></tr></table></figure>
+
+<p>断言：</p>
+<ul>
+<li>接口返回语言符合预期</li>
+<li>不支持语言使用默认语言</li>
+<li>错误提示语言正确</li>
+<li>枚举值不因语言变化而错乱</li>
+</ul>
+<hr>
+<h3 id="22-2-时区-Header-自动化"><a href="#22-2-时区-Header-自动化" class="headerlink" title="22.2 时区 Header 自动化"></a>22.2 时区 Header 自动化</h3><p>测试：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">X-Timezone</span><span class="punctuation">: </span>Asia/Singapore</span><br><span class="line"><span class="attribute">X-Timezone</span><span class="punctuation">: </span>America/New_York</span><br><span class="line"><span class="attribute">X-Timezone</span><span class="punctuation">: </span>Europe/London</span><br></pre></td></tr></table></figure>
+
+<p>断言：</p>
+<ul>
+<li>时间字段格式正确</li>
+<li>不同时区展示符合产品规则</li>
+<li>错误时区有兜底</li>
+<li>活动开始&#x2F;结束时间转换正确</li>
+</ul>
+<hr>
+<h2 id="第三部分：自动化测试专项方法"><a href="#第三部分：自动化测试专项方法" class="headerlink" title="第三部分：自动化测试专项方法"></a>第三部分：自动化测试专项方法</h2><blockquote>
+<p>这一部分不是某个具体模块，而是一套可以复用的方法。</p>
+<p>自动化测试的关键不是写很多脚本，而是写出稳定、可维护、能持续产生价值的脚本。</p>
+</blockquote>
+<hr>
+<p><a id="forum-auto-ch-23"></a></p>
+<h2 id="23-接口自动化怎么入门"><a href="#23-接口自动化怎么入门" class="headerlink" title="23. 接口自动化怎么入门"></a>23. 接口自动化怎么入门</h2><p>接口自动化建议从简单链路开始。</p>
+<hr>
+<h3 id="23-1-第一个接口自动化场景"><a href="#23-1-第一个接口自动化场景" class="headerlink" title="23.1 第一个接口自动化场景"></a>23.1 第一个接口自动化场景</h3><p>推荐从登录接口开始：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 调用登录接口</span><br><span class="line">2. 断言返回成功</span><br><span class="line">3. 提取 Token</span><br><span class="line">4. 调用用户信息接口</span><br><span class="line">5. 断言用户信息正确</span><br></pre></td></tr></table></figure>
+
+<p>这是后续所有接口自动化的基础。</p>
+<hr>
+<h3 id="23-2-接口自动化基本结构"><a href="#23-2-接口自动化基本结构" class="headerlink" title="23.2 接口自动化基本结构"></a>23.2 接口自动化基本结构</h3><p>一个接口自动化用例通常包括：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">前置条件</span><br><span class="line">请求地址</span><br><span class="line">请求方法</span><br><span class="line">请求头</span><br><span class="line">请求参数</span><br><span class="line">执行请求</span><br><span class="line">响应断言</span><br><span class="line">数据清理</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-auto-ch-24"></a></p>
+<h2 id="24-UI-自动化怎么入门"><a href="#24-UI-自动化怎么入门" class="headerlink" title="24. UI 自动化怎么入门"></a>24. UI 自动化怎么入门</h2><p>UI 自动化适合做少量核心冒烟，不建议新手一开始大规模做。</p>
+<hr>
+<h3 id="24-1-Web-UI-自动化适合场景"><a href="#24-1-Web-UI-自动化适合场景" class="headerlink" title="24.1 Web UI 自动化适合场景"></a>24.1 Web UI 自动化适合场景</h3><ul>
+<li>登录成功</li>
+<li>发帖成功</li>
+<li>搜索成功</li>
+<li>后台审核通过</li>
+<li>后台筛选查询</li>
+</ul>
+<hr>
+<h3 id="24-2-App-UI-自动化适合场景"><a href="#24-2-App-UI-自动化适合场景" class="headerlink" title="24.2 App UI 自动化适合场景"></a>24.2 App UI 自动化适合场景</h3><ul>
+<li>App 启动</li>
+<li>登录</li>
+<li>进入首页</li>
+<li>发帖主流程</li>
+<li>评论主流程</li>
+</ul>
+<hr>
+<h3 id="24-3-UI-自动化注意事项"><a href="#24-3-UI-自动化注意事项" class="headerlink" title="24.3 UI 自动化注意事项"></a>24.3 UI 自动化注意事项</h3><ul>
+<li>页面元素定位要稳定</li>
+<li>不要依赖频繁变化的文案</li>
+<li>等待机制要合理</li>
+<li>不要用固定 sleep 过多</li>
+<li>UI 脚本失败要截图</li>
+<li>优先覆盖核心主流程</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-25"></a></p>
+<h2 id="25-自动化用例怎么设计"><a href="#25-自动化用例怎么设计" class="headerlink" title="25. 自动化用例怎么设计"></a>25. 自动化用例怎么设计</h2><hr>
+<h3 id="25-1-自动化用例选择原则"><a href="#25-1-自动化用例选择原则" class="headerlink" title="25.1 自动化用例选择原则"></a>25.1 自动化用例选择原则</h3><p>优先选择：</p>
+<ul>
+<li>P0 核心链路</li>
+<li>高频回归场景</li>
+<li>稳定接口</li>
+<li>结果明确</li>
+<li>数据可控</li>
+<li>失败影响大的场景</li>
+</ul>
+<p>不优先选择：</p>
+<ul>
+<li>需求变化频繁</li>
+<li>依赖人工判断</li>
+<li>强依赖第三方不稳定环境</li>
+<li>数据难清理</li>
+<li>页面频繁改版</li>
+</ul>
+<hr>
+<h3 id="25-2-自动化用例分层"><a href="#25-2-自动化用例分层" class="headerlink" title="25.2 自动化用例分层"></a>25.2 自动化用例分层</h3><p>建议分成：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>冒烟用例</td>
+<td>登录、发帖、评论、点赞等最核心流程</td>
+</tr>
+<tr>
+<td>回归用例</td>
+<td>常用模块接口和权限场景</td>
+</tr>
+<tr>
+<td>专项用例</td>
+<td>多语言、权限、风控、数据一致性等</td>
+</tr>
+<tr>
+<td>稳定性用例</td>
+<td>定时执行、监控核心接口健康</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-auto-ch-26"></a></p>
+<h2 id="26-自动化断言怎么写"><a href="#26-自动化断言怎么写" class="headerlink" title="26. 自动化断言怎么写"></a>26. 自动化断言怎么写</h2><p>断言就是自动判断结果是否符合预期。</p>
+<hr>
+<h3 id="26-1-常见断言"><a href="#26-1-常见断言" class="headerlink" title="26.1 常见断言"></a>26.1 常见断言</h3><ul>
+<li>HTTP 状态码正确</li>
+<li>业务 code 正确</li>
+<li>message 正确，按需求判断</li>
+<li>data 不为空</li>
+<li>返回字段存在</li>
+<li>字段类型正确</li>
+<li>字段值等于预期</li>
+<li>列表长度符合预期</li>
+<li>数据状态正确</li>
+<li>权限失败时数据未变化</li>
+</ul>
+<hr>
+<h3 id="26-2-不好的断言"><a href="#26-2-不好的断言" class="headerlink" title="26.2 不好的断言"></a>26.2 不好的断言</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">只断言接口返回 200</span><br></pre></td></tr></table></figure>
+
+<p>这不够。</p>
+<p>因为接口返回 200，也可能业务失败。</p>
+<hr>
+<h3 id="26-3-好的断言示例"><a href="#26-3-好的断言示例" class="headerlink" title="26.3 好的断言示例"></a>26.3 好的断言示例</h3><p>发帖成功用例应断言：</p>
+<ul>
+<li>HTTP 状态码成功</li>
+<li>业务 code 成功</li>
+<li>postId 不为空</li>
+<li>查询详情成功</li>
+<li>详情标题等于请求标题</li>
+<li>作者 ID 等于当前用户 ID</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-27"></a></p>
+<h2 id="27-自动化测试数据怎么准备"><a href="#27-自动化测试数据怎么准备" class="headerlink" title="27. 自动化测试数据怎么准备"></a>27. 自动化测试数据怎么准备</h2><p>自动化测试最难的部分之一是数据。</p>
+<hr>
+<h3 id="27-1-数据准备方式"><a href="#27-1-数据准备方式" class="headerlink" title="27.1 数据准备方式"></a>27.1 数据准备方式</h3><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>预置数据</td>
+<td>提前准备固定账号和帖子</td>
+</tr>
+<tr>
+<td>接口造数</td>
+<td>用接口在用例前创建数据</td>
+</tr>
+<tr>
+<td>数据库造数</td>
+<td>直接写入数据库，需谨慎和授权</td>
+</tr>
+<tr>
+<td>Mock 数据</td>
+<td>模拟接口返回，适合部分场景</td>
+</tr>
+<tr>
+<td>随机数据</td>
+<td>使用时间戳避免重复</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="27-2-数据清理"><a href="#27-2-数据清理" class="headerlink" title="27.2 数据清理"></a>27.2 数据清理</h3><p>自动化用例执行后要考虑清理：</p>
+<ul>
+<li>删除测试帖子</li>
+<li>删除测试评论</li>
+<li>取消点赞</li>
+<li>取消关注</li>
+<li>恢复用户资料</li>
+<li>清理测试通知，按需求判断</li>
+</ul>
+<p>如果不清理，测试环境会越来越脏。</p>
+<hr>
+<p><a id="forum-auto-ch-28"></a></p>
+<h2 id="28-环境变量和-Token-怎么管理"><a href="#28-环境变量和-Token-怎么管理" class="headerlink" title="28. 环境变量和 Token 怎么管理"></a>28. 环境变量和 Token 怎么管理</h2><hr>
+<h3 id="28-1-常见环境变量"><a href="#28-1-常见环境变量" class="headerlink" title="28.1 常见环境变量"></a>28.1 常见环境变量</h3><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>base_url</td>
+<td>测试环境接口地址</td>
+</tr>
+<tr>
+<td>userA_email</td>
+<td>用户A邮箱</td>
+</tr>
+<tr>
+<td>userA_password</td>
+<td>用户A密码</td>
+</tr>
+<tr>
+<td>userA_token</td>
+<td>用户A Token</td>
+</tr>
+<tr>
+<td>admin_token</td>
+<td>管理员 Token</td>
+</tr>
+<tr>
+<td>topic_id</td>
+<td>测试板块 ID</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="28-2-Token-管理"><a href="#28-2-Token-管理" class="headerlink" title="28.2 Token 管理"></a>28.2 Token 管理</h3><p>不要手动复制 Token 到每个请求中。</p>
+<p>建议：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录接口执行后自动提取 Token</span><br><span class="line">后续请求自动使用 Token</span><br><span class="line">Token 过期时重新登录获取</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="28-3-安全注意"><a href="#28-3-安全注意" class="headerlink" title="28.3 安全注意"></a>28.3 安全注意</h3><p>不要把真实密码、Token 提交到公共代码库。</p>
+<p>测试账号密码也要按团队规范管理。</p>
+<hr>
+<p><a id="forum-auto-ch-29"></a></p>
+<h2 id="29-自动化测试报告怎么看"><a href="#29-自动化测试报告怎么看" class="headerlink" title="29. 自动化测试报告怎么看"></a>29. 自动化测试报告怎么看</h2><p>自动化报告至少要看：</p>
+<ul>
+<li>总用例数</li>
+<li>通过数</li>
+<li>失败数</li>
+<li>跳过数</li>
+<li>失败原因</li>
+<li>失败截图，UI 自动化</li>
+<li>请求和响应，接口自动化</li>
+<li>执行耗时</li>
+<li>历史趋势</li>
+</ul>
+<hr>
+<h3 id="29-1-失败结果怎么判断"><a href="#29-1-失败结果怎么判断" class="headerlink" title="29.1 失败结果怎么判断"></a>29.1 失败结果怎么判断</h3><p>自动化失败不一定都是产品 Bug。</p>
+<p>可能是：</p>
+<ul>
+<li>产品 Bug</li>
+<li>脚本问题</li>
+<li>测试数据问题</li>
+<li>环境问题</li>
+<li>网络问题</li>
+<li>接口文档变更</li>
+<li>Token 失效</li>
+<li>第三方服务异常</li>
+</ul>
+<p>所以自动化失败后要先分析，再提交 Bug。</p>
+<hr>
+<p><a id="forum-auto-ch-30"></a></p>
+<h2 id="30-自动化脚本失败怎么定位"><a href="#30-自动化脚本失败怎么定位" class="headerlink" title="30. 自动化脚本失败怎么定位"></a>30. 自动化脚本失败怎么定位</h2><p>定位思路：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">先看失败用例名称</span><br><span class="line">  ↓</span><br><span class="line">看失败步骤</span><br><span class="line">  ↓</span><br><span class="line">看请求参数</span><br><span class="line">  ↓</span><br><span class="line">看响应结果</span><br><span class="line">  ↓</span><br><span class="line">看测试数据是否存在</span><br><span class="line">  ↓</span><br><span class="line">看环境是否正常</span><br><span class="line">  ↓</span><br><span class="line">判断是产品问题还是脚本问题</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="30-1-常见失败原因"><a href="#30-1-常见失败原因" class="headerlink" title="30.1 常见失败原因"></a>30.1 常见失败原因</h3><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>可能原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登录失败</td>
+<td>账号密码变更、账号被锁、环境异常</td>
+</tr>
+<tr>
+<td>发帖失败</td>
+<td>Token 失效、参数变化、用户状态异常</td>
+</tr>
+<tr>
+<td>查询不到数据</td>
+<td>数据未创建成功、搜索索引延迟</td>
+</tr>
+<tr>
+<td>UI 找不到元素</td>
+<td>页面改版、定位方式不稳定</td>
+</tr>
+<tr>
+<td>用例偶现失败</td>
+<td>异步延迟、网络波动、等待不足</td>
+</tr>
+<tr>
+<td>所有接口失败</td>
+<td>环境挂了或 base_url 错误</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-auto-ch-31"></a></p>
+<h2 id="31-自动化测试如何接入-CI-CD"><a href="#31-自动化测试如何接入-CI-CD" class="headerlink" title="31. 自动化测试如何接入 CI&#x2F;CD"></a>31. 自动化测试如何接入 CI&#x2F;CD</h2><p>CI&#x2F;CD 是持续集成和持续交付。</p>
+<p>自动化测试接入 CI 后，可以在代码提交、版本构建、发布前自动执行。</p>
+<hr>
+<h3 id="31-1-常见触发方式"><a href="#31-1-常见触发方式" class="headerlink" title="31.1 常见触发方式"></a>31.1 常见触发方式</h3><ul>
+<li>每次代码提交后执行</li>
+<li>每次构建后执行</li>
+<li>每天定时执行</li>
+<li>发布前手动触发</li>
+<li>合并主分支前执行</li>
+</ul>
+<hr>
+<h3 id="31-2-适合接入-CI-的用例"><a href="#31-2-适合接入-CI-的用例" class="headerlink" title="31.2 适合接入 CI 的用例"></a>31.2 适合接入 CI 的用例</h3><p>优先接入：</p>
+<ul>
+<li>冒烟用例</li>
+<li>接口核心链路</li>
+<li>权限高风险用例</li>
+<li>稳定且执行快的用例</li>
+</ul>
+<p>不建议一开始接入：</p>
+<ul>
+<li>不稳定 UI 用例</li>
+<li>强依赖第三方登录 UI 的用例</li>
+<li>执行时间很长的全量用例</li>
+</ul>
+<hr>
+<p><a id="forum-auto-ch-32"></a></p>
+<h2 id="32-自动化测试如何维护稳定性"><a href="#32-自动化测试如何维护稳定性" class="headerlink" title="32. 自动化测试如何维护稳定性"></a>32. 自动化测试如何维护稳定性</h2><p>自动化最大问题之一是“不稳定”。</p>
+<hr>
+<h3 id="32-1-提高稳定性的方法"><a href="#32-1-提高稳定性的方法" class="headerlink" title="32.1 提高稳定性的方法"></a>32.1 提高稳定性的方法</h3><ul>
+<li>使用稳定测试环境</li>
+<li>使用固定测试账号</li>
+<li>用例之间尽量独立</li>
+<li>每个用例准备自己的数据</li>
+<li>避免依赖执行顺序</li>
+<li>异步场景使用合理重试</li>
+<li>UI 自动化使用稳定元素定位</li>
+<li>定期清理测试数据</li>
+<li>脚本失败及时维护</li>
+</ul>
+<hr>
+<h3 id="32-2-用例独立性"><a href="#32-2-用例独立性" class="headerlink" title="32.2 用例独立性"></a>32.2 用例独立性</h3><p>不好的设计：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用例2依赖用例1创建的帖子</span><br><span class="line">用例3依赖用例2创建的评论</span><br></pre></td></tr></table></figure>
+
+<p>如果用例1失败，后面全部失败。</p>
+<p>更好的设计：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">每个用例自己准备需要的数据</span><br><span class="line">用例结束后自己清理数据</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-auto-ch-33"></a></p>
+<h2 id="33-自动化测试的风险和注意事项"><a href="#33-自动化测试的风险和注意事项" class="headerlink" title="33. 自动化测试的风险和注意事项"></a>33. 自动化测试的风险和注意事项</h2><hr>
+<h3 id="33-1-常见风险"><a href="#33-1-常见风险" class="headerlink" title="33.1 常见风险"></a>33.1 常见风险</h3><ul>
+<li>自动化脚本维护成本过高</li>
+<li>脚本频繁误报</li>
+<li>测试数据污染环境</li>
+<li>过度依赖自动化，忽略手工探索</li>
+<li>自动化覆盖了很多低价值用例</li>
+<li>敏感账号密码管理不当</li>
+<li>CI 中失败无人关注</li>
+</ul>
+<hr>
+<h3 id="33-2-注意事项"><a href="#33-2-注意事项" class="headerlink" title="33.2 注意事项"></a>33.2 注意事项</h3><ul>
+<li>先小范围试点</li>
+<li>优先做接口自动化</li>
+<li>优先覆盖核心链路</li>
+<li>脚本要有人维护</li>
+<li>失败结果要有人分析</li>
+<li>自动化用例要定期清理和优化</li>
+</ul>
+<hr>
+<h2 id="第四部分：用例、脚本设计、问题与总结"><a href="#第四部分：用例、脚本设计、问题与总结" class="headerlink" title="第四部分：用例、脚本设计、问题与总结"></a>第四部分：用例、脚本设计、问题与总结</h2><blockquote>
+<p>自动化测试不是单纯写脚本，而是把稳定、有价值、可重复执行的测试流程沉淀成长期资产。</p>
+</blockquote>
+<hr>
+<p><a id="forum-auto-ch-34"></a></p>
+<h2 id="34-自动化测试用例怎么写"><a href="#34-自动化测试用例怎么写" class="headerlink" title="34. 自动化测试用例怎么写"></a>34. 自动化测试用例怎么写</h2><p>自动化测试用例建议包含：</p>
+<ul>
+<li>用例编号</li>
+<li>模块</li>
+<li>自动化类型</li>
+<li>前置条件</li>
+<li>测试数据</li>
+<li>操作步骤</li>
+<li>断言点</li>
+<li>数据清理方式</li>
+<li>优先级</li>
+</ul>
+<hr>
+<h3 id="34-1-用例模板"><a href="#34-1-用例模板" class="headerlink" title="34.1 用例模板"></a>34.1 用例模板</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>AUTO_API_POST_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>发帖</td>
+</tr>
+<tr>
+<td>自动化类型</td>
+<td>接口自动化</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>用户A已登录，测试板块存在</td>
+</tr>
+<tr>
+<td>测试数据</td>
+<td>title&#x3D;AUTO_TEST_POST_时间戳，content&#x3D;auto test content</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>调用创建帖子接口，再调用详情接口</td>
+</tr>
+<tr>
+<td>断言点</td>
+<td>创建成功；postId 不为空；详情标题和正文正确</td>
+</tr>
+<tr>
+<td>数据清理</td>
+<td>删除测试帖子</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="34-2-示例用例：点赞幂等自动化"><a href="#34-2-示例用例：点赞幂等自动化" class="headerlink" title="34.2 示例用例：点赞幂等自动化"></a>34.2 示例用例：点赞幂等自动化</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>AUTO_API_LIKE_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>点赞</td>
+</tr>
+<tr>
+<td>自动化类型</td>
+<td>接口自动化</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>存在正常帖子 P001，用户A已登录</td>
+</tr>
+<tr>
+<td>测试数据</td>
+<td>postId&#x3D;P001，userA_token</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>用户A连续调用点赞接口 3 次，再查询帖子详情</td>
+</tr>
+<tr>
+<td>断言点</td>
+<td>likeStatus&#x3D;true；likeCount 只增加一次；不生成重复点赞记录</td>
+</tr>
+<tr>
+<td>数据清理</td>
+<td>取消点赞</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-auto-ch-35"></a></p>
+<h2 id="35-自动化脚本设计思路"><a href="#35-自动化脚本设计思路" class="headerlink" title="35. 自动化脚本设计思路"></a>35. 自动化脚本设计思路</h2><hr>
+<h3 id="35-1-分层设计"><a href="#35-1-分层设计" class="headerlink" title="35.1 分层设计"></a>35.1 分层设计</h3><p>建议把脚本分成几层：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">接口请求层</span><br><span class="line">业务封装层</span><br><span class="line">测试用例层</span><br><span class="line">测试数据层</span><br><span class="line">配置层</span><br><span class="line">报告层</span><br></pre></td></tr></table></figure>
+
+<p>简单理解：</p>
+<ul>
+<li>接口请求层：负责发送请求</li>
+<li>业务封装层：负责登录、发帖、评论这些业务动作</li>
+<li>测试用例层：负责组织测试步骤和断言</li>
+<li>测试数据层：负责账号、标题、内容、ID</li>
+<li>配置层：负责环境地址、Token、语言等</li>
+<li>报告层：负责展示结果</li>
+</ul>
+<hr>
+<h3 id="35-2-为什么要分层"><a href="#35-2-为什么要分层" class="headerlink" title="35.2 为什么要分层"></a>35.2 为什么要分层</h3><p>如果不分层，脚本会变得很乱。</p>
+<p>例如每个用例都手写登录请求、发帖请求、断言逻辑，后面接口一变，所有地方都要改。</p>
+<p>分层后，只需要改封装方法。</p>
+<hr>
+<p><a id="forum-auto-ch-36"></a></p>
+<h2 id="36-自动化失败问题怎么提交"><a href="#36-自动化失败问题怎么提交" class="headerlink" title="36. 自动化失败问题怎么提交"></a>36. 自动化失败问题怎么提交</h2><p>自动化失败先判断是否产品 Bug。</p>
+<p>如果确认是产品 Bug，再提交。</p>
+<hr>
+<h3 id="36-1-自动化失败记录应包含"><a href="#36-1-自动化失败记录应包含" class="headerlink" title="36.1 自动化失败记录应包含"></a>36.1 自动化失败记录应包含</h3><ul>
+<li>自动化执行时间</li>
+<li>执行环境</li>
+<li>失败用例名称</li>
+<li>失败步骤</li>
+<li>请求参数</li>
+<li>响应结果</li>
+<li>断言失败原因</li>
+<li>相关测试数据 ID</li>
+<li>是否手工复现</li>
+<li>截图或日志</li>
+</ul>
+<hr>
+<h3 id="36-2-示例-Bug"><a href="#36-2-示例-Bug" class="headerlink" title="36.2 示例 Bug"></a>36.2 示例 Bug</h3><h4 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[自动化回归][接口] 被禁言用户发帖接口返回成功</span><br></pre></td></tr></table></figure>
+
+<h4 id="来源"><a href="#来源" class="headerlink" title="来源"></a>来源</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">自动化回归任务：API Smoke Test</span><br><span class="line">执行时间：2026-05-08 10:00</span><br><span class="line">失败用例：AUTO_API_POST_MUTED_USER_001</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果"><a href="#实际结果" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">被禁言用户调用创建帖子接口，接口返回 code=0，并返回 postId。</span><br></pre></td></tr></table></figure>
+
+<h4 id="预期结果"><a href="#预期结果" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">被禁言用户不允许发帖，接口应返回账号受限错误，不应创建帖子。</span><br></pre></td></tr></table></figure>
+
+<h4 id="补充信息"><a href="#补充信息" class="headerlink" title="补充信息"></a>补充信息</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">已手工使用同账号复现。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-auto-ch-37"></a></p>
+<h2 id="37-新手常见误区"><a href="#37-新手常见误区" class="headerlink" title="37. 新手常见误区"></a>37. 新手常见误区</h2><h3 id="37-1-一开始就做-UI-自动化大而全"><a href="#37-1-一开始就做-UI-自动化大而全" class="headerlink" title="37.1 一开始就做 UI 自动化大而全"></a>37.1 一开始就做 UI 自动化大而全</h3><p>UI 自动化维护成本高。</p>
+<p>新手建议先从接口自动化开始。</p>
+<hr>
+<h3 id="37-2-自动化用例没有断言"><a href="#37-2-自动化用例没有断言" class="headerlink" title="37.2 自动化用例没有断言"></a>37.2 自动化用例没有断言</h3><p>只执行步骤，不判断结果，不叫有效自动化。</p>
+<p>例如只调用发帖接口，但不检查 postId 和详情内容，就是不完整的。</p>
+<hr>
+<h3 id="37-3-测试数据不清理"><a href="#37-3-测试数据不清理" class="headerlink" title="37.3 测试数据不清理"></a>37.3 测试数据不清理</h3><p>自动化长期运行会产生大量脏数据。</p>
+<p>要设计清理机制。</p>
+<hr>
+<h3 id="37-4-用例之间强依赖"><a href="#37-4-用例之间强依赖" class="headerlink" title="37.4 用例之间强依赖"></a>37.4 用例之间强依赖</h3><p>一个用例失败，后面一串失败，会导致定位困难。</p>
+<p>尽量让用例独立。</p>
+<hr>
+<h3 id="37-5-自动化失败没人看"><a href="#37-5-自动化失败没人看" class="headerlink" title="37.5 自动化失败没人看"></a>37.5 自动化失败没人看</h3><p>自动化不是跑完报告就结束。</p>
+<p>失败结果必须有人分析，否则自动化没有价值。</p>
+<hr>
+<p><a id="forum-auto-ch-38"></a></p>
+<h2 id="38-最后总结"><a href="#38-最后总结" class="headerlink" title="38. 最后总结"></a>38. 最后总结</h2><p>自动化测试的核心不是“写很多脚本”，而是要理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">哪些场景值得自动化？</span><br><span class="line">哪些场景结果明确、适合断言？</span><br><span class="line">测试数据如何准备？</span><br><span class="line">执行后如何清理？</span><br><span class="line">失败后如何定位？</span><br><span class="line">脚本如何长期维护？</span><br><span class="line">自动化如何融入版本回归？</span><br></pre></td></tr></table></figure>
+
+<p>对于海外社区论坛项目，最适合优先自动化的方向是：</p>
+<ul>
+<li>登录接口</li>
+<li>发帖接口</li>
+<li>评论接口</li>
+<li>点赞、收藏、关注接口</li>
+<li>权限越权接口</li>
+<li>Feed 基础接口</li>
+<li>搜索基础接口</li>
+<li>通知未读数接口</li>
+<li>用户资料接口</li>
+<li>多语言和时区 Header 基础校验</li>
+<li>冒烟级 UI 主流程</li>
+</ul>
+<p>你可以记住一个万能自动化测试公式：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">稳定场景 + 明确断言 + 可控数据 + 可重复执行 + 可维护脚本 = 有价值的自动化测试</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录接口 + 断言 Token + 固定测试账号 + 每次回归执行 + 统一封装登录方法</span><br><span class="line">发帖接口 + 断言 postId 和详情 + 自动生成标题 + 执行后删除帖子</span><br><span class="line">点赞接口 + 断言 likeStatus 和 likeCount + 准备固定帖子 + 执行后取消点赞</span><br></pre></td></tr></table></figure>
+
+<p>只要你先从接口自动化的小闭环做起，再逐步扩展到 UI 自动化和 CI 集成，自动化测试能力就会越来越成熟。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-17-overseas-forum-automation-guide/">https://linn0813.github.io/2026-05-17-overseas-forum-automation-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/">自动化测试</a><a class="post-meta__tags" href="/tags/pytest/">pytest</a><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a><a class="post-meta__tags" href="/tags/%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96/">接口自动化</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-automation-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-05-16-overseas-forum-security-guide/" title="学习笔记：海外社区论坛 - 安全测试入门"><img class="cover" src="/img/overseas-forum-security-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 安全测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛安全测试入门：风险边界与各模块实战、常见漏洞测试思路，以及用例与安全类 Bug 提交要点。</div></div></div></a><a class="pagination-related" href="/2026-05-18-overseas-forum-test-plan-guide/" title="学习笔记：海外社区论坛 - 测试计划与测试方案入门"><img class="cover" src="/img/overseas-forum-test-plan-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 测试计划与测试方案入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛测试计划与测试方案入门：计划与方案区分、需求到范围的拆解、排期与准入准出，附模板与范围风险示例。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-06-30-pytest/" title="🧪pytest 自动化测试框架学习笔记｜结合两个优质视频总结"><img class="cover" src="/img/pytest.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-30</div><div class="info-item-2">🧪pytest 自动化测试框架学习笔记｜结合两个优质视频总结</div></div><div class="info-2"><div class="info-item-1">分享 pytest 自动化测试框架的实战经验，涵盖基础使用、前后置处理、数据驱动、Allure 报告集成等内容，结合代码示例与项目规范，帮助掌握测试框架落地方法！</div></div></div></a><a class="pagination-related" href="/2025-10-01-pytest-automation-testing-guide/" title="🚀 Pytest自动化测试框架入门到实战：我的学习笔记与实战经验"><img class="cover" src="/img/pytest.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-01</div><div class="info-item-2">🚀 Pytest自动化测试框架入门到实战：我的学习笔记与实战经验</div></div><div class="info-2"><div class="info-item-1">全面的Pytest自动化测试框架学习笔记，从基础概念到高级特性，结合实战经验，助你快速掌握Python测试利器。</div></div></div></a><a class="pagination-related" href="/2025-10-02-pytest-courses-comparison/" title="📚 pytest学习指南：白月黑羽vs码尚教育课程对比与学习策略"><img class="cover" src="/img/pytest.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-02</div><div class="info-item-2">📚 pytest学习指南：白月黑羽vs码尚教育课程对比与学习策略</div></div><div class="info-2"><div class="info-item-1">对比白月黑羽与码尚教育的pytest课程特点，分享如何结合两门课程高效学习pytest自动化测试框架。</div></div></div></a><a class="pagination-related" href="/2025-05-15-apifox/" title="🚀 Apifox 使用指南 —— 开发 &amp; 测试的效率神器"><img class="cover" src="/img/apifox.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-15</div><div class="info-item-2">🚀 Apifox 使用指南 —— 开发 &amp; 测试的效率神器</div></div><div class="info-2"><div class="info-item-1">详细介绍 Apifox 这一强大的 API 开发与测试工具，涵盖安装方法、基本使用、进阶功能，如环境变量、Mock 数据、自动化测试和压力测试等，同时对比 Apifox 与 Postman 的差异，帮助测试工程师提升工作效率。</div></div></div></a><a class="pagination-related" href="/2025-05-18-postman/" title="📨 Postman 使用指南 —— 测试工程师的快乐源泉"><img class="cover" src="/img/postman.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-18</div><div class="info-item-2">📨 Postman 使用指南 —— 测试工程师的快乐源泉</div></div><div class="info-2"><div class="info-item-1">详细介绍 Postman 这一强大的 API 开发与测试工具，涵盖安装方法、基本使用、进阶功能，如环境变量管理、自动化测试、Postman Collection 等，帮助测试工程师提升工作效率。</div></div></div></a><a class="pagination-related" href="/2025-06-20-postman-class/" title="从入门到实战：一篇文章掌握接口测试与 Postman 全流程"><img class="cover" src="/img/postman-class.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-20</div><div class="info-item-2">从入门到实战：一篇文章掌握接口测试与 Postman 全流程</div></div><div class="info-2"><div class="info-item-1">分享码尚教育Postman课程的学习内容，详细介绍接口测试的概念、分类、流程与用例设计，全面讲解 Postman 的使用方法，包括界面操作、断言设置、数据驱动测试和 Mock Server 等功能，适合接口测试初学者与自动化测试入门者学习。</div></div></div></a><a class="pagination-related" href="/2025-07-28-logcat-guide-for-testers/" title="Logcat 日志详解与测试工程师实战指南"><img class="cover" src="/img/logcat-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-28</div><div class="info-item-2">Logcat 日志详解与测试工程师实战指南</div></div><div class="info-2"><div class="info-item-1">全面介绍 Android 系统的 Logcat 日志工具，涵盖日志类型、等级、常用命令、过滤技巧，以及测试工程师实战应用和日志抓取方法，助你高效定位问题，提升测试工作效率！</div></div></div></a><a class="pagination-related" href="/2025-10-02-pytest-advanced-features-guide/" title="🔍 Pytest高级特性实战：从码尚教育课程中学到的进阶技巧"><img class="cover" src="/img/pytest.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-02</div><div class="info-item-2">🔍 Pytest高级特性实战：从码尚教育课程中学到的进阶技巧</div></div><div class="info-2"><div class="info-item-1">深入探讨Pytest高级特性，包括fixture机制、数据驱动测试和Allure报告生成，结合实战案例分享。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">第一部分：自动化测试基础概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%AD%A6%E4%B9%A0%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么要学习自动化测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E8%83%BD%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 自动化测试能解决什么问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E4%B8%8D%E8%83%BD%E8%A7%A3%E5%86%B3%E6%89%80%E6%9C%89%E9%97%AE%E9%A2%98"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 自动化测试不能解决所有问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text">2. 什么是自动化测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E7%9A%84%E6%A0%B8%E5%BF%83"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 自动化测试的核心</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E5%92%8C%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">3. 自动化测试和手工测试有什么区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%9A%E5%8F%91%E5%B8%96%E5%8A%9F%E8%83%BD"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 举个例子：发帖功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E9%80%82%E5%90%88%E6%B5%8B%E4%BB%80%E4%B9%88"><span class="toc-number">5.</span> <span class="toc-text">4. 自动化测试适合测什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E9%80%82%E5%90%88%E8%87%AA%E5%8A%A8%E5%8C%96%E7%9A%84%E5%9C%BA%E6%99%AF"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 社区论坛适合自动化的场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E4%B8%8D%E9%80%82%E5%90%88%E6%B5%8B%E4%BB%80%E4%B9%88"><span class="toc-number">6.</span> <span class="toc-text">5. 自动化测试不适合测什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%96%B0%E6%89%8B%E5%AE%B9%E6%98%93%E8%AF%AF%E8%A7%A3%E7%9A%84%E7%82%B9"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 新手容易误解的点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96%E3%80%81UI-%E8%87%AA%E5%8A%A8%E5%8C%96%E3%80%81%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">6. 接口自动化、UI 自动化、单元测试分别是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 接口自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-UI-%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 UI 自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="toc-number">7.3.</span> <span class="toc-text">6.3 单元测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">8.</span> <span class="toc-text">7. 自动化测试的基本流程是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B8%8D%E6%98%AF%E5%86%99%E5%AE%8C%E5%B0%B1%E7%BB%93%E6%9D%9F"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 自动化不是写完就结束</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">9.</span> <span class="toc-text">8. 自动化测试需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%87%86%E5%A4%87%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3%E5%92%8C%E7%A8%B3%E5%AE%9A%E7%8E%AF%E5%A2%83"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 准备接口文档和稳定环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7%E5%92%8C%E8%AF%AD%E8%A8%80"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 准备工具和语言</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">10.</span> <span class="toc-text">9. 自动化测试常用工具有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-Postman-Apifox"><span class="toc-number">10.1.</span> <span class="toc-text">9.1 Postman &#x2F; Apifox</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-Python-pytest-requests"><span class="toc-number">10.2.</span> <span class="toc-text">9.2 Python + pytest + requests</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-Playwright-Selenium"><span class="toc-number">10.3.</span> <span class="toc-text">9.3 Playwright &#x2F; Selenium</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-Appium-Airtest"><span class="toc-number">10.4.</span> <span class="toc-text">9.4 Appium &#x2F; Airtest</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%96%B0%E6%89%8B%E5%BA%94%E8%AF%A5%E4%BB%8E%E5%93%AA%E9%87%8C%E5%BC%80%E5%A7%8B%E5%AD%A6%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">11.</span> <span class="toc-text">10. 新手应该从哪里开始学自动化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E5%AE%9E%E6%88%98"><span class="toc-number">12.</span> <span class="toc-text">第二部分：海外社区论坛自动化测试实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF%E9%80%82%E5%90%88%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">13.</span> <span class="toc-text">11. 社区论坛哪些场景适合自动化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E6%B3%A8%E5%86%8C%E7%99%BB%E5%BD%95%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">14.</span> <span class="toc-text">12. 注册登录自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">14.1.</span> <span class="toc-text">12.1 登录接口自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E6%B3%A8%E5%86%8C%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">14.2.</span> <span class="toc-text">12.2 注册自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">14.3.</span> <span class="toc-text">12.3 第三方登录自动化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E7%94%A8%E6%88%B7%E8%B5%84%E6%96%99%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">15.</span> <span class="toc-text">13. 用户资料自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E4%BF%AE%E6%94%B9%E8%B5%84%E6%96%99%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">15.1.</span> <span class="toc-text">13.1 修改资料自动化流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">15.2.</span> <span class="toc-text">13.2 注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%8F%91%E5%B8%96%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">16.</span> <span class="toc-text">14. 发帖自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E5%8F%91%E5%B8%96%E6%88%90%E5%8A%9F%E9%93%BE%E8%B7%AF"><span class="toc-number">16.1.</span> <span class="toc-text">14.1 发帖成功链路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E5%8F%91%E5%B8%96%E5%BC%82%E5%B8%B8%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">16.2.</span> <span class="toc-text">14.2 发帖异常自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-3-%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86"><span class="toc-number">16.3.</span> <span class="toc-text">14.3 测试数据清理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E8%AF%84%E8%AE%BA%E4%B8%8E%E5%9B%9E%E5%A4%8D%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">17.</span> <span class="toc-text">15. 评论与回复自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E8%AF%84%E8%AE%BA%E6%88%90%E5%8A%9F%E9%93%BE%E8%B7%AF"><span class="toc-number">17.1.</span> <span class="toc-text">15.1 评论成功链路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E5%9B%9E%E5%A4%8D%E6%88%90%E5%8A%9F%E9%93%BE%E8%B7%AF"><span class="toc-number">17.2.</span> <span class="toc-text">15.2 回复成功链路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-3-%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF"><span class="toc-number">17.3.</span> <span class="toc-text">15.3 异常场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E7%82%B9%E8%B5%9E%E3%80%81%E6%94%B6%E8%97%8F%E3%80%81%E5%85%B3%E6%B3%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">18.</span> <span class="toc-text">16. 点赞、收藏、关注自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E7%82%B9%E8%B5%9E%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">18.1.</span> <span class="toc-text">16.1 点赞自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-%E6%94%B6%E8%97%8F%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">18.2.</span> <span class="toc-text">16.2 收藏自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-3-%E5%85%B3%E6%B3%A8%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">18.3.</span> <span class="toc-text">16.3 关注自动化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-Feed-%E4%BF%A1%E6%81%AF%E6%B5%81%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">19.</span> <span class="toc-text">17. Feed 信息流自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E9%80%82%E5%90%88%E8%87%AA%E5%8A%A8%E5%8C%96%E7%9A%84%E6%96%AD%E8%A8%80"><span class="toc-number">19.1.</span> <span class="toc-text">17.1 适合自动化的断言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-%E6%8E%A8%E8%8D%90%E6%B5%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">19.2.</span> <span class="toc-text">17.2 推荐流注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E6%90%9C%E7%B4%A2%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">20.</span> <span class="toc-text">18. 搜索自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#18-1-%E6%90%9C%E7%B4%A2%E6%88%90%E5%8A%9F%E9%93%BE%E8%B7%AF"><span class="toc-number">20.1.</span> <span class="toc-text">18.1 搜索成功链路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-2-%E6%90%9C%E7%B4%A2%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF"><span class="toc-number">20.2.</span> <span class="toc-text">18.2 搜索异常场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-3-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">20.3.</span> <span class="toc-text">18.3 注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E9%80%9A%E7%9F%A5%E6%B6%88%E6%81%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">21.</span> <span class="toc-text">19. 通知消息自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E8%AF%84%E8%AE%BA%E9%80%9A%E7%9F%A5%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">21.1.</span> <span class="toc-text">19.1 评论通知自动化流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">21.2.</span> <span class="toc-text">19.2 注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E7%A7%81%E4%BF%A1%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">22.</span> <span class="toc-text">20. 私信自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#20-1-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E9%93%BE%E8%B7%AF"><span class="toc-number">22.1.</span> <span class="toc-text">20.1 发送消息链路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-2-%E5%AE%9E%E6%97%B6%E6%B6%88%E6%81%AF%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">22.2.</span> <span class="toc-text">20.2 实时消息自动化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E4%B8%BE%E6%8A%A5%E4%B8%8E%E5%AE%A1%E6%A0%B8%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">23.</span> <span class="toc-text">21. 举报与审核自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-%E4%B8%BE%E6%8A%A5%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">23.1.</span> <span class="toc-text">21.1 举报自动化流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-%E5%AE%A1%E6%A0%B8%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">23.2.</span> <span class="toc-text">21.2 审核自动化流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-3-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">23.3.</span> <span class="toc-text">21.3 注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E5%A4%9A%E8%AF%AD%E8%A8%80%E5%92%8C%E6%97%B6%E5%8C%BA%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">24.</span> <span class="toc-text">22. 多语言和时区接口自动化怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E5%A4%9A%E8%AF%AD%E8%A8%80-Header-%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">24.1.</span> <span class="toc-text">22.1 多语言 Header 自动化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E6%97%B6%E5%8C%BA-Header-%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">24.2.</span> <span class="toc-text">22.2 时区 Header 自动化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E4%B8%93%E9%A1%B9%E6%96%B9%E6%B3%95"><span class="toc-number">25.</span> <span class="toc-text">第三部分：自动化测试专项方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%85%A5%E9%97%A8"><span class="toc-number">26.</span> <span class="toc-text">23. 接口自动化怎么入门</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#23-1-%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9C%BA%E6%99%AF"><span class="toc-number">26.1.</span> <span class="toc-text">23.1 第一个接口自动化场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-2-%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="toc-number">26.2.</span> <span class="toc-text">23.2 接口自动化基本结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-UI-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%80%8E%E4%B9%88%E5%85%A5%E9%97%A8"><span class="toc-number">27.</span> <span class="toc-text">24. UI 自动化怎么入门</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#24-1-Web-UI-%E8%87%AA%E5%8A%A8%E5%8C%96%E9%80%82%E5%90%88%E5%9C%BA%E6%99%AF"><span class="toc-number">27.1.</span> <span class="toc-text">24.1 Web UI 自动化适合场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-2-App-UI-%E8%87%AA%E5%8A%A8%E5%8C%96%E9%80%82%E5%90%88%E5%9C%BA%E6%99%AF"><span class="toc-number">27.2.</span> <span class="toc-text">24.2 App UI 自动化适合场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-3-UI-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">27.3.</span> <span class="toc-text">24.3 UI 自动化注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%A8%E4%BE%8B%E6%80%8E%E4%B9%88%E8%AE%BE%E8%AE%A1"><span class="toc-number">28.</span> <span class="toc-text">25. 自动化用例怎么设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#25-1-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%A8%E4%BE%8B%E9%80%89%E6%8B%A9%E5%8E%9F%E5%88%99"><span class="toc-number">28.1.</span> <span class="toc-text">25.1 自动化用例选择原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-2-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%A8%E4%BE%8B%E5%88%86%E5%B1%82"><span class="toc-number">28.2.</span> <span class="toc-text">25.2 自动化用例分层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%96%AD%E8%A8%80%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">29.</span> <span class="toc-text">26. 自动化断言怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#26-1-%E5%B8%B8%E8%A7%81%E6%96%AD%E8%A8%80"><span class="toc-number">29.1.</span> <span class="toc-text">26.1 常见断言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-2-%E4%B8%8D%E5%A5%BD%E7%9A%84%E6%96%AD%E8%A8%80"><span class="toc-number">29.2.</span> <span class="toc-text">26.2 不好的断言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-3-%E5%A5%BD%E7%9A%84%E6%96%AD%E8%A8%80%E7%A4%BA%E4%BE%8B"><span class="toc-number">29.3.</span> <span class="toc-text">26.3 好的断言示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E6%80%8E%E4%B9%88%E5%87%86%E5%A4%87"><span class="toc-number">30.</span> <span class="toc-text">27. 自动化测试数据怎么准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#27-1-%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87%E6%96%B9%E5%BC%8F"><span class="toc-number">30.1.</span> <span class="toc-text">27.1 数据准备方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-2-%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86"><span class="toc-number">30.2.</span> <span class="toc-text">27.2 数据清理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E5%92%8C-Token-%E6%80%8E%E4%B9%88%E7%AE%A1%E7%90%86"><span class="toc-number">31.</span> <span class="toc-text">28. 环境变量和 Token 怎么管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#28-1-%E5%B8%B8%E8%A7%81%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">31.1.</span> <span class="toc-text">28.1 常见环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-2-Token-%E7%AE%A1%E7%90%86"><span class="toc-number">31.2.</span> <span class="toc-text">28.2 Token 管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-3-%E5%AE%89%E5%85%A8%E6%B3%A8%E6%84%8F"><span class="toc-number">31.3.</span> <span class="toc-text">28.3 安全注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A%E6%80%8E%E4%B9%88%E7%9C%8B"><span class="toc-number">32.</span> <span class="toc-text">29. 自动化测试报告怎么看</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#29-1-%E5%A4%B1%E8%B4%A5%E7%BB%93%E6%9E%9C%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD"><span class="toc-number">32.1.</span> <span class="toc-text">29.1 失败结果怎么判断</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E5%AE%9A%E4%BD%8D"><span class="toc-number">33.</span> <span class="toc-text">30. 自动化脚本失败怎么定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#30-1-%E5%B8%B8%E8%A7%81%E5%A4%B1%E8%B4%A5%E5%8E%9F%E5%9B%A0"><span class="toc-number">33.1.</span> <span class="toc-text">30.1 常见失败原因</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E5%A6%82%E4%BD%95%E6%8E%A5%E5%85%A5-CI-CD"><span class="toc-number">34.</span> <span class="toc-text">31. 自动化测试如何接入 CI&#x2F;CD</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-1-%E5%B8%B8%E8%A7%81%E8%A7%A6%E5%8F%91%E6%96%B9%E5%BC%8F"><span class="toc-number">34.1.</span> <span class="toc-text">31.1 常见触发方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-2-%E9%80%82%E5%90%88%E6%8E%A5%E5%85%A5-CI-%E7%9A%84%E7%94%A8%E4%BE%8B"><span class="toc-number">34.2.</span> <span class="toc-text">31.2 适合接入 CI 的用例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E5%A6%82%E4%BD%95%E7%BB%B4%E6%8A%A4%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="toc-number">35.</span> <span class="toc-text">32. 自动化测试如何维护稳定性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32-1-%E6%8F%90%E9%AB%98%E7%A8%B3%E5%AE%9A%E6%80%A7%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">35.1.</span> <span class="toc-text">32.1 提高稳定性的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-2-%E7%94%A8%E4%BE%8B%E7%8B%AC%E7%AB%8B%E6%80%A7"><span class="toc-number">35.2.</span> <span class="toc-text">32.2 用例独立性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E7%9A%84%E9%A3%8E%E9%99%A9%E5%92%8C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">36.</span> <span class="toc-text">33. 自动化测试的风险和注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#33-1-%E5%B8%B8%E8%A7%81%E9%A3%8E%E9%99%A9"><span class="toc-number">36.1.</span> <span class="toc-text">33.1 常见风险</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-2-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">36.2.</span> <span class="toc-text">33.2 注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E7%94%A8%E4%BE%8B%E3%80%81%E8%84%9A%E6%9C%AC%E8%AE%BE%E8%AE%A1%E3%80%81%E9%97%AE%E9%A2%98%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">37.</span> <span class="toc-text">第四部分：用例、脚本设计、问题与总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">38.</span> <span class="toc-text">34. 自动化测试用例怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#34-1-%E7%94%A8%E4%BE%8B%E6%A8%A1%E6%9D%BF"><span class="toc-number">38.1.</span> <span class="toc-text">34.1 用例模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-2-%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B%EF%BC%9A%E7%82%B9%E8%B5%9E%E5%B9%82%E7%AD%89%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">38.2.</span> <span class="toc-text">34.2 示例用例：点赞幂等自动化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF"><span class="toc-number">39.</span> <span class="toc-text">35. 自动化脚本设计思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#35-1-%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1"><span class="toc-number">39.1.</span> <span class="toc-text">35.1 分层设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%B1%82"><span class="toc-number">39.2.</span> <span class="toc-text">35.2 为什么要分层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%E6%80%8E%E4%B9%88%E6%8F%90%E4%BA%A4"><span class="toc-number">40.</span> <span class="toc-text">36. 自动化失败问题怎么提交</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#36-1-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%A4%B1%E8%B4%A5%E8%AE%B0%E5%BD%95%E5%BA%94%E5%8C%85%E5%90%AB"><span class="toc-number">40.1.</span> <span class="toc-text">36.1 自动化失败记录应包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-2-%E7%A4%BA%E4%BE%8B-Bug"><span class="toc-number">40.2.</span> <span class="toc-text">36.2 示例 Bug</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98"><span class="toc-number">40.2.1.</span> <span class="toc-text">标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%A5%E6%BA%90"><span class="toc-number">40.2.2.</span> <span class="toc-text">来源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C"><span class="toc-number">40.2.3.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C"><span class="toc-number">40.2.4.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E4%BF%A1%E6%81%AF"><span class="toc-number">40.2.5.</span> <span class="toc-text">补充信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">41.</span> <span class="toc-text">37. 新手常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#37-1-%E4%B8%80%E5%BC%80%E5%A7%8B%E5%B0%B1%E5%81%9A-UI-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%A4%A7%E8%80%8C%E5%85%A8"><span class="toc-number">41.1.</span> <span class="toc-text">37.1 一开始就做 UI 自动化大而全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-2-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%A8%E4%BE%8B%E6%B2%A1%E6%9C%89%E6%96%AD%E8%A8%80"><span class="toc-number">41.2.</span> <span class="toc-text">37.2 自动化用例没有断言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-3-%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E4%B8%8D%E6%B8%85%E7%90%86"><span class="toc-number">41.3.</span> <span class="toc-text">37.3 测试数据不清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-4-%E7%94%A8%E4%BE%8B%E4%B9%8B%E9%97%B4%E5%BC%BA%E4%BE%9D%E8%B5%96"><span class="toc-number">41.4.</span> <span class="toc-text">37.4 用例之间强依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-5-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%A4%B1%E8%B4%A5%E6%B2%A1%E4%BA%BA%E7%9C%8B"><span class="toc-number">41.5.</span> <span class="toc-text">37.5 自动化失败没人看</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#38-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">42.</span> <span class="toc-text">38. 最后总结</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

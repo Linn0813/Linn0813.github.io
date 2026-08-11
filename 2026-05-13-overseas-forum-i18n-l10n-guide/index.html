@@ -1,0 +1,1758 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - 国际化与本地化专项入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="海外社区论坛国际化与本地化专项入门：I18N&#x2F;L10N 基础、各模块实战、文案布局与时区等方法，以及用例与 Bug 落地。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - 国际化与本地化专项入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-13-overseas-forum-i18n-l10n-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="海外社区论坛国际化与本地化专项入门：I18N&#x2F;L10N 基础、各模块实战、文案布局与时区等方法，以及用例与 Bug 落地。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-i18n-l10n-guide.png">
+<meta property="article:published_time" content="2026-05-13T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-13T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="社区论坛">
+<meta property="article:tag" content="海外社区">
+<meta property="article:tag" content="国际化">
+<meta property="article:tag" content="本地化">
+<meta property="article:tag" content="I18N">
+<meta property="article:tag" content="L10N">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-i18n-l10n-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - 国际化与本地化专项入门",
+  "url": "https://linn0813.github.io/2026-05-13-overseas-forum-i18n-l10n-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-i18n-l10n-guide.png",
+  "datePublished": "2026-05-13T02:00:00.000Z",
+  "dateModified": "2026-05-13T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-13-overseas-forum-i18n-l10n-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - 国际化与本地化专项入门',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-i18n-l10n-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - 国际化与本地化专项入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - 国际化与本地化专项入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-13T02:00:00.000Z" title="发表于 2026-05-13 10:00:00">2026-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-13T02:00:00.000Z" title="更新于 2026-05-13 10:00:00">2026-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/%E5%9B%BD%E9%99%85%E5%8C%96%E4%B8%8E%E6%9C%AC%E5%9C%B0%E5%8C%96/">国际化与本地化</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>27分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>学习记录</strong>：把海外社区论坛场景下的<strong>国际化与本地化</strong>整理成一篇专项入门笔记，结合个人实践，并与 AI 一起补全结构，便于按模块与方法查阅。</p>
+<p>若你在测面向多地区用户的社区产品，希望这篇能当检查清单用。</p>
+<blockquote>
+<p><strong>适合对象</strong>：准备系统了解海外社区论坛国际化与本地化专项测试的同学；文中不默认你已熟悉 I18N&#x2F;L10N、RTL、时区与地区格式等细节。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文按「基础概念 → 论坛国际化实战 → 专项测试方法 → 用例与 Bug」四块展开；配合页面 <strong>TOC</strong> 或下方折叠目录跳转。<strong>第 10～21 章</strong>对应注册登录、发帖、Feed、搜索、通知等主链路，宜对照语言包与时区配置逐项核对。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 37 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-i18n-ch-01">为什么海外社区论坛要做国际化与本地化测试</a></li>
+<li><a href="#forum-i18n-ch-02">什么是国际化 I18N</a></li>
+<li><a href="#forum-i18n-ch-03">什么是本地化 L10N</a></li>
+<li><a href="#forum-i18n-ch-04">国际化和本地化有什么区别</a></li>
+<li><a href="#forum-i18n-ch-05">多语言测试要关注什么</a></li>
+<li><a href="#forum-i18n-ch-06">RTL 语言是什么</a></li>
+<li><a href="#forum-i18n-ch-07">时区和夏令时是什么</a></li>
+<li><a href="#forum-i18n-ch-08">地区格式和文化差异是什么</a></li>
+<li><a href="#forum-i18n-ch-09">国际化专项测试前需要准备什么</a></li>
+<li><a href="#forum-i18n-ch-10">注册登录国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-11">用户资料国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-12">发帖与内容展示国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-13">评论与回复国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-14">Feed 信息流国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-15">搜索国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-16">通知消息国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-17">私信国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-18">举报与审核国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-19">后台管理系统国际化怎么测</a></li>
+<li><a href="#forum-i18n-ch-20">多语言内容审核怎么测</a></li>
+<li><a href="#forum-i18n-ch-21">海外合规入口本地化怎么测</a></li>
+<li><a href="#forum-i18n-ch-22">多语言文案怎么测</a></li>
+<li><a href="#forum-i18n-ch-23">长文案和 UI 布局怎么测</a></li>
+<li><a href="#forum-i18n-ch-24">多语言输入和字符编码怎么测</a></li>
+<li><a href="#forum-i18n-ch-25">字数限制怎么测</a></li>
+<li><a href="#forum-i18n-ch-26">复数、变量、占位符怎么测</a></li>
+<li><a href="#forum-i18n-ch-27">RTL 语言布局怎么测</a></li>
+<li><a href="#forum-i18n-ch-28">多语言搜索怎么测</a></li>
+<li><a href="#forum-i18n-ch-29">时区切换怎么测</a></li>
+<li><a href="#forum-i18n-ch-30">夏令时怎么测</a></li>
+<li><a href="#forum-i18n-ch-31">日期、数字、货币格式怎么测</a></li>
+<li><a href="#forum-i18n-ch-32">国家地区差异怎么测</a></li>
+<li><a href="#forum-i18n-ch-33">国际化问题如何定位</a></li>
+<li><a href="#forum-i18n-ch-34">国际化测试用例怎么写</a></li>
+<li><a href="#forum-i18n-ch-35">国际化类 Bug 怎么提交</a></li>
+<li><a href="#forum-i18n-ch-36">新手常见误区</a></li>
+<li><a href="#forum-i18n-ch-37">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<h2 id="第一部分：国际化与本地化基础概念"><a href="#第一部分：国际化与本地化基础概念" class="headerlink" title="第一部分：国际化与本地化基础概念"></a>第一部分：国际化与本地化基础概念</h2><blockquote>
+<p>如果你是国际化测试新手，建议先完整学习这一部分。</p>
+<p>如果你已经理解多语言、时区、RTL，可以直接跳到 <strong>第二部分：海外社区论坛国际化实战</strong>。</p>
+</blockquote>
+<hr>
+<p><a id="forum-i18n-ch-01"></a></p>
+<h2 id="1-为什么海外社区论坛要做国际化与本地化测试"><a href="#1-为什么海外社区论坛要做国际化与本地化测试" class="headerlink" title="1. 为什么海外社区论坛要做国际化与本地化测试"></a>1. 为什么海外社区论坛要做国际化与本地化测试</h2><p>海外社区论坛面对的用户可能来自不同国家和地区。</p>
+<p>这些用户可能：</p>
+<ul>
+<li>使用不同语言</li>
+<li>处在不同时区</li>
+<li>使用不同日期格式</li>
+<li>使用不同数字格式</li>
+<li>使用不同货币符号</li>
+<li>使用不同设备语言</li>
+<li>使用不同文化习惯</li>
+<li>受到不同地区法规影响</li>
+</ul>
+<p>如果产品只按一个国家或一种语言设计，就很容易出现问题。</p>
+<hr>
+<h3 id="1-1-海外项目常见国际化问题"><a href="#1-1-海外项目常见国际化问题" class="headerlink" title="1.1 海外项目常见国际化问题"></a>1.1 海外项目常见国际化问题</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文案未翻译</td>
+<td>页面出现中文或翻译 key，例如 <code>login.error</code></td>
+</tr>
+<tr>
+<td>文案过长撑破 UI</td>
+<td>德语按钮文案太长，按钮显示不全</td>
+</tr>
+<tr>
+<td>RTL 布局错误</td>
+<td>阿拉伯语页面方向仍然从左到右</td>
+</tr>
+<tr>
+<td>时间显示错误</td>
+<td>用户刚发帖，却显示为“明天”</td>
+</tr>
+<tr>
+<td>日期格式混乱</td>
+<td>05&#x2F;08&#x2F;2026 在美国和欧洲含义不同</td>
+</tr>
+<tr>
+<td>搜索不支持多语言</td>
+<td>日文、韩文、重音字符搜索不到</td>
+</tr>
+<tr>
+<td>字数限制错误</td>
+<td>中文或 Emoji 被错误计算长度</td>
+</tr>
+<tr>
+<td>合规入口缺失</td>
+<td>部分地区没有隐私政策或 Cookie 设置入口</td>
+</tr>
+<tr>
+<td>通知变量错位</td>
+<td>翻译后用户名、帖子标题位置错误</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="1-2-国际化测试和普通功能测试有什么区别"><a href="#1-2-国际化测试和普通功能测试有什么区别" class="headerlink" title="1.2 国际化测试和普通功能测试有什么区别"></a>1.2 国际化测试和普通功能测试有什么区别</h3><p>普通功能测试关注：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">功能能不能正常使用</span><br></pre></td></tr></table></figure>
+
+<p>国际化测试关注：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">不同语言、不同地区、不同时间规则下，功能是否仍然正常使用</span><br></pre></td></tr></table></figure>
+
+<p>例如发帖功能：</p>
+<p>普通功能测试会测：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">输入标题和正文，点击发布，发布成功</span><br></pre></td></tr></table></figure>
+
+<p>国际化测试还要测：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">标题输入日文是否正常？</span><br><span class="line">正文输入阿拉伯语是否方向正确？</span><br><span class="line">Emoji 是否乱码？</span><br><span class="line">发布时间在纽约时区是否正确？</span><br><span class="line">错误提示是否按当前语言显示？</span><br><span class="line">标题字数限制是否对中文、英文、Emoji 都正确？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-i18n-ch-02"></a></p>
+<h2 id="2-什么是国际化-I18N"><a href="#2-什么是国际化-I18N" class="headerlink" title="2. 什么是国际化 I18N"></a>2. 什么是国际化 I18N</h2><p>国际化英文是 Internationalization，常缩写为 I18N。</p>
+<p>为什么叫 I18N？</p>
+<p>因为 Internationalization 这个单词中，I 和 N 中间有 18 个字母。</p>
+<p>简单理解：</p>
+<blockquote>
+<p>国际化是让产品具备支持多语言、多地区、多时区的能力。</p>
+</blockquote>
+<p>它更偏技术和框架能力。</p>
+<hr>
+<h3 id="2-1-国际化能力包括什么"><a href="#2-1-国际化能力包括什么" class="headerlink" title="2.1 国际化能力包括什么"></a>2.1 国际化能力包括什么</h3><p>国际化能力通常包括：</p>
+<ul>
+<li>文案不写死在代码里</li>
+<li>可以根据语言切换文案</li>
+<li>支持不同日期格式</li>
+<li>支持不同时区</li>
+<li>支持不同数字格式</li>
+<li>支持 RTL 布局</li>
+<li>支持 Unicode 字符</li>
+<li>支持多语言输入和展示</li>
+<li>支持多语言搜索</li>
+</ul>
+<hr>
+<h3 id="2-2-举个例子"><a href="#2-2-举个例子" class="headerlink" title="2.2 举个例子"></a>2.2 举个例子</h3><p>不好的写法：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">按钮固定写死：发布</span><br></pre></td></tr></table></figure>
+
+<p>好的国际化设计：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">按钮 key：post.publish</span><br><span class="line">中文：发布</span><br><span class="line">英文：Post</span><br><span class="line">日文：投稿</span><br><span class="line">德语：Veröffentlichen</span><br></pre></td></tr></table></figure>
+
+<p>这样用户切换语言时，按钮文案可以自动变化。</p>
+<hr>
+<p><a id="forum-i18n-ch-03"></a></p>
+<h2 id="3-什么是本地化-L10N"><a href="#3-什么是本地化-L10N" class="headerlink" title="3. 什么是本地化 L10N"></a>3. 什么是本地化 L10N</h2><p>本地化英文是 Localization，常缩写为 L10N。</p>
+<p>简单理解：</p>
+<blockquote>
+<p>本地化是根据具体国家或地区的语言、文化、格式、法规习惯，把产品调整得更适合当地用户。</p>
+</blockquote>
+<p>它更偏用户体验和地区适配。</p>
+<hr>
+<h3 id="3-1-本地化能力包括什么"><a href="#3-1-本地化能力包括什么" class="headerlink" title="3.1 本地化能力包括什么"></a>3.1 本地化能力包括什么</h3><p>本地化通常包括：</p>
+<ul>
+<li>翻译成当地语言</li>
+<li>使用当地日期格式</li>
+<li>使用当地时间显示方式</li>
+<li>使用当地货币符号</li>
+<li>使用当地手机号格式</li>
+<li>使用当地地址格式</li>
+<li>使用当地合规文案</li>
+<li>使用符合当地习惯的用词</li>
+<li>根据地区展示不同功能或入口</li>
+</ul>
+<hr>
+<h3 id="3-2-举个例子"><a href="#3-2-举个例子" class="headerlink" title="3.2 举个例子"></a>3.2 举个例子</h3><p>同一个日期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">2026 年 5 月 8 日</span><br></pre></td></tr></table></figure>
+
+<p>在不同地区可能展示为：</p>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>常见展示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中国&#x2F;日本&#x2F;韩国</td>
+<td>2026&#x2F;05&#x2F;08</td>
+</tr>
+<tr>
+<td>美国</td>
+<td>05&#x2F;08&#x2F;2026</td>
+</tr>
+<tr>
+<td>英国&#x2F;欧洲</td>
+<td>08&#x2F;05&#x2F;2026</td>
+</tr>
+</tbody></table>
+<p>如果产品面向全球用户，就要避免让用户误解日期。</p>
+<hr>
+<p><a id="forum-i18n-ch-04"></a></p>
+<h2 id="4-国际化和本地化有什么区别"><a href="#4-国际化和本地化有什么区别" class="headerlink" title="4. 国际化和本地化有什么区别"></a>4. 国际化和本地化有什么区别</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>国际化 I18N</th>
+<th>本地化 L10N</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关注点</td>
+<td>产品是否具备多语言多地区能力</td>
+<td>产品是否适合某个具体地区用户</td>
+</tr>
+<tr>
+<td>更偏向</td>
+<td>技术能力</td>
+<td>用户体验和地区规则</td>
+</tr>
+<tr>
+<td>示例</td>
+<td>支持切换语言、支持 Unicode</td>
+<td>英文翻译自然、日期符合美国格式</td>
+</tr>
+<tr>
+<td>测试重点</td>
+<td>是否能切语言、字符是否乱码、时区是否支持</td>
+<td>翻译是否准确、格式是否符合当地习惯</td>
+</tr>
+</tbody></table>
+<p>一句话理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">国际化 = 产品有能力支持全球化</span><br><span class="line">本地化 = 产品在某个地区用起来像本地产品</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-i18n-ch-05"></a></p>
+<h2 id="5-多语言测试要关注什么"><a href="#5-多语言测试要关注什么" class="headerlink" title="5. 多语言测试要关注什么"></a>5. 多语言测试要关注什么</h2><p>多语言测试不是只看页面有没有英文。</p>
+<p>真正要关注：</p>
+<ul>
+<li>文案是否完整</li>
+<li>翻译是否正确</li>
+<li>是否有未翻译 key</li>
+<li>文案长度是否适配 UI</li>
+<li>不同语言输入是否正常</li>
+<li>不同语言搜索是否正常</li>
+<li>错误提示是否跟随语言切换</li>
+<li>通知、邮件、弹窗是否也翻译</li>
+<li>后台是否能展示多语言内容</li>
+</ul>
+<hr>
+<h3 id="5-1-常见测试语言"><a href="#5-1-常见测试语言" class="headerlink" title="5.1 常见测试语言"></a>5.1 常见测试语言</h3><p>海外社区常见语言：</p>
+<table>
+<thead>
+<tr>
+<th>语言</th>
+<th>特点</th>
+<th>测试重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>英文</td>
+<td>最常见</td>
+<td>大小写、复数、长单词换行</td>
+</tr>
+<tr>
+<td>德语</td>
+<td>单词很长</td>
+<td>UI 是否撑破</td>
+</tr>
+<tr>
+<td>法语</td>
+<td>有重音字符</td>
+<td>字符展示、搜索</td>
+</tr>
+<tr>
+<td>西班牙语</td>
+<td>用户量大</td>
+<td>重音、标点、文案长度</td>
+</tr>
+<tr>
+<td>日语</td>
+<td>无空格分词</td>
+<td>输入、换行、搜索</td>
+</tr>
+<tr>
+<td>韩语</td>
+<td>字符组合复杂</td>
+<td>输入、删除、搜索</td>
+</tr>
+<tr>
+<td>阿拉伯语</td>
+<td>RTL 从右向左</td>
+<td>页面方向、混排、图标方向</td>
+</tr>
+<tr>
+<td>泰语</td>
+<td>单词之间通常无空格</td>
+<td>自动换行、截断</td>
+</tr>
+<tr>
+<td>中文</td>
+<td>无空格分词</td>
+<td>搜索、字数限制、审核</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-2-测试时不要只测-UI-文案"><a href="#5-2-测试时不要只测-UI-文案" class="headerlink" title="5.2 测试时不要只测 UI 文案"></a>5.2 测试时不要只测 UI 文案</h3><p>还要测用户生成内容。</p>
+<p>社区论坛是 UGC 产品，用户会自己输入：</p>
+<ul>
+<li>昵称</li>
+<li>简介</li>
+<li>帖子标题</li>
+<li>帖子正文</li>
+<li>评论</li>
+<li>私信</li>
+<li>举报描述</li>
+</ul>
+<p>这些输入也必须支持多语言。</p>
+<hr>
+<p><a id="forum-i18n-ch-06"></a></p>
+<h2 id="6-RTL-语言是什么"><a href="#6-RTL-语言是什么" class="headerlink" title="6. RTL 语言是什么"></a>6. RTL 语言是什么</h2><p>RTL 是 Right To Left 的缩写，意思是从右向左书写。</p>
+<p>常见 RTL 语言：</p>
+<ul>
+<li>阿拉伯语</li>
+<li>希伯来语</li>
+<li>波斯语</li>
+<li>乌尔都语</li>
+</ul>
+<p>大部分中文、英文、日文是 LTR，也就是从左向右。</p>
+<hr>
+<h3 id="6-1-RTL-会影响什么"><a href="#6-1-RTL-会影响什么" class="headerlink" title="6.1 RTL 会影响什么"></a>6.1 RTL 会影响什么</h3><p>RTL 不只是文字方向变化，还会影响页面布局。</p>
+<p>需要关注：</p>
+<ul>
+<li>页面整体方向</li>
+<li>返回按钮方向</li>
+<li>输入框光标方向</li>
+<li>列表排列方向</li>
+<li>消息气泡方向</li>
+<li>图标是否需要镜像</li>
+<li>数字和英文混排是否正常</li>
+<li>左右滑动手势是否符合预期</li>
+</ul>
+<hr>
+<h3 id="6-2-举个例子"><a href="#6-2-举个例子" class="headerlink" title="6.2 举个例子"></a>6.2 举个例子</h3><p>LTR 页面可能是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">头像  昵称  内容</span><br></pre></td></tr></table></figure>
+
+<p>RTL 页面可能需要变成：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">内容  昵称  头像</span><br></pre></td></tr></table></figure>
+
+<p>如果只是把文字翻译成阿拉伯语，但布局仍然完全按英文方向展示，就可能影响用户理解。</p>
+<hr>
+<p><a id="forum-i18n-ch-07"></a></p>
+<h2 id="7-时区和夏令时是什么"><a href="#7-时区和夏令时是什么" class="headerlink" title="7. 时区和夏令时是什么"></a>7. 时区和夏令时是什么</h2><p>海外项目一定要理解时区和夏令时。</p>
+<hr>
+<h3 id="7-1-什么是时区"><a href="#7-1-什么是时区" class="headerlink" title="7.1 什么是时区"></a>7.1 什么是时区</h3><p>同一个真实时刻，不同地区显示的本地时间可能不同。</p>
+<p>例如同一时刻：</p>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>可能显示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>新加坡</td>
+<td>2026-05-08 20:00</td>
+</tr>
+<tr>
+<td>日本</td>
+<td>2026-05-08 21:00</td>
+</tr>
+<tr>
+<td>英国</td>
+<td>2026-05-08 13:00</td>
+</tr>
+<tr>
+<td>纽约</td>
+<td>2026-05-08 08:00</td>
+</tr>
+<tr>
+<td>洛杉矶</td>
+<td>2026-05-08 05:00</td>
+</tr>
+</tbody></table>
+<p>所以用户发帖时间、评论时间、通知时间都要按产品规则正确展示。</p>
+<hr>
+<h3 id="7-2-什么是夏令时"><a href="#7-2-什么是夏令时" class="headerlink" title="7.2 什么是夏令时"></a>7.2 什么是夏令时</h3><p>夏令时英文是 Daylight Saving Time，简称 DST。</p>
+<p>简单理解：</p>
+<blockquote>
+<p>有些国家会在一年中的某段时间，把本地时间拨快 1 小时；到了另一段时间，再把时间拨回去。</p>
+</blockquote>
+<p>例如美国纽约：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">冬天可能是 UTC-5</span><br><span class="line">夏天可能是 UTC-4</span><br></pre></td></tr></table></figure>
+
+<p>所以不能简单认为：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">纽约永远是 UTC-5</span><br></pre></td></tr></table></figure>
+
+<p>这是错误的。</p>
+<hr>
+<h3 id="7-3-夏令时为什么容易出问题"><a href="#7-3-夏令时为什么容易出问题" class="headerlink" title="7.3 夏令时为什么容易出问题"></a>7.3 夏令时为什么容易出问题</h3><p>夏令时切换时，可能出现：</p>
+<ul>
+<li>某一天少 1 个小时</li>
+<li>某一天多 1 个小时</li>
+<li>某些本地时间不存在</li>
+<li>某些本地时间出现两次</li>
+</ul>
+<p>常见问题：</p>
+<ul>
+<li>活动提前 1 小时开始</li>
+<li>封禁提前或延后 1 小时解除</li>
+<li>消息排序错乱</li>
+<li>统计按天计算错误</li>
+<li>帖子时间显示为未来时间</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-08"></a></p>
+<h2 id="8-地区格式和文化差异是什么"><a href="#8-地区格式和文化差异是什么" class="headerlink" title="8. 地区格式和文化差异是什么"></a>8. 地区格式和文化差异是什么</h2><p>海外本地化不仅是语言，还包括地区格式和文化习惯。</p>
+<hr>
+<h3 id="8-1-日期格式差异"><a href="#8-1-日期格式差异" class="headerlink" title="8.1 日期格式差异"></a>8.1 日期格式差异</h3><table>
+<thead>
+<tr>
+<th>地区</th>
+<th>常见格式</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>美国</td>
+<td>MM&#x2F;DD&#x2F;YYYY</td>
+<td>05&#x2F;08 表示 5 月 8 日</td>
+</tr>
+<tr>
+<td>英国&#x2F;欧洲</td>
+<td>DD&#x2F;MM&#x2F;YYYY</td>
+<td>05&#x2F;08 表示 8 月 5 日</td>
+</tr>
+<tr>
+<td>中国&#x2F;日本&#x2F;韩国</td>
+<td>YYYY&#x2F;MM&#x2F;DD</td>
+<td>年月日更清晰</td>
+</tr>
+</tbody></table>
+<p>如果活动截止日期展示不清楚，用户可能误解。</p>
+<hr>
+<h3 id="8-2-数字格式差异"><a href="#8-2-数字格式差异" class="headerlink" title="8.2 数字格式差异"></a>8.2 数字格式差异</h3><table>
+<thead>
+<tr>
+<th>地区</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>美国&#x2F;英国</td>
+<td>1,234.56</td>
+</tr>
+<tr>
+<td>德国&#x2F;法国部分场景</td>
+<td>1.234,56</td>
+</tr>
+</tbody></table>
+<p>社区里可能涉及：</p>
+<ul>
+<li>粉丝数</li>
+<li>点赞数</li>
+<li>浏览量</li>
+<li>积分</li>
+<li>奖励数量</li>
+</ul>
+<hr>
+<h3 id="8-3-货币格式差异"><a href="#8-3-货币格式差异" class="headerlink" title="8.3 货币格式差异"></a>8.3 货币格式差异</h3><p>如果社区有会员、订阅、打赏、付费内容，需要测：</p>
+<ul>
+<li>币种符号</li>
+<li>小数位</li>
+<li>金额格式</li>
+<li>税费展示</li>
+<li>支付地区限制</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">$9.99</span><br><span class="line">€9,99</span><br><span class="line">¥1200</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-i18n-ch-09"></a></p>
+<h2 id="9-国际化专项测试前需要准备什么"><a href="#9-国际化专项测试前需要准备什么" class="headerlink" title="9. 国际化专项测试前需要准备什么"></a>9. 国际化专项测试前需要准备什么</h2><hr>
+<h3 id="9-1-准备测试语言"><a href="#9-1-准备测试语言" class="headerlink" title="9.1 准备测试语言"></a>9.1 准备测试语言</h3><p>至少准备：</p>
+<ul>
+<li>英文</li>
+<li>中文</li>
+<li>日文</li>
+<li>韩文</li>
+<li>德语或法语</li>
+<li>阿拉伯语，如果产品支持 RTL</li>
+<li>目标市场主要语言</li>
+</ul>
+<hr>
+<h3 id="9-2-准备测试时区"><a href="#9-2-准备测试时区" class="headerlink" title="9.2 准备测试时区"></a>9.2 准备测试时区</h3><p>建议准备：</p>
+<table>
+<thead>
+<tr>
+<th>时区</th>
+<th>代表地区</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Asia&#x2F;Singapore</td>
+<td>新加坡</td>
+</tr>
+<tr>
+<td>Asia&#x2F;Tokyo</td>
+<td>日本</td>
+</tr>
+<tr>
+<td>Europe&#x2F;London</td>
+<td>英国</td>
+</tr>
+<tr>
+<td>Europe&#x2F;Berlin</td>
+<td>德国</td>
+</tr>
+<tr>
+<td>America&#x2F;New_York</td>
+<td>美国东部</td>
+</tr>
+<tr>
+<td>America&#x2F;Los_Angeles</td>
+<td>美国西部</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="9-3-准备测试数据"><a href="#9-3-准备测试数据" class="headerlink" title="9.3 准备测试数据"></a>9.3 准备测试数据</h3><p>文本数据：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Hello community</span><br><span class="line">你好，社区</span><br><span class="line">こんにちは</span><br><span class="line">안녕하세요</span><br><span class="line">مرحبا</span><br><span class="line">café</span><br><span class="line">naïve</span><br><span class="line">😀🔥🎉</span><br><span class="line">ThisIsAVeryLongEnglishWordWithoutSpacesToTestWrapping</span><br></pre></td></tr></table></figure>
+
+<p>时间数据：</p>
+<ul>
+<li>当前时间发帖</li>
+<li>跨天时间</li>
+<li>活动开始前</li>
+<li>活动结束后</li>
+<li>夏令时切换日前后，按条件准备</li>
+</ul>
+<hr>
+<h3 id="9-4-准备设备和环境"><a href="#9-4-准备设备和环境" class="headerlink" title="9.4 准备设备和环境"></a>9.4 准备设备和环境</h3><ul>
+<li>不同系统语言的手机</li>
+<li>不同浏览器语言</li>
+<li>不同时区设置</li>
+<li>App 语言设置</li>
+<li>Web 语言切换入口</li>
+<li>后台管理系统语言设置，按需求判断</li>
+<li>VPN 或地区模拟工具，按公司规范使用</li>
+</ul>
+<hr>
+<h2 id="第二部分：海外社区论坛国际化实战"><a href="#第二部分：海外社区论坛国际化实战" class="headerlink" title="第二部分：海外社区论坛国际化实战"></a>第二部分：海外社区论坛国际化实战</h2><blockquote>
+<p>这一部分开始进入项目实战。</p>
+<p>国际化测试要结合具体业务模块，不是只看首页有没有翻译。</p>
+</blockquote>
+<hr>
+<p><a id="forum-i18n-ch-10"></a></p>
+<h2 id="10-注册登录国际化怎么测"><a href="#10-注册登录国际化怎么测" class="headerlink" title="10. 注册登录国际化怎么测"></a>10. 注册登录国际化怎么测</h2><p>注册登录是用户进入社区的第一步，国际化问题会直接影响新用户转化。</p>
+<hr>
+<h3 id="10-1-注册页文案"><a href="#10-1-注册页文案" class="headerlink" title="10.1 注册页文案"></a>10.1 注册页文案</h3><p>测试点：</p>
+<ul>
+<li>邮箱输入框占位文案是否翻译</li>
+<li>密码规则是否翻译</li>
+<li>验证码提示是否翻译</li>
+<li>第三方登录按钮文案是否翻译</li>
+<li>用户协议、隐私政策入口是否翻译</li>
+<li>错误提示是否跟随当前语言</li>
+</ul>
+<hr>
+<h3 id="10-2-邮箱和手机号格式"><a href="#10-2-邮箱和手机号格式" class="headerlink" title="10.2 邮箱和手机号格式"></a>10.2 邮箱和手机号格式</h3><p>测试点：</p>
+<ul>
+<li>不同地区手机号区号显示正确</li>
+<li>国家&#x2F;地区列表是否本地化</li>
+<li>手机号格式提示是否清楚</li>
+<li>邮箱大小写、别名处理不受语言影响</li>
+<li>错误提示文案语言正确</li>
+</ul>
+<hr>
+<h3 id="10-3-第三方登录"><a href="#10-3-第三方登录" class="headerlink" title="10.3 第三方登录"></a>10.3 第三方登录</h3><p>测试点：</p>
+<ul>
+<li>Google &#x2F; Apple &#x2F; Facebook 授权页语言是否符合设备或浏览器语言</li>
+<li>授权取消后错误提示语言正确</li>
+<li>第三方返回昵称为多语言时展示正常</li>
+<li>Apple 隐藏邮箱提示是否本地化</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-11"></a></p>
+<h2 id="11-用户资料国际化怎么测"><a href="#11-用户资料国际化怎么测" class="headerlink" title="11. 用户资料国际化怎么测"></a>11. 用户资料国际化怎么测</h2><p>用户资料包含昵称、头像、简介、地区、语言偏好等信息。</p>
+<hr>
+<h3 id="11-1-昵称测试"><a href="#11-1-昵称测试" class="headerlink" title="11.1 昵称测试"></a>11.1 昵称测试</h3><p>测试点：</p>
+<ul>
+<li>英文昵称</li>
+<li>中文昵称</li>
+<li>日文昵称</li>
+<li>韩文昵称</li>
+<li>阿拉伯语昵称</li>
+<li>Emoji 昵称</li>
+<li>超长昵称</li>
+<li>重音字符昵称，例如 café</li>
+<li>昵称在个人主页、帖子、评论、通知中展示一致</li>
+</ul>
+<hr>
+<h3 id="11-2-简介测试"><a href="#11-2-简介测试" class="headerlink" title="11.2 简介测试"></a>11.2 简介测试</h3><p>测试点：</p>
+<ul>
+<li>多语言简介保存成功</li>
+<li>换行展示正常</li>
+<li>长文本不会撑破 UI</li>
+<li>RTL 简介方向正确</li>
+<li>链接展示和审核正常</li>
+<li>字数限制计算正确</li>
+</ul>
+<hr>
+<h3 id="11-3-地区和语言偏好"><a href="#11-3-地区和语言偏好" class="headerlink" title="11.3 地区和语言偏好"></a>11.3 地区和语言偏好</h3><p>测试点：</p>
+<ul>
+<li>用户选择语言后页面切换</li>
+<li>用户选择地区后日期&#x2F;格式变化，按需求判断</li>
+<li>退出登录后语言偏好是否保留</li>
+<li>多端登录后语言偏好是否同步，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-12"></a></p>
+<h2 id="12-发帖与内容展示国际化怎么测"><a href="#12-发帖与内容展示国际化怎么测" class="headerlink" title="12. 发帖与内容展示国际化怎么测"></a>12. 发帖与内容展示国际化怎么测</h2><p>发帖是社区 UGC 的核心，必须支持多语言输入和展示。</p>
+<hr>
+<h3 id="12-1-发帖输入"><a href="#12-1-发帖输入" class="headerlink" title="12.1 发帖输入"></a>12.1 发帖输入</h3><p>测试点：</p>
+<ul>
+<li>标题输入英文</li>
+<li>标题输入中文</li>
+<li>标题输入日文</li>
+<li>标题输入韩文</li>
+<li>标题输入阿拉伯语</li>
+<li>正文混合多语言</li>
+<li>正文包含 Emoji</li>
+<li>正文包含重音字符</li>
+<li>正文超长</li>
+<li>正文包含无空格长单词</li>
+</ul>
+<hr>
+<h3 id="12-2-发布后展示"><a href="#12-2-发布后展示" class="headerlink" title="12.2 发布后展示"></a>12.2 发布后展示</h3><p>需要验证：</p>
+<ul>
+<li>帖子详情展示正常</li>
+<li>Feed 展示摘要正常</li>
+<li>用户主页展示正常</li>
+<li>后台审核展示正常</li>
+<li>搜索结果展示正常</li>
+<li>不出现乱码、问号、方框字符</li>
+<li>换行和截断正常</li>
+</ul>
+<hr>
+<h3 id="12-3-字数限制"><a href="#12-3-字数限制" class="headerlink" title="12.3 字数限制"></a>12.3 字数限制</h3><p>要确认：</p>
+<ul>
+<li>英文按字符还是单词计算</li>
+<li>中文按字符还是字节计算</li>
+<li>Emoji 算几个字符</li>
+<li>阿拉伯语和组合字符是否计算异常</li>
+<li>剩余字数提示是否准确</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-13"></a></p>
+<h2 id="13-评论与回复国际化怎么测"><a href="#13-评论与回复国际化怎么测" class="headerlink" title="13. 评论与回复国际化怎么测"></a>13. 评论与回复国际化怎么测</h2><p>评论区多语言混杂很常见。</p>
+<hr>
+<h3 id="13-1-评论输入和展示"><a href="#13-1-评论输入和展示" class="headerlink" title="13.1 评论输入和展示"></a>13.1 评论输入和展示</h3><p>测试点：</p>
+<ul>
+<li>多语言评论成功</li>
+<li>Emoji 评论成功</li>
+<li>RTL 评论显示方向正确</li>
+<li>多语言混排正常</li>
+<li>@ 用户后文本方向不乱</li>
+<li>评论折叠、展开文案翻译正确</li>
+<li>评论删除提示本地化</li>
+</ul>
+<hr>
+<h3 id="13-2-回复通知"><a href="#13-2-回复通知" class="headerlink" title="13.2 回复通知"></a>13.2 回复通知</h3><p>测试点：</p>
+<ul>
+<li>回复后通知文案语言正确</li>
+<li>通知中用户名、帖子标题变量位置正确</li>
+<li>多语言标题在通知中不乱码</li>
+<li>RTL 通知布局合理</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-14"></a></p>
+<h2 id="14-Feed-信息流国际化怎么测"><a href="#14-Feed-信息流国际化怎么测" class="headerlink" title="14. Feed 信息流国际化怎么测"></a>14. Feed 信息流国际化怎么测</h2><p>Feed 是用户最常访问的页面。</p>
+<hr>
+<h3 id="14-1-Feed-文案"><a href="#14-1-Feed-文案" class="headerlink" title="14.1 Feed 文案"></a>14.1 Feed 文案</h3><p>测试点：</p>
+<ul>
+<li>Tab 文案翻译正确，例如 Latest、Hot、Following</li>
+<li>空状态文案翻译正确</li>
+<li>加载失败文案翻译正确</li>
+<li>刷新、加载更多提示翻译正确</li>
+<li>推荐原因文案翻译正确，按需求判断</li>
+</ul>
+<hr>
+<h3 id="14-2-Feed-内容展示"><a href="#14-2-Feed-内容展示" class="headerlink" title="14.2 Feed 内容展示"></a>14.2 Feed 内容展示</h3><p>测试点：</p>
+<ul>
+<li>多语言帖子标题展示正常</li>
+<li>长标题截断正常</li>
+<li>RTL 内容卡片布局正常</li>
+<li>点赞数、评论数格式正确</li>
+<li>发布时间按当前语言和时区展示</li>
+<li>已删除、审核中、隐藏状态文案正确</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-15"></a></p>
+<h2 id="15-搜索国际化怎么测"><a href="#15-搜索国际化怎么测" class="headerlink" title="15. 搜索国际化怎么测"></a>15. 搜索国际化怎么测</h2><p>搜索是国际化测试重点。</p>
+<hr>
+<h3 id="15-1-多语言关键词搜索"><a href="#15-1-多语言关键词搜索" class="headerlink" title="15.1 多语言关键词搜索"></a>15.1 多语言关键词搜索</h3><p>测试点：</p>
+<ul>
+<li>英文搜索</li>
+<li>英文大小写搜索</li>
+<li>英文单复数搜索，按搜索能力判断</li>
+<li>中文搜索</li>
+<li>日文搜索</li>
+<li>韩文搜索</li>
+<li>阿拉伯语搜索</li>
+<li>重音字符搜索，例如 café &#x2F; cafe</li>
+<li>Emoji 搜索，按需求判断</li>
+<li>混合语言搜索</li>
+</ul>
+<hr>
+<h3 id="15-2-搜索结果展示"><a href="#15-2-搜索结果展示" class="headerlink" title="15.2 搜索结果展示"></a>15.2 搜索结果展示</h3><p>测试点：</p>
+<ul>
+<li>搜索结果标题不乱码</li>
+<li>摘要高亮正确</li>
+<li>重音字符高亮正确</li>
+<li>RTL 结果布局合理</li>
+<li>无结果文案本地化</li>
+<li>搜索历史记录多语言展示正常</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-16"></a></p>
+<h2 id="16-通知消息国际化怎么测"><a href="#16-通知消息国际化怎么测" class="headerlink" title="16. 通知消息国际化怎么测"></a>16. 通知消息国际化怎么测</h2><p>通知文案通常包含变量，很容易翻译错。</p>
+<hr>
+<h3 id="16-1-通知类型"><a href="#16-1-通知类型" class="headerlink" title="16.1 通知类型"></a>16.1 通知类型</h3><p>需要测试：</p>
+<ul>
+<li>点赞通知</li>
+<li>评论通知</li>
+<li>回复通知</li>
+<li>关注通知</li>
+<li>私信通知</li>
+<li>审核结果通知</li>
+<li>封禁&#x2F;禁言通知</li>
+<li>系统公告</li>
+</ul>
+<hr>
+<h3 id="16-2-通知变量"><a href="#16-2-通知变量" class="headerlink" title="16.2 通知变量"></a>16.2 通知变量</h3><p>通知通常包含：</p>
+<ul>
+<li>用户名</li>
+<li>帖子标题</li>
+<li>评论内容摘要</li>
+<li>时间</li>
+<li>操作类型</li>
+</ul>
+<p>例如英文：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Alice commented on your post &quot;Battery issue&quot;.</span><br></pre></td></tr></table></figure>
+
+<p>测试时要检查：</p>
+<ul>
+<li>Alice 是否正确显示</li>
+<li>帖子标题是否正确</li>
+<li>不同语言下变量位置是否正确</li>
+<li>长标题是否截断正常</li>
+<li>RTL 语言下顺序是否合理</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-17"></a></p>
+<h2 id="17-私信国际化怎么测"><a href="#17-私信国际化怎么测" class="headerlink" title="17. 私信国际化怎么测"></a>17. 私信国际化怎么测</h2><p>私信是实时沟通场景，需要特别关注输入、展示、时间和已读状态。</p>
+<hr>
+<h3 id="17-1-私信内容"><a href="#17-1-私信内容" class="headerlink" title="17.1 私信内容"></a>17.1 私信内容</h3><p>测试点：</p>
+<ul>
+<li>发送英文消息</li>
+<li>发送中文消息</li>
+<li>发送日文、韩文、阿拉伯语消息</li>
+<li>发送 Emoji</li>
+<li>多语言混合消息</li>
+<li>长消息换行</li>
+<li>RTL 消息气泡方向</li>
+<li>图片消息说明文案本地化</li>
+</ul>
+<hr>
+<h3 id="17-2-私信时间和状态"><a href="#17-2-私信时间和状态" class="headerlink" title="17.2 私信时间和状态"></a>17.2 私信时间和状态</h3><p>测试点：</p>
+<ul>
+<li>消息发送时间按当前时区展示</li>
+<li>昨天&#x2F;今天判断正确</li>
+<li>已读、未读文案翻译正确</li>
+<li>多端不同时区查看消息顺序一致</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-18"></a></p>
+<h2 id="18-举报与审核国际化怎么测"><a href="#18-举报与审核国际化怎么测" class="headerlink" title="18. 举报与审核国际化怎么测"></a>18. 举报与审核国际化怎么测</h2><p>举报和审核涉及内容治理，海外项目必须重视。</p>
+<hr>
+<h3 id="18-1-举报原因本地化"><a href="#18-1-举报原因本地化" class="headerlink" title="18.1 举报原因本地化"></a>18.1 举报原因本地化</h3><p>举报原因需要翻译准确。</p>
+<p>常见原因：</p>
+<table>
+<thead>
+<tr>
+<th>英文</th>
+<th>中文含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spam</td>
+<td>广告&#x2F;垃圾内容</td>
+</tr>
+<tr>
+<td>Harassment</td>
+<td>骚扰</td>
+</tr>
+<tr>
+<td>Hate Speech</td>
+<td>仇恨言论</td>
+</tr>
+<tr>
+<td>Nudity &#x2F; Sexual Content</td>
+<td>色情或裸露内容</td>
+</tr>
+<tr>
+<td>Violence</td>
+<td>暴力内容</td>
+</tr>
+<tr>
+<td>Scam &#x2F; Fraud</td>
+<td>诈骗</td>
+</tr>
+<tr>
+<td>Privacy Violation</td>
+<td>隐私泄露</td>
+</tr>
+<tr>
+<td>Intellectual Property</td>
+<td>侵权</td>
+</tr>
+<tr>
+<td>Other</td>
+<td>其他</td>
+</tr>
+</tbody></table>
+<p>测试点：</p>
+<ul>
+<li>举报原因翻译完整</li>
+<li>选择举报原因后后台记录正确枚举值</li>
+<li>不同语言下枚举值不应错乱</li>
+<li>举报成功提示语言正确</li>
+</ul>
+<hr>
+<h3 id="18-2-审核结果文案"><a href="#18-2-审核结果文案" class="headerlink" title="18.2 审核结果文案"></a>18.2 审核结果文案</h3><p>测试点：</p>
+<ul>
+<li>审核中提示本地化</li>
+<li>审核失败原因本地化</li>
+<li>内容已删除提示本地化</li>
+<li>申诉入口文案本地化</li>
+<li>后台审核原因是否支持多语言，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-19"></a></p>
+<h2 id="19-后台管理系统国际化怎么测"><a href="#19-后台管理系统国际化怎么测" class="headerlink" title="19. 后台管理系统国际化怎么测"></a>19. 后台管理系统国际化怎么测</h2><p>有些海外项目后台也需要支持多语言，或者至少能正确展示多语言用户内容。</p>
+<hr>
+<h3 id="19-1-后台-UI-文案"><a href="#19-1-后台-UI-文案" class="headerlink" title="19.1 后台 UI 文案"></a>19.1 后台 UI 文案</h3><p>测试点：</p>
+<ul>
+<li>菜单文案翻译正确</li>
+<li>按钮文案翻译正确</li>
+<li>筛选项文案翻译正确</li>
+<li>错误提示翻译正确</li>
+<li>操作确认弹窗翻译正确</li>
+</ul>
+<hr>
+<h3 id="19-2-后台展示用户内容"><a href="#19-2-后台展示用户内容" class="headerlink" title="19.2 后台展示用户内容"></a>19.2 后台展示用户内容</h3><p>即使后台不支持多语言切换，也必须能正确展示用户内容。</p>
+<p>测试点：</p>
+<ul>
+<li>多语言帖子不乱码</li>
+<li>RTL 内容可读</li>
+<li>Emoji 正常显示</li>
+<li>搜索用户昵称支持多语言</li>
+<li>导出内容不乱码，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-20"></a></p>
+<h2 id="20-多语言内容审核怎么测"><a href="#20-多语言内容审核怎么测" class="headerlink" title="20. 多语言内容审核怎么测"></a>20. 多语言内容审核怎么测</h2><p>国际化和风控审核会交叉。</p>
+<hr>
+<h3 id="20-1-多语言审核输入"><a href="#20-1-多语言审核输入" class="headerlink" title="20.1 多语言审核输入"></a>20.1 多语言审核输入</h3><p>测试点：</p>
+<ul>
+<li>英文违规测试样本</li>
+<li>中文违规测试样本</li>
+<li>日文违规测试样本</li>
+<li>韩文违规测试样本</li>
+<li>阿拉伯语违规测试样本</li>
+<li>多语言混合违规内容</li>
+<li>Emoji 绕过内容</li>
+</ul>
+<hr>
+<h3 id="20-2-审核提示语言"><a href="#20-2-审核提示语言" class="headerlink" title="20.2 审核提示语言"></a>20.2 审核提示语言</h3><p>测试点：</p>
+<ul>
+<li>用户当前语言为英文时，审核失败提示英文</li>
+<li>当前语言为日文时，提示日文</li>
+<li>后台风险类型记录不受前端语言影响</li>
+<li>审核枚举值稳定，不因翻译变化导致数据错误</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-21"></a></p>
+<h2 id="21-海外合规入口本地化怎么测"><a href="#21-海外合规入口本地化怎么测" class="headerlink" title="21. 海外合规入口本地化怎么测"></a>21. 海外合规入口本地化怎么测</h2><p>海外项目通常会有一些合规相关入口。</p>
+<p>测试同学不负责判断法律内容是否正确，但要验证入口和流程是否可用。</p>
+<hr>
+<h3 id="21-1-常见合规入口"><a href="#21-1-常见合规入口" class="headerlink" title="21.1 常见合规入口"></a>21.1 常见合规入口</h3><ul>
+<li>用户协议</li>
+<li>隐私政策</li>
+<li>Cookie 设置</li>
+<li>数据导出</li>
+<li>删除账号</li>
+<li>不出售或共享个人信息，按地区要求</li>
+<li>年龄确认</li>
+<li>家长同意，按产品定位判断</li>
+<li>举报入口</li>
+<li>屏蔽和拉黑入口</li>
+</ul>
+<hr>
+<h3 id="21-2-测试点"><a href="#21-2-测试点" class="headerlink" title="21.2 测试点"></a>21.2 测试点</h3><ul>
+<li>链接能打开</li>
+<li>当前语言下展示对应文案</li>
+<li>不同地区展示正确入口，按需求判断</li>
+<li>删除账号流程可用</li>
+<li>Cookie 同意&#x2F;拒绝可保存</li>
+<li>隐私设置修改后生效</li>
+<li>协议更新后重新确认逻辑正确，按需求判断</li>
+</ul>
+<hr>
+<h2 id="第三部分：国际化与本地化专项测试方法"><a href="#第三部分：国际化与本地化专项测试方法" class="headerlink" title="第三部分：国际化与本地化专项测试方法"></a>第三部分：国际化与本地化专项测试方法</h2><blockquote>
+<p>这一部分不是某个具体模块，而是可以反复使用的方法。</p>
+<p>当你遇到多语言、时区、地区格式相关问题时，可以回到这一部分找思路。</p>
+</blockquote>
+<hr>
+<p><a id="forum-i18n-ch-22"></a></p>
+<h2 id="22-多语言文案怎么测"><a href="#22-多语言文案怎么测" class="headerlink" title="22. 多语言文案怎么测"></a>22. 多语言文案怎么测</h2><hr>
+<h3 id="22-1-文案完整性"><a href="#22-1-文案完整性" class="headerlink" title="22.1 文案完整性"></a>22.1 文案完整性</h3><p>测试点：</p>
+<ul>
+<li>所有页面文案已翻译</li>
+<li>没有中文残留，按目标语言判断</li>
+<li>没有出现翻译 key</li>
+<li>没有中英文混杂</li>
+<li>弹窗、Toast、错误提示也已翻译</li>
+<li>邮件、Push、通知也已翻译，按需求判断</li>
+</ul>
+<hr>
+<h3 id="22-2-翻译准确性"><a href="#22-2-翻译准确性" class="headerlink" title="22.2 翻译准确性"></a>22.2 翻译准确性</h3><p>测试同学不一定负责专业翻译，但可以发现明显问题：</p>
+<ul>
+<li>用词不符合场景</li>
+<li>按钮意思相反</li>
+<li>错误提示和实际错误不匹配</li>
+<li>举报原因翻译不清楚</li>
+<li>审核失败原因表达错误</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-23"></a></p>
+<h2 id="23-长文案和-UI-布局怎么测"><a href="#23-长文案和-UI-布局怎么测" class="headerlink" title="23. 长文案和 UI 布局怎么测"></a>23. 长文案和 UI 布局怎么测</h2><p>不同语言长度差异很大。</p>
+<hr>
+<h3 id="23-1-常见长文案风险"><a href="#23-1-常见长文案风险" class="headerlink" title="23.1 常见长文案风险"></a>23.1 常见长文案风险</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>德语按钮</td>
+<td>文案太长显示不全</td>
+</tr>
+<tr>
+<td>弹窗标题</td>
+<td>超出弹窗宽度</td>
+</tr>
+<tr>
+<td>Tab 名称</td>
+<td>多个 Tab 重叠</td>
+</tr>
+<tr>
+<td>错误提示</td>
+<td>换行后遮挡按钮</td>
+</tr>
+<tr>
+<td>通知文案</td>
+<td>长标题导致布局错乱</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="23-2-测试方法"><a href="#23-2-测试方法" class="headerlink" title="23.2 测试方法"></a>23.2 测试方法</h3><ul>
+<li>切换到德语或法语等长文案语言</li>
+<li>检查核心页面按钮</li>
+<li>检查弹窗</li>
+<li>检查列表卡片</li>
+<li>检查 Tab 栏</li>
+<li>检查小屏设备</li>
+<li>检查横竖屏，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-24"></a></p>
+<h2 id="24-多语言输入和字符编码怎么测"><a href="#24-多语言输入和字符编码怎么测" class="headerlink" title="24. 多语言输入和字符编码怎么测"></a>24. 多语言输入和字符编码怎么测</h2><p>字符编码问题会导致乱码、保存失败、搜索异常。</p>
+<hr>
+<h3 id="24-1-测试输入"><a href="#24-1-测试输入" class="headerlink" title="24.1 测试输入"></a>24.1 测试输入</h3><p>使用：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">English text</span><br><span class="line">中文内容</span><br><span class="line">こんにちは</span><br><span class="line">안녕하세요</span><br><span class="line">مرحبا</span><br><span class="line">café</span><br><span class="line">naïve</span><br><span class="line">😀🔥🎉</span><br></pre></td></tr></table></figure>
+
+<p>分别输入到：</p>
+<ul>
+<li>昵称</li>
+<li>简介</li>
+<li>标题</li>
+<li>正文</li>
+<li>评论</li>
+<li>私信</li>
+<li>举报描述</li>
+</ul>
+<hr>
+<h3 id="24-2-预期"><a href="#24-2-预期" class="headerlink" title="24.2 预期"></a>24.2 预期</h3><ul>
+<li>保存成功</li>
+<li>展示不乱码</li>
+<li>接口返回不乱码</li>
+<li>后台展示不乱码</li>
+<li>搜索和审核能处理</li>
+<li>导出时不乱码，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-25"></a></p>
+<h2 id="25-字数限制怎么测"><a href="#25-字数限制怎么测" class="headerlink" title="25. 字数限制怎么测"></a>25. 字数限制怎么测</h2><p>字数限制在多语言下非常容易出错。</p>
+<hr>
+<h3 id="25-1-需要确认规则"><a href="#25-1-需要确认规则" class="headerlink" title="25.1 需要确认规则"></a>25.1 需要确认规则</h3><p>先确认产品规则：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">限制的是字符数？</span><br><span class="line">字节数？</span><br><span class="line">展示宽度？</span><br><span class="line">Emoji 算几个字符？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="25-2-测试点"><a href="#25-2-测试点" class="headerlink" title="25.2 测试点"></a>25.2 测试点</h3><ul>
+<li>英文达到最大长度</li>
+<li>中文达到最大长度</li>
+<li>日文达到最大长度</li>
+<li>Emoji 达到最大长度</li>
+<li>混合语言达到最大长度</li>
+<li>超出 1 个字符</li>
+<li>输入过程中剩余字数是否准确</li>
+<li>粘贴超长文本是否处理正确</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-26"></a></p>
+<h2 id="26-复数、变量、占位符怎么测"><a href="#26-复数、变量、占位符怎么测" class="headerlink" title="26. 复数、变量、占位符怎么测"></a>26. 复数、变量、占位符怎么测</h2><p>很多语言对数量有不同表达。</p>
+<hr>
+<h3 id="26-1-复数规则"><a href="#26-1-复数规则" class="headerlink" title="26.1 复数规则"></a>26.1 复数规则</h3><p>英文示例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1 comment</span><br><span class="line">2 comments</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>0 条评论</li>
+<li>1 条评论</li>
+<li>2 条评论</li>
+<li>多条评论</li>
+<li>不同语言下是否语法正确</li>
+</ul>
+<hr>
+<h3 id="26-2-变量占位符"><a href="#26-2-变量占位符" class="headerlink" title="26.2 变量占位符"></a>26.2 变量占位符</h3><p>示例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&#123;username&#125; commented on your post &#123;postTitle&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>username 是否正确替换</li>
+<li>postTitle 是否正确替换</li>
+<li>变量顺序在不同语言下是否合理</li>
+<li>变量为空时是否有兜底</li>
+<li>长变量是否导致布局异常</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-27"></a></p>
+<h2 id="27-RTL-语言布局怎么测"><a href="#27-RTL-语言布局怎么测" class="headerlink" title="27. RTL 语言布局怎么测"></a>27. RTL 语言布局怎么测</h2><hr>
+<h3 id="27-1-页面布局"><a href="#27-1-页面布局" class="headerlink" title="27.1 页面布局"></a>27.1 页面布局</h3><p>测试点：</p>
+<ul>
+<li>页面整体方向是否 RTL</li>
+<li>返回按钮方向是否正确</li>
+<li>输入框光标方向是否正确</li>
+<li>列表卡片是否适配</li>
+<li>消息气泡方向是否合理</li>
+<li>左右滑动手势是否符合需求</li>
+<li>图标是否需要镜像</li>
+</ul>
+<hr>
+<h3 id="27-2-混排测试"><a href="#27-2-混排测试" class="headerlink" title="27.2 混排测试"></a>27.2 混排测试</h3><p>阿拉伯语页面中可能出现英文、数字、Emoji。</p>
+<p>测试点：</p>
+<ul>
+<li>阿拉伯语 + 英文混排</li>
+<li>阿拉伯语 + 数字混排</li>
+<li>阿拉伯语 + URL 混排</li>
+<li>阿拉伯语 + Emoji 混排</li>
+<li>时间和数字位置是否异常</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-28"></a></p>
+<h2 id="28-多语言搜索怎么测"><a href="#28-多语言搜索怎么测" class="headerlink" title="28. 多语言搜索怎么测"></a>28. 多语言搜索怎么测</h2><hr>
+<h3 id="28-1-搜索输入"><a href="#28-1-搜索输入" class="headerlink" title="28.1 搜索输入"></a>28.1 搜索输入</h3><p>测试点：</p>
+<ul>
+<li>英文大小写</li>
+<li>英文单复数，按搜索能力</li>
+<li>中文分词</li>
+<li>日文无空格文本</li>
+<li>韩文</li>
+<li>阿拉伯语</li>
+<li>重音字符，例如 café &#x2F; cafe</li>
+<li>Emoji，按需求判断</li>
+<li>混合语言</li>
+</ul>
+<hr>
+<h3 id="28-2-搜索结果"><a href="#28-2-搜索结果" class="headerlink" title="28.2 搜索结果"></a>28.2 搜索结果</h3><p>测试点：</p>
+<ul>
+<li>结果相关</li>
+<li>高亮正确</li>
+<li>摘要不乱码</li>
+<li>排序合理</li>
+<li>点击结果跳转正确</li>
+<li>删除内容不出现在搜索结果，允许延迟按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-29"></a></p>
+<h2 id="29-时区切换怎么测"><a href="#29-时区切换怎么测" class="headerlink" title="29. 时区切换怎么测"></a>29. 时区切换怎么测</h2><hr>
+<h3 id="29-1-测试方法"><a href="#29-1-测试方法" class="headerlink" title="29.1 测试方法"></a>29.1 测试方法</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 将设备时区设置为 Asia/Singapore</span><br><span class="line">2. 发布一篇帖子</span><br><span class="line">3. 记录显示时间</span><br><span class="line">4. 切换设备时区为 America/New_York</span><br><span class="line">5. 重新打开同一帖子</span><br><span class="line">6. 对比时间显示是否符合产品规则</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="29-2-重点字段"><a href="#29-2-重点字段" class="headerlink" title="29.2 重点字段"></a>29.2 重点字段</h3><ul>
+<li>注册时间</li>
+<li>发帖时间</li>
+<li>评论时间</li>
+<li>私信时间</li>
+<li>通知时间</li>
+<li>审核时间</li>
+<li>封禁到期时间</li>
+<li>活动开始&#x2F;结束时间</li>
+</ul>
+<hr>
+<h3 id="29-3-常见-Bug"><a href="#29-3-常见-Bug" class="headerlink" title="29.3 常见 Bug"></a>29.3 常见 Bug</h3><ul>
+<li>刚发布显示为昨天</li>
+<li>刚发布显示为明天</li>
+<li>通知时间比当前时间晚</li>
+<li>评论排序错乱</li>
+<li>活动提前开始或延后结束</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-30"></a></p>
+<h2 id="30-夏令时怎么测"><a href="#30-夏令时怎么测" class="headerlink" title="30. 夏令时怎么测"></a>30. 夏令时怎么测</h2><hr>
+<h3 id="30-1-测试地区"><a href="#30-1-测试地区" class="headerlink" title="30.1 测试地区"></a>30.1 测试地区</h3><p>选择有夏令时的地区：</p>
+<ul>
+<li>America&#x2F;New_York</li>
+<li>America&#x2F;Los_Angeles</li>
+<li>Europe&#x2F;London</li>
+<li>Europe&#x2F;Berlin</li>
+</ul>
+<hr>
+<h3 id="30-2-测试场景"><a href="#30-2-测试场景" class="headerlink" title="30.2 测试场景"></a>30.2 测试场景</h3><ul>
+<li>夏令时开始前发帖</li>
+<li>夏令时开始后发帖</li>
+<li>夏令时结束前发帖</li>
+<li>夏令时结束后发帖</li>
+<li>活动跨越夏令时切换日</li>
+<li>封禁到期时间跨越夏令时切换日</li>
+<li>通知和私信排序跨越切换点</li>
+</ul>
+<hr>
+<h3 id="30-3-新手注意"><a href="#30-3-新手注意" class="headerlink" title="30.3 新手注意"></a>30.3 新手注意</h3><p>如果测试环境不能模拟真实日期，可以先做到：</p>
+<ul>
+<li>知道该风险</li>
+<li>设计测试用例</li>
+<li>向开发确认是否使用标准时区库</li>
+<li>确认时间字段是否带时区</li>
+<li>在有条件时再执行 DST 专项验证</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-31"></a></p>
+<h2 id="31-日期、数字、货币格式怎么测"><a href="#31-日期、数字、货币格式怎么测" class="headerlink" title="31. 日期、数字、货币格式怎么测"></a>31. 日期、数字、货币格式怎么测</h2><hr>
+<h3 id="31-1-日期格式"><a href="#31-1-日期格式" class="headerlink" title="31.1 日期格式"></a>31.1 日期格式</h3><p>测试点：</p>
+<ul>
+<li>美国格式 MM&#x2F;DD&#x2F;YYYY</li>
+<li>欧洲格式 DD&#x2F;MM&#x2F;YYYY</li>
+<li>亚洲格式 YYYY&#x2F;MM&#x2F;DD</li>
+<li>月份英文缩写是否正确</li>
+<li>12 小时制和 24 小时制是否符合地区习惯</li>
+</ul>
+<hr>
+<h3 id="31-2-数字格式"><a href="#31-2-数字格式" class="headerlink" title="31.2 数字格式"></a>31.2 数字格式</h3><p>测试点：</p>
+<ul>
+<li>点赞数 1,000 是否展示正确</li>
+<li>粉丝数大数字是否格式正确</li>
+<li>小数点和千分位是否符合地区习惯</li>
+<li>排序是否按数字而不是字符串</li>
+</ul>
+<hr>
+<h3 id="31-3-货币格式"><a href="#31-3-货币格式" class="headerlink" title="31.3 货币格式"></a>31.3 货币格式</h3><p>如果涉及支付：</p>
+<ul>
+<li>币种符号正确</li>
+<li>小数位正确</li>
+<li>税费展示正确，按需求判断</li>
+<li>退款金额格式正确</li>
+<li>App Store &#x2F; Google Play 订阅文案本地化</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-32"></a></p>
+<h2 id="32-国家地区差异怎么测"><a href="#32-国家地区差异怎么测" class="headerlink" title="32. 国家地区差异怎么测"></a>32. 国家地区差异怎么测</h2><hr>
+<h3 id="32-1-手机号和地址"><a href="#32-1-手机号和地址" class="headerlink" title="32.1 手机号和地址"></a>32.1 手机号和地址</h3><p>测试点：</p>
+<ul>
+<li>国家区号列表正确</li>
+<li>手机号长度校验按国家变化</li>
+<li>地址字段适配不同国家</li>
+<li>邮编格式校验正确</li>
+<li>州、省、城市字段符合地区习惯</li>
+</ul>
+<hr>
+<h3 id="32-2-地区功能差异"><a href="#32-2-地区功能差异" class="headerlink" title="32.2 地区功能差异"></a>32.2 地区功能差异</h3><p>有些功能可能按地区开放或关闭。</p>
+<p>测试点：</p>
+<ul>
+<li>某地区是否显示特定功能</li>
+<li>某地区是否隐藏特定功能</li>
+<li>地区切换后功能变化正确</li>
+<li>接口也限制对应地区规则</li>
+</ul>
+<hr>
+<p><a id="forum-i18n-ch-33"></a></p>
+<h2 id="33-国际化问题如何定位"><a href="#33-国际化问题如何定位" class="headerlink" title="33. 国际化问题如何定位"></a>33. 国际化问题如何定位</h2><hr>
+<h3 id="33-1-定位思路"><a href="#33-1-定位思路" class="headerlink" title="33.1 定位思路"></a>33.1 定位思路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">是翻译资源问题？</span><br><span class="line">是前端布局问题？</span><br><span class="line">是接口返回语言问题？</span><br><span class="line">是设备语言没有识别？</span><br><span class="line">是用户语言偏好没有保存？</span><br><span class="line">是后端时间转换问题？</span><br><span class="line">是搜索索引不支持该语言？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="33-2-常见现象和可能原因"><a href="#33-2-常见现象和可能原因" class="headerlink" title="33.2 常见现象和可能原因"></a>33.2 常见现象和可能原因</h3><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>可能原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>页面出现 key</td>
+<td>翻译资源缺失</td>
+</tr>
+<tr>
+<td>按钮文字显示不全</td>
+<td>UI 未适配长文案</td>
+</tr>
+<tr>
+<td>阿拉伯语方向不对</td>
+<td>未支持 RTL</td>
+</tr>
+<tr>
+<td>时间差 8 小时</td>
+<td>时区转换错误</td>
+</tr>
+<tr>
+<td>搜索不到日文</td>
+<td>搜索分词或索引问题</td>
+</tr>
+<tr>
+<td>Emoji 变成方块</td>
+<td>字体或编码问题</td>
+</tr>
+<tr>
+<td>通知变量错位</td>
+<td>翻译占位符配置错误</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="第四部分：用例、Bug-与总结"><a href="#第四部分：用例、Bug-与总结" class="headerlink" title="第四部分：用例、Bug 与总结"></a>第四部分：用例、Bug 与总结</h2><blockquote>
+<p>国际化测试用例一定要写清楚：语言、地区、时区、输入内容、页面位置、预期展示。</p>
+</blockquote>
+<hr>
+<p><a id="forum-i18n-ch-34"></a></p>
+<h2 id="34-国际化测试用例怎么写"><a href="#34-国际化测试用例怎么写" class="headerlink" title="34. 国际化测试用例怎么写"></a>34. 国际化测试用例怎么写</h2><p>国际化测试用例建议包含：</p>
+<ul>
+<li>用例编号</li>
+<li>模块</li>
+<li>测试语言</li>
+<li>测试地区</li>
+<li>测试时区</li>
+<li>前置条件</li>
+<li>测试数据</li>
+<li>操作步骤</li>
+<li>预期结果</li>
+<li>优先级</li>
+</ul>
+<hr>
+<h3 id="34-1-用例模板"><a href="#34-1-用例模板" class="headerlink" title="34.1 用例模板"></a>34.1 用例模板</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>I18N_POST_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>发帖</td>
+</tr>
+<tr>
+<td>测试语言</td>
+<td>日文</td>
+</tr>
+<tr>
+<td>测试地区</td>
+<td>日本</td>
+</tr>
+<tr>
+<td>测试时区</td>
+<td>Asia&#x2F;Tokyo</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>用户已登录，语言切换为日文</td>
+</tr>
+<tr>
+<td>测试数据</td>
+<td>タイトル：こんにちは；正文：これはテスト投稿です</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>发布日文帖子并查看详情、Feed、搜索结果</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>内容不乱码，展示正常，搜索可命中，时间按日本时区显示</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="34-2-示例用例：阿拉伯语-RTL-帖子展示"><a href="#34-2-示例用例：阿拉伯语-RTL-帖子展示" class="headerlink" title="34.2 示例用例：阿拉伯语 RTL 帖子展示"></a>34.2 示例用例：阿拉伯语 RTL 帖子展示</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>I18N_RTL_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>发帖展示</td>
+</tr>
+<tr>
+<td>测试语言</td>
+<td>阿拉伯语</td>
+</tr>
+<tr>
+<td>测试地区</td>
+<td>沙特阿拉伯</td>
+</tr>
+<tr>
+<td>测试时区</td>
+<td>Asia&#x2F;Riyadh</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>App 或 Web 语言切换为阿拉伯语</td>
+</tr>
+<tr>
+<td>测试数据</td>
+<td>标题和正文输入阿拉伯语测试文本</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>发布帖子，查看详情页、Feed、评论区</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>文本方向正确，页面布局合理，按钮和图标方向符合 RTL 规则，不乱码</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="34-3-示例用例：切换时区后帖子时间展示正确"><a href="#34-3-示例用例：切换时区后帖子时间展示正确" class="headerlink" title="34.3 示例用例：切换时区后帖子时间展示正确"></a>34.3 示例用例：切换时区后帖子时间展示正确</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>I18N_TIMEZONE_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>帖子时间</td>
+</tr>
+<tr>
+<td>测试语言</td>
+<td>英文</td>
+</tr>
+<tr>
+<td>测试地区</td>
+<td>美国</td>
+</tr>
+<tr>
+<td>测试时区</td>
+<td>America&#x2F;New_York</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>用户A在 Asia&#x2F;Singapore 时区发布帖子</td>
+</tr>
+<tr>
+<td>测试数据</td>
+<td>普通文本帖子</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>用户B将设备时区切换为 America&#x2F;New_York 后查看该帖子</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>帖子时间按产品规则正确转换，不显示未来时间，排序不错误</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-i18n-ch-35"></a></p>
+<h2 id="35-国际化类-Bug-怎么提交"><a href="#35-国际化类-Bug-怎么提交" class="headerlink" title="35. 国际化类 Bug 怎么提交"></a>35. 国际化类 Bug 怎么提交</h2><p>国际化类 Bug 要写清楚语言、地区和设备环境。</p>
+<hr>
+<h3 id="35-1-Bug-应包含"><a href="#35-1-Bug-应包含" class="headerlink" title="35.1 Bug 应包含"></a>35.1 Bug 应包含</h3><ul>
+<li>Bug 标题</li>
+<li>测试环境</li>
+<li>语言设置</li>
+<li>地区设置</li>
+<li>时区设置</li>
+<li>设备&#x2F;浏览器</li>
+<li>页面位置</li>
+<li>测试数据</li>
+<li>操作步骤</li>
+<li>实际结果</li>
+<li>预期结果</li>
+<li>截图或录屏</li>
+<li>严重程度</li>
+</ul>
+<hr>
+<h3 id="35-2-示例-Bug：德语按钮文案显示不全"><a href="#35-2-示例-Bug：德语按钮文案显示不全" class="headerlink" title="35.2 示例 Bug：德语按钮文案显示不全"></a>35.2 示例 Bug：德语按钮文案显示不全</h3><h4 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[国际化] 德语环境下发帖按钮文案显示不全</span><br></pre></td></tr></table></figure>
+
+<h4 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">测试环境：Test</span><br><span class="line">设备：iPhone 14</span><br><span class="line">语言：Deutsch</span><br><span class="line">时区：Europe/Berlin</span><br><span class="line">页面：发帖页</span><br></pre></td></tr></table></figure>
+
+<h4 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 将 App 语言切换为德语</span><br><span class="line">2. 进入发帖页</span><br><span class="line">3. 查看底部发布按钮</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果"><a href="#实际结果" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">发布按钮德语文案被截断，只显示部分文字，用户无法完整理解按钮含义。</span><br></pre></td></tr></table></figure>
+
+<h4 id="预期结果"><a href="#预期结果" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">按钮文案应完整展示，或采用合理换行/缩略/自适应布局。</span><br></pre></td></tr></table></figure>
+
+<h4 id="严重程度"><a href="#严重程度" class="headerlink" title="严重程度"></a>严重程度</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Major</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="35-3-示例-Bug：纽约时区帖子时间显示为未来时间"><a href="#35-3-示例-Bug：纽约时区帖子时间显示为未来时间" class="headerlink" title="35.3 示例 Bug：纽约时区帖子时间显示为未来时间"></a>35.3 示例 Bug：纽约时区帖子时间显示为未来时间</h3><h4 id="标题-1"><a href="#标题-1" class="headerlink" title="标题"></a>标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[时区] America/New_York 时区下刚发布的帖子显示为未来时间</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果-1"><a href="#实际结果-1" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户在新加坡时间 2026-05-08 20:00 发布帖子后，切换到 America/New_York 查看，帖子显示为 Tomorrow 08:00。</span><br></pre></td></tr></table></figure>
+
+<h4 id="预期结果-1"><a href="#预期结果-1" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">帖子时间应按纽约本地时间正确显示，不应显示为未来时间。</span><br></pre></td></tr></table></figure>
+
+<h4 id="严重程度-1"><a href="#严重程度-1" class="headerlink" title="严重程度"></a>严重程度</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Major</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-i18n-ch-36"></a></p>
+<h2 id="36-新手常见误区"><a href="#36-新手常见误区" class="headerlink" title="36. 新手常见误区"></a>36. 新手常见误区</h2><h3 id="36-1-只测英文"><a href="#36-1-只测英文" class="headerlink" title="36.1 只测英文"></a>36.1 只测英文</h3><p>海外项目不等于英文项目。</p>
+<p>如果目标市场包括日本、韩国、欧洲、中东，就要覆盖对应语言。</p>
+<hr>
+<h3 id="36-2-只看页面翻译，不测输入"><a href="#36-2-只看页面翻译，不测输入" class="headerlink" title="36.2 只看页面翻译，不测输入"></a>36.2 只看页面翻译，不测输入</h3><p>社区项目用户会自己输入内容。</p>
+<p>一定要测：</p>
+<ul>
+<li>发帖</li>
+<li>评论</li>
+<li>私信</li>
+<li>昵称</li>
+<li>简介</li>
+<li>搜索</li>
+</ul>
+<hr>
+<h3 id="36-3-不测时区"><a href="#36-3-不测时区" class="headerlink" title="36.3 不测时区"></a>36.3 不测时区</h3><p>很多海外项目问题都出在时间。</p>
+<p>要重点测：</p>
+<ul>
+<li>发帖时间</li>
+<li>评论时间</li>
+<li>私信时间</li>
+<li>通知时间</li>
+<li>活动时间</li>
+<li>封禁到期时间</li>
+</ul>
+<hr>
+<h3 id="36-4-忽略-RTL"><a href="#36-4-忽略-RTL" class="headerlink" title="36.4 忽略 RTL"></a>36.4 忽略 RTL</h3><p>如果支持阿拉伯语或希伯来语，必须测 RTL。</p>
+<p>只翻译文字，不调整布局，体验通常是不合格的。</p>
+<hr>
+<h3 id="36-5-不关注合规入口"><a href="#36-5-不关注合规入口" class="headerlink" title="36.5 不关注合规入口"></a>36.5 不关注合规入口</h3><p>测试同学不负责判断法律内容，但要验证入口是否存在、链接是否能打开、流程是否可用。</p>
+<hr>
+<p><a id="forum-i18n-ch-37"></a></p>
+<h2 id="37-最后总结"><a href="#37-最后总结" class="headerlink" title="37. 最后总结"></a>37. 最后总结</h2><p>国际化与本地化专项的核心不是“页面有没有英文”，而是要理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">不同语言能不能正常看？</span><br><span class="line">不同语言能不能正常输入？</span><br><span class="line">不同语言会不会撑坏页面？</span><br><span class="line">不同地区时间是否正确？</span><br><span class="line">夏令时会不会导致时间错误？</span><br><span class="line">日期、数字、货币格式是否符合地区习惯？</span><br><span class="line">搜索、通知、审核、后台是否也支持多语言？</span><br><span class="line">合规入口是否按地区展示和可用？</span><br></pre></td></tr></table></figure>
+
+<p>对于海外社区论坛项目，最需要重点关注的方向是：</p>
+<ul>
+<li>多语言文案完整性</li>
+<li>长文案 UI 适配</li>
+<li>多语言输入和展示</li>
+<li>Emoji 和特殊字符</li>
+<li>RTL 布局</li>
+<li>多语言搜索</li>
+<li>通知变量和占位符</li>
+<li>时区转换</li>
+<li>夏令时</li>
+<li>日期、数字、货币格式</li>
+<li>手机号、地址、地区规则</li>
+<li>合规入口本地化</li>
+<li>后台多语言内容展示</li>
+</ul>
+<p>你可以记住一个万能测试公式：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">语言 + 地区 + 时区 + 业务模块 + 用户输入 = 国际化测试场景</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">阿拉伯语 + 中东地区 + Asia/Riyadh + 发帖 + RTL 文本</span><br><span class="line">日语 + 日本 + Asia/Tokyo + 搜索 + 无空格关键词</span><br><span class="line">英语 + 美国 + America/New_York + 活动 + 夏令时边界</span><br><span class="line">德语 + 德国 + Europe/Berlin + Feed + 长文案布局</span><br></pre></td></tr></table></figure>
+
+<p>只要你每次测试海外项目时都把这几个维度组合起来，国际化与本地化测试思路就会越来越清晰。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-13-overseas-forum-i18n-l10n-guide/">https://linn0813.github.io/2026-05-13-overseas-forum-i18n-l10n-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B/">社区论坛</a><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a><a class="post-meta__tags" href="/tags/%E5%9B%BD%E9%99%85%E5%8C%96/">国际化</a><a class="post-meta__tags" href="/tags/%E6%9C%AC%E5%9C%B0%E5%8C%96/">本地化</a><a class="post-meta__tags" href="/tags/I18N/">I18N</a><a class="post-meta__tags" href="/tags/L10N/">L10N</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-i18n-l10n-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-10</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-09-overseas-forum-api-testing-guide/" title="学习笔记：海外社区论坛 - 接口测试入门"><img class="cover" src="/img/overseas-forum-api-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-09</div><div class="info-item-2">学习笔记：海外社区论坛 - 接口测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-12</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-07-overseas-forum-functional-testing-guide/" title="学习笔记：海外社区论坛 - 功能测试入门"><img class="cover" src="/img/overseas-forum-functional-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-07</div><div class="info-item-2">学习笔记：海外社区论坛 - 功能测试入门</div></div><div class="info-2"><div class="info-item-1">结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。</div></div></div></a><a class="pagination-related" href="/2026-05-11-overseas-forum-permission-testing-guide/" title="学习笔记：海外社区论坛 - 权限测试专项入门"><img class="cover" src="/img/overseas-forum-permission-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-11</div><div class="info-item-2">学习笔记：海外社区论坛 - 权限测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛权限测试专项入门：角色与状态、前后端权限、越权与权限矩阵、按模块实战及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-14</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-06-community-forum-testing-strategy/" title="新阶段开启：海外版社区论坛测试方案学习"><img class="cover" src="/img/testing-strategy-cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-06</div><div class="info-item-2">新阶段开启：海外版社区论坛测试方案学习</div></div><div class="info-2"><div class="info-item-1">开启测试能力进阶的新阶段，围绕海外版社区论坛测试方案系统学习，覆盖功能、海外化、合规、安全、性能、自动化与 AI 辅助测试。</div></div></div></a><a class="pagination-related" href="/2026-05-15-overseas-forum-performance-guide/" title="学习笔记：海外社区论坛 - 性能测试入门"><img class="cover" src="/img/overseas-forum-performance-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-15</div><div class="info-item-2">学习笔记：海外社区论坛 - 性能测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E5%9B%BD%E9%99%85%E5%8C%96%E4%B8%8E%E6%9C%AC%E5%9C%B0%E5%8C%96%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">第一部分：国际化与本地化基础概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E8%A6%81%E5%81%9A%E5%9B%BD%E9%99%85%E5%8C%96%E4%B8%8E%E6%9C%AC%E5%9C%B0%E5%8C%96%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么海外社区论坛要做国际化与本地化测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%B5%B7%E5%A4%96%E9%A1%B9%E7%9B%AE%E5%B8%B8%E8%A7%81%E5%9B%BD%E9%99%85%E5%8C%96%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 海外项目常见国际化问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%9B%BD%E9%99%85%E5%8C%96%E6%B5%8B%E8%AF%95%E5%92%8C%E6%99%AE%E9%80%9A%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 国际化测试和普通功能测试有什么区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%9B%BD%E9%99%85%E5%8C%96-I18N"><span class="toc-number">3.</span> <span class="toc-text">2. 什么是国际化 I18N</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%9B%BD%E9%99%85%E5%8C%96%E8%83%BD%E5%8A%9B%E5%8C%85%E6%8B%AC%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 国际化能力包括什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 举个例子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AF%E6%9C%AC%E5%9C%B0%E5%8C%96-L10N"><span class="toc-number">4.</span> <span class="toc-text">3. 什么是本地化 L10N</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%9C%AC%E5%9C%B0%E5%8C%96%E8%83%BD%E5%8A%9B%E5%8C%85%E6%8B%AC%E4%BB%80%E4%B9%88"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 本地化能力包括什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 举个例子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%9B%BD%E9%99%85%E5%8C%96%E5%92%8C%E6%9C%AC%E5%9C%B0%E5%8C%96%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">5.</span> <span class="toc-text">4. 国际化和本地化有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%B5%8B%E8%AF%95%E8%A6%81%E5%85%B3%E6%B3%A8%E4%BB%80%E4%B9%88"><span class="toc-number">6.</span> <span class="toc-text">5. 多语言测试要关注什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%B8%B8%E8%A7%81%E6%B5%8B%E8%AF%95%E8%AF%AD%E8%A8%80"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 常见测试语言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E6%B5%8B%E8%AF%95%E6%97%B6%E4%B8%8D%E8%A6%81%E5%8F%AA%E6%B5%8B-UI-%E6%96%87%E6%A1%88"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 测试时不要只测 UI 文案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-RTL-%E8%AF%AD%E8%A8%80%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">6. RTL 语言是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-RTL-%E4%BC%9A%E5%BD%B1%E5%93%8D%E4%BB%80%E4%B9%88"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 RTL 会影响什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 举个例子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%97%B6%E5%8C%BA%E5%92%8C%E5%A4%8F%E4%BB%A4%E6%97%B6%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">8.</span> <span class="toc-text">7. 时区和夏令时是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%BB%80%E4%B9%88%E6%98%AF%E6%97%B6%E5%8C%BA"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 什么是时区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%8F%E4%BB%A4%E6%97%B6"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 什么是夏令时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E5%A4%8F%E4%BB%A4%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%B9%E6%98%93%E5%87%BA%E9%97%AE%E9%A2%98"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 夏令时为什么容易出问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%9C%B0%E5%8C%BA%E6%A0%BC%E5%BC%8F%E5%92%8C%E6%96%87%E5%8C%96%E5%B7%AE%E5%BC%82%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">9.</span> <span class="toc-text">8. 地区格式和文化差异是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%B7%AE%E5%BC%82"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 日期格式差异</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E6%95%B0%E5%AD%97%E6%A0%BC%E5%BC%8F%E5%B7%AE%E5%BC%82"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 数字格式差异</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E8%B4%A7%E5%B8%81%E6%A0%BC%E5%BC%8F%E5%B7%AE%E5%BC%82"><span class="toc-number">9.3.</span> <span class="toc-text">8.3 货币格式差异</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%9B%BD%E9%99%85%E5%8C%96%E4%B8%93%E9%A1%B9%E6%B5%8B%E8%AF%95%E5%89%8D%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">10.</span> <span class="toc-text">9. 国际化专项测试前需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E8%AF%AD%E8%A8%80"><span class="toc-number">10.1.</span> <span class="toc-text">9.1 准备测试语言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E6%97%B6%E5%8C%BA"><span class="toc-number">10.2.</span> <span class="toc-text">9.2 准备测试时区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="toc-number">10.3.</span> <span class="toc-text">9.3 准备测试数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E5%87%86%E5%A4%87%E8%AE%BE%E5%A4%87%E5%92%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">10.4.</span> <span class="toc-text">9.4 准备设备和环境</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%9B%BD%E9%99%85%E5%8C%96%E5%AE%9E%E6%88%98"><span class="toc-number">11.</span> <span class="toc-text">第二部分：海外社区论坛国际化实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%B3%A8%E5%86%8C%E7%99%BB%E5%BD%95%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">12.</span> <span class="toc-text">10. 注册登录国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E6%B3%A8%E5%86%8C%E9%A1%B5%E6%96%87%E6%A1%88"><span class="toc-number">12.1.</span> <span class="toc-text">10.1 注册页文案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E9%82%AE%E7%AE%B1%E5%92%8C%E6%89%8B%E6%9C%BA%E5%8F%B7%E6%A0%BC%E5%BC%8F"><span class="toc-number">12.2.</span> <span class="toc-text">10.2 邮箱和手机号格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95"><span class="toc-number">12.3.</span> <span class="toc-text">10.3 第三方登录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%94%A8%E6%88%B7%E8%B5%84%E6%96%99%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">13.</span> <span class="toc-text">11. 用户资料国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E6%98%B5%E7%A7%B0%E6%B5%8B%E8%AF%95"><span class="toc-number">13.1.</span> <span class="toc-text">11.1 昵称测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E7%AE%80%E4%BB%8B%E6%B5%8B%E8%AF%95"><span class="toc-number">13.2.</span> <span class="toc-text">11.2 简介测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-%E5%9C%B0%E5%8C%BA%E5%92%8C%E8%AF%AD%E8%A8%80%E5%81%8F%E5%A5%BD"><span class="toc-number">13.3.</span> <span class="toc-text">11.3 地区和语言偏好</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%8F%91%E5%B8%96%E4%B8%8E%E5%86%85%E5%AE%B9%E5%B1%95%E7%A4%BA%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">14.</span> <span class="toc-text">12. 发帖与内容展示国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E5%8F%91%E5%B8%96%E8%BE%93%E5%85%A5"><span class="toc-number">14.1.</span> <span class="toc-text">12.1 发帖输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E5%8F%91%E5%B8%83%E5%90%8E%E5%B1%95%E7%A4%BA"><span class="toc-number">14.2.</span> <span class="toc-text">12.2 发布后展示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E5%AD%97%E6%95%B0%E9%99%90%E5%88%B6"><span class="toc-number">14.3.</span> <span class="toc-text">12.3 字数限制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E8%AF%84%E8%AE%BA%E4%B8%8E%E5%9B%9E%E5%A4%8D%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">15.</span> <span class="toc-text">13. 评论与回复国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E8%AF%84%E8%AE%BA%E8%BE%93%E5%85%A5%E5%92%8C%E5%B1%95%E7%A4%BA"><span class="toc-number">15.1.</span> <span class="toc-text">13.1 评论输入和展示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E5%9B%9E%E5%A4%8D%E9%80%9A%E7%9F%A5"><span class="toc-number">15.2.</span> <span class="toc-text">13.2 回复通知</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-Feed-%E4%BF%A1%E6%81%AF%E6%B5%81%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">16.</span> <span class="toc-text">14. Feed 信息流国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-Feed-%E6%96%87%E6%A1%88"><span class="toc-number">16.1.</span> <span class="toc-text">14.1 Feed 文案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-Feed-%E5%86%85%E5%AE%B9%E5%B1%95%E7%A4%BA"><span class="toc-number">16.2.</span> <span class="toc-text">14.2 Feed 内容展示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E6%90%9C%E7%B4%A2%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">17.</span> <span class="toc-text">15. 搜索国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E5%A4%9A%E8%AF%AD%E8%A8%80%E5%85%B3%E9%94%AE%E8%AF%8D%E6%90%9C%E7%B4%A2"><span class="toc-number">17.1.</span> <span class="toc-text">15.1 多语言关键词搜索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E6%90%9C%E7%B4%A2%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="toc-number">17.2.</span> <span class="toc-text">15.2 搜索结果展示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E9%80%9A%E7%9F%A5%E6%B6%88%E6%81%AF%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">18.</span> <span class="toc-text">16. 通知消息国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E9%80%9A%E7%9F%A5%E7%B1%BB%E5%9E%8B"><span class="toc-number">18.1.</span> <span class="toc-text">16.1 通知类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-%E9%80%9A%E7%9F%A5%E5%8F%98%E9%87%8F"><span class="toc-number">18.2.</span> <span class="toc-text">16.2 通知变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E7%A7%81%E4%BF%A1%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">19.</span> <span class="toc-text">17. 私信国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E7%A7%81%E4%BF%A1%E5%86%85%E5%AE%B9"><span class="toc-number">19.1.</span> <span class="toc-text">17.1 私信内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-%E7%A7%81%E4%BF%A1%E6%97%B6%E9%97%B4%E5%92%8C%E7%8A%B6%E6%80%81"><span class="toc-number">19.2.</span> <span class="toc-text">17.2 私信时间和状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E4%B8%BE%E6%8A%A5%E4%B8%8E%E5%AE%A1%E6%A0%B8%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">20.</span> <span class="toc-text">18. 举报与审核国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#18-1-%E4%B8%BE%E6%8A%A5%E5%8E%9F%E5%9B%A0%E6%9C%AC%E5%9C%B0%E5%8C%96"><span class="toc-number">20.1.</span> <span class="toc-text">18.1 举报原因本地化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-2-%E5%AE%A1%E6%A0%B8%E7%BB%93%E6%9E%9C%E6%96%87%E6%A1%88"><span class="toc-number">20.2.</span> <span class="toc-text">18.2 审核结果文案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E5%9B%BD%E9%99%85%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">21.</span> <span class="toc-text">19. 后台管理系统国际化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E5%90%8E%E5%8F%B0-UI-%E6%96%87%E6%A1%88"><span class="toc-number">21.1.</span> <span class="toc-text">19.1 后台 UI 文案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E5%90%8E%E5%8F%B0%E5%B1%95%E7%A4%BA%E7%94%A8%E6%88%B7%E5%86%85%E5%AE%B9"><span class="toc-number">21.2.</span> <span class="toc-text">19.2 后台展示用户内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%A4%9A%E8%AF%AD%E8%A8%80%E5%86%85%E5%AE%B9%E5%AE%A1%E6%A0%B8%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">22.</span> <span class="toc-text">20. 多语言内容审核怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#20-1-%E5%A4%9A%E8%AF%AD%E8%A8%80%E5%AE%A1%E6%A0%B8%E8%BE%93%E5%85%A5"><span class="toc-number">22.1.</span> <span class="toc-text">20.1 多语言审核输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-2-%E5%AE%A1%E6%A0%B8%E6%8F%90%E7%A4%BA%E8%AF%AD%E8%A8%80"><span class="toc-number">22.2.</span> <span class="toc-text">20.2 审核提示语言</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E6%B5%B7%E5%A4%96%E5%90%88%E8%A7%84%E5%85%A5%E5%8F%A3%E6%9C%AC%E5%9C%B0%E5%8C%96%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">23.</span> <span class="toc-text">21. 海外合规入口本地化怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-%E5%B8%B8%E8%A7%81%E5%90%88%E8%A7%84%E5%85%A5%E5%8F%A3"><span class="toc-number">23.1.</span> <span class="toc-text">21.1 常见合规入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">23.2.</span> <span class="toc-text">21.2 测试点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E5%9B%BD%E9%99%85%E5%8C%96%E4%B8%8E%E6%9C%AC%E5%9C%B0%E5%8C%96%E4%B8%93%E9%A1%B9%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">24.</span> <span class="toc-text">第三部分：国际化与本地化专项测试方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%96%87%E6%A1%88%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">25.</span> <span class="toc-text">22. 多语言文案怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E6%96%87%E6%A1%88%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-number">25.1.</span> <span class="toc-text">22.1 文案完整性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E7%BF%BB%E8%AF%91%E5%87%86%E7%A1%AE%E6%80%A7"><span class="toc-number">25.2.</span> <span class="toc-text">22.2 翻译准确性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E9%95%BF%E6%96%87%E6%A1%88%E5%92%8C-UI-%E5%B8%83%E5%B1%80%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">26.</span> <span class="toc-text">23. 长文案和 UI 布局怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#23-1-%E5%B8%B8%E8%A7%81%E9%95%BF%E6%96%87%E6%A1%88%E9%A3%8E%E9%99%A9"><span class="toc-number">26.1.</span> <span class="toc-text">23.1 常见长文案风险</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-2-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">26.2.</span> <span class="toc-text">23.2 测试方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E5%A4%9A%E8%AF%AD%E8%A8%80%E8%BE%93%E5%85%A5%E5%92%8C%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">27.</span> <span class="toc-text">24. 多语言输入和字符编码怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#24-1-%E6%B5%8B%E8%AF%95%E8%BE%93%E5%85%A5"><span class="toc-number">27.1.</span> <span class="toc-text">24.1 测试输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-2-%E9%A2%84%E6%9C%9F"><span class="toc-number">27.2.</span> <span class="toc-text">24.2 预期</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E5%AD%97%E6%95%B0%E9%99%90%E5%88%B6%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">28.</span> <span class="toc-text">25. 字数限制怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#25-1-%E9%9C%80%E8%A6%81%E7%A1%AE%E8%AE%A4%E8%A7%84%E5%88%99"><span class="toc-number">28.1.</span> <span class="toc-text">25.1 需要确认规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-2-%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">28.2.</span> <span class="toc-text">25.2 测试点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E5%A4%8D%E6%95%B0%E3%80%81%E5%8F%98%E9%87%8F%E3%80%81%E5%8D%A0%E4%BD%8D%E7%AC%A6%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">29.</span> <span class="toc-text">26. 复数、变量、占位符怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#26-1-%E5%A4%8D%E6%95%B0%E8%A7%84%E5%88%99"><span class="toc-number">29.1.</span> <span class="toc-text">26.1 复数规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-2-%E5%8F%98%E9%87%8F%E5%8D%A0%E4%BD%8D%E7%AC%A6"><span class="toc-number">29.2.</span> <span class="toc-text">26.2 变量占位符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-RTL-%E8%AF%AD%E8%A8%80%E5%B8%83%E5%B1%80%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">30.</span> <span class="toc-text">27. RTL 语言布局怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#27-1-%E9%A1%B5%E9%9D%A2%E5%B8%83%E5%B1%80"><span class="toc-number">30.1.</span> <span class="toc-text">27.1 页面布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-2-%E6%B7%B7%E6%8E%92%E6%B5%8B%E8%AF%95"><span class="toc-number">30.2.</span> <span class="toc-text">27.2 混排测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%90%9C%E7%B4%A2%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">31.</span> <span class="toc-text">28. 多语言搜索怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#28-1-%E6%90%9C%E7%B4%A2%E8%BE%93%E5%85%A5"><span class="toc-number">31.1.</span> <span class="toc-text">28.1 搜索输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-2-%E6%90%9C%E7%B4%A2%E7%BB%93%E6%9E%9C"><span class="toc-number">31.2.</span> <span class="toc-text">28.2 搜索结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E6%97%B6%E5%8C%BA%E5%88%87%E6%8D%A2%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">32.</span> <span class="toc-text">29. 时区切换怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#29-1-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">32.1.</span> <span class="toc-text">29.1 测试方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-2-%E9%87%8D%E7%82%B9%E5%AD%97%E6%AE%B5"><span class="toc-number">32.2.</span> <span class="toc-text">29.2 重点字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-3-%E5%B8%B8%E8%A7%81-Bug"><span class="toc-number">32.3.</span> <span class="toc-text">29.3 常见 Bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E5%A4%8F%E4%BB%A4%E6%97%B6%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">33.</span> <span class="toc-text">30. 夏令时怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#30-1-%E6%B5%8B%E8%AF%95%E5%9C%B0%E5%8C%BA"><span class="toc-number">33.1.</span> <span class="toc-text">30.1 测试地区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-2-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">33.2.</span> <span class="toc-text">30.2 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-3-%E6%96%B0%E6%89%8B%E6%B3%A8%E6%84%8F"><span class="toc-number">33.3.</span> <span class="toc-text">30.3 新手注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E6%97%A5%E6%9C%9F%E3%80%81%E6%95%B0%E5%AD%97%E3%80%81%E8%B4%A7%E5%B8%81%E6%A0%BC%E5%BC%8F%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">34.</span> <span class="toc-text">31. 日期、数字、货币格式怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-1-%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F"><span class="toc-number">34.1.</span> <span class="toc-text">31.1 日期格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-2-%E6%95%B0%E5%AD%97%E6%A0%BC%E5%BC%8F"><span class="toc-number">34.2.</span> <span class="toc-text">31.2 数字格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-3-%E8%B4%A7%E5%B8%81%E6%A0%BC%E5%BC%8F"><span class="toc-number">34.3.</span> <span class="toc-text">31.3 货币格式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E5%9B%BD%E5%AE%B6%E5%9C%B0%E5%8C%BA%E5%B7%AE%E5%BC%82%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">35.</span> <span class="toc-text">32. 国家地区差异怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32-1-%E6%89%8B%E6%9C%BA%E5%8F%B7%E5%92%8C%E5%9C%B0%E5%9D%80"><span class="toc-number">35.1.</span> <span class="toc-text">32.1 手机号和地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-2-%E5%9C%B0%E5%8C%BA%E5%8A%9F%E8%83%BD%E5%B7%AE%E5%BC%82"><span class="toc-number">35.2.</span> <span class="toc-text">32.2 地区功能差异</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-%E5%9B%BD%E9%99%85%E5%8C%96%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D"><span class="toc-number">36.</span> <span class="toc-text">33. 国际化问题如何定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#33-1-%E5%AE%9A%E4%BD%8D%E6%80%9D%E8%B7%AF"><span class="toc-number">36.1.</span> <span class="toc-text">33.1 定位思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-2-%E5%B8%B8%E8%A7%81%E7%8E%B0%E8%B1%A1%E5%92%8C%E5%8F%AF%E8%83%BD%E5%8E%9F%E5%9B%A0"><span class="toc-number">36.2.</span> <span class="toc-text">33.2 常见现象和可能原因</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E7%94%A8%E4%BE%8B%E3%80%81Bug-%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">37.</span> <span class="toc-text">第四部分：用例、Bug 与总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-%E5%9B%BD%E9%99%85%E5%8C%96%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">38.</span> <span class="toc-text">34. 国际化测试用例怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#34-1-%E7%94%A8%E4%BE%8B%E6%A8%A1%E6%9D%BF"><span class="toc-number">38.1.</span> <span class="toc-text">34.1 用例模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-2-%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B%EF%BC%9A%E9%98%BF%E6%8B%89%E4%BC%AF%E8%AF%AD-RTL-%E5%B8%96%E5%AD%90%E5%B1%95%E7%A4%BA"><span class="toc-number">38.2.</span> <span class="toc-text">34.2 示例用例：阿拉伯语 RTL 帖子展示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-3-%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B%EF%BC%9A%E5%88%87%E6%8D%A2%E6%97%B6%E5%8C%BA%E5%90%8E%E5%B8%96%E5%AD%90%E6%97%B6%E9%97%B4%E5%B1%95%E7%A4%BA%E6%AD%A3%E7%A1%AE"><span class="toc-number">38.3.</span> <span class="toc-text">34.3 示例用例：切换时区后帖子时间展示正确</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-%E5%9B%BD%E9%99%85%E5%8C%96%E7%B1%BB-Bug-%E6%80%8E%E4%B9%88%E6%8F%90%E4%BA%A4"><span class="toc-number">39.</span> <span class="toc-text">35. 国际化类 Bug 怎么提交</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#35-1-Bug-%E5%BA%94%E5%8C%85%E5%90%AB"><span class="toc-number">39.1.</span> <span class="toc-text">35.1 Bug 应包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-2-%E7%A4%BA%E4%BE%8B-Bug%EF%BC%9A%E5%BE%B7%E8%AF%AD%E6%8C%89%E9%92%AE%E6%96%87%E6%A1%88%E6%98%BE%E7%A4%BA%E4%B8%8D%E5%85%A8"><span class="toc-number">39.2.</span> <span class="toc-text">35.2 示例 Bug：德语按钮文案显示不全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98"><span class="toc-number">39.2.1.</span> <span class="toc-text">标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-number">39.2.2.</span> <span class="toc-text">环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-number">39.2.3.</span> <span class="toc-text">操作步骤</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C"><span class="toc-number">39.2.4.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C"><span class="toc-number">39.2.5.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6"><span class="toc-number">39.2.6.</span> <span class="toc-text">严重程度</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-3-%E7%A4%BA%E4%BE%8B-Bug%EF%BC%9A%E7%BA%BD%E7%BA%A6%E6%97%B6%E5%8C%BA%E5%B8%96%E5%AD%90%E6%97%B6%E9%97%B4%E6%98%BE%E7%A4%BA%E4%B8%BA%E6%9C%AA%E6%9D%A5%E6%97%B6%E9%97%B4"><span class="toc-number">39.3.</span> <span class="toc-text">35.3 示例 Bug：纽约时区帖子时间显示为未来时间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98-1"><span class="toc-number">39.3.1.</span> <span class="toc-text">标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C-1"><span class="toc-number">39.3.2.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C-1"><span class="toc-number">39.3.3.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6-1"><span class="toc-number">39.3.4.</span> <span class="toc-text">严重程度</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">40.</span> <span class="toc-text">36. 新手常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#36-1-%E5%8F%AA%E6%B5%8B%E8%8B%B1%E6%96%87"><span class="toc-number">40.1.</span> <span class="toc-text">36.1 只测英文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-2-%E5%8F%AA%E7%9C%8B%E9%A1%B5%E9%9D%A2%E7%BF%BB%E8%AF%91%EF%BC%8C%E4%B8%8D%E6%B5%8B%E8%BE%93%E5%85%A5"><span class="toc-number">40.2.</span> <span class="toc-text">36.2 只看页面翻译，不测输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-3-%E4%B8%8D%E6%B5%8B%E6%97%B6%E5%8C%BA"><span class="toc-number">40.3.</span> <span class="toc-text">36.3 不测时区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-4-%E5%BF%BD%E7%95%A5-RTL"><span class="toc-number">40.4.</span> <span class="toc-text">36.4 忽略 RTL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-5-%E4%B8%8D%E5%85%B3%E6%B3%A8%E5%90%88%E8%A7%84%E5%85%A5%E5%8F%A3"><span class="toc-number">40.5.</span> <span class="toc-text">36.5 不关注合规入口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">41.</span> <span class="toc-text">37. 最后总结</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

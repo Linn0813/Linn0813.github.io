@@ -1,0 +1,2225 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - 权限测试专项入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="海外社区论坛权限测试专项入门：角色与状态、前后端权限、越权与权限矩阵、按模块实战及用例与 Bug 落地。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - 权限测试专项入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-11-overseas-forum-permission-testing-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="海外社区论坛权限测试专项入门：角色与状态、前后端权限、越权与权限矩阵、按模块实战及用例与 Bug 落地。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-permission-testing-guide.png">
+<meta property="article:published_time" content="2026-05-11T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-11T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="社区论坛">
+<meta property="article:tag" content="海外社区">
+<meta property="article:tag" content="权限测试">
+<meta property="article:tag" content="越权测试">
+<meta property="article:tag" content="RBAC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-permission-testing-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - 权限测试专项入门",
+  "url": "https://linn0813.github.io/2026-05-11-overseas-forum-permission-testing-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-permission-testing-guide.png",
+  "datePublished": "2026-05-11T02:00:00.000Z",
+  "dateModified": "2026-05-11T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-11-overseas-forum-permission-testing-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - 权限测试专项入门',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-permission-testing-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - 权限测试专项入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - 权限测试专项入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-11T02:00:00.000Z" title="发表于 2026-05-11 10:00:00">2026-05-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-11T02:00:00.000Z" title="更新于 2026-05-11 10:00:00">2026-05-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95/">权限测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">11.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>34分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>学习记录</strong>：把海外社区论坛场景下的<strong>权限测试</strong>整理成一篇专项入门笔记，结合个人实践，并与 AI 一起补全结构，便于按角色与模块查阅。</p>
+<p>若你在测带治理与多角色体系的论坛产品，希望这篇能当检查清单用。</p>
+<blockquote>
+<p><strong>适合对象</strong>：具备基础测试经验、准备系统梳理权限与越权测试思路的同学；文中不默认你已熟悉权限模型与 RBAC 术语。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文按「基础概念 → 论坛角色实战 → 专项方法 → 用例与 Bug」四块展开；配合页面 <strong>TOC</strong> 或下方折叠目录跳转。<strong>第 9～25 章</strong>按角色与业务模块展开，宜对照真实权限说明逐项核对。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 37 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-perm-ch-01">为什么要做权限测试专项</a></li>
+<li><a href="#forum-perm-ch-02">什么是权限测试</a></li>
+<li><a href="#forum-perm-ch-03">权限测试和普通功能测试有什么区别</a></li>
+<li><a href="#forum-perm-ch-04">角色、用户状态、资源归属分别是什么</a></li>
+<li><a href="#forum-perm-ch-05">前端权限和后端权限怎么理解</a></li>
+<li><a href="#forum-perm-ch-06">什么是越权</a></li>
+<li><a href="#forum-perm-ch-07">海外社区论坛为什么容易出现权限问题</a></li>
+<li><a href="#forum-perm-ch-08">权限测试前需要准备什么</a></li>
+<li><a href="#forum-perm-ch-09">社区论坛常见角色有哪些</a></li>
+<li><a href="#forum-perm-ch-10">游客权限怎么测</a></li>
+<li><a href="#forum-perm-ch-11">普通用户权限怎么测</a></li>
+<li><a href="#forum-perm-ch-12">作者和非作者权限怎么测</a></li>
+<li><a href="#forum-perm-ch-13">新用户、未验证用户权限怎么测</a></li>
+<li><a href="#forum-perm-ch-14">被禁言用户权限怎么测</a></li>
+<li><a href="#forum-perm-ch-15">被封禁用户权限怎么测</a></li>
+<li><a href="#forum-perm-ch-16">版主 Moderator 权限怎么测</a></li>
+<li><a href="#forum-perm-ch-17">管理员 Admin 权限怎么测</a></li>
+<li><a href="#forum-perm-ch-18">超级管理员 Super Admin 权限怎么测</a></li>
+<li><a href="#forum-perm-ch-19">用户资料与隐私权限怎么测</a></li>
+<li><a href="#forum-perm-ch-20">发帖、编辑、删除权限怎么测</a></li>
+<li><a href="#forum-perm-ch-21">评论、回复、删除评论权限怎么测</a></li>
+<li><a href="#forum-perm-ch-22">点赞、收藏、关注权限怎么测</a></li>
+<li><a href="#forum-perm-ch-23">私信、通知权限怎么测</a></li>
+<li><a href="#forum-perm-ch-24">举报、审核、封禁权限怎么测</a></li>
+<li><a href="#forum-perm-ch-25">后台管理权限怎么测</a></li>
+<li><a href="#forum-perm-ch-26">权限矩阵怎么写</a></li>
+<li><a href="#forum-perm-ch-27">接口越权怎么测</a></li>
+<li><a href="#forum-perm-ch-28">水平越权怎么测</a></li>
+<li><a href="#forum-perm-ch-29">垂直越权怎么测</a></li>
+<li><a href="#forum-perm-ch-30">多端权限同步怎么测</a></li>
+<li><a href="#forum-perm-ch-31">状态变化后的权限怎么测</a></li>
+<li><a href="#forum-perm-ch-32">权限与数据一致性怎么结合验证</a></li>
+<li><a href="#forum-perm-ch-33">权限测试如何定位问题</a></li>
+<li><a href="#forum-perm-ch-34">权限测试用例怎么写</a></li>
+<li><a href="#forum-perm-ch-35">权限类 Bug 怎么提交</a></li>
+<li><a href="#forum-perm-ch-36">新手常见误区</a></li>
+<li><a href="#forum-perm-ch-37">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<h2 id="第一部分：权限测试基础概念"><a href="#第一部分：权限测试基础概念" class="headerlink" title="第一部分：权限测试基础概念"></a>第一部分：权限测试基础概念</h2><blockquote>
+<p>如果你是权限测试新手，建议先完整学习这一部分。</p>
+<p>如果你已经了解角色权限、越权测试，可以直接跳到 <strong>第二部分：海外社区论坛权限测试实战</strong>。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perm-ch-01"></a></p>
+<h2 id="1-为什么要做权限测试专项"><a href="#1-为什么要做权限测试专项" class="headerlink" title="1. 为什么要做权限测试专项"></a>1. 为什么要做权限测试专项</h2><p>社区论坛项目里，权限问题非常重要。</p>
+<p>功能测试主要验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">正常用户能不能正常使用功能</span><br></pre></td></tr></table></figure>
+
+<p>接口测试主要验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">接口参数、返回、状态是否正确</span><br></pre></td></tr></table></figure>
+
+<p>数据一致性测试主要验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">数据是否保存正确、展示一致</span><br></pre></td></tr></table></figure>
+
+<p>而权限测试重点验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">不该做的人，能不能做不该做的事</span><br><span class="line">不该看的数据，能不能被看到</span><br><span class="line">不该访问的接口，能不能被访问</span><br></pre></td></tr></table></figure>
+
+<p>权限问题一旦出现在社区论坛里，影响通常比较严重。</p>
+<hr>
+<h3 id="1-1-社区论坛常见权限事故"><a href="#1-1-社区论坛常见权限事故" class="headerlink" title="1.1 社区论坛常见权限事故"></a>1.1 社区论坛常见权限事故</h3><table>
+<thead>
+<tr>
+<th>权限问题</th>
+<th>可能影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>普通用户能删除别人的帖子</td>
+<td>严重越权，破坏内容生态</td>
+</tr>
+<tr>
+<td>普通用户能编辑别人的评论</td>
+<td>数据被篡改</td>
+</tr>
+<tr>
+<td>被禁言用户还能发帖</td>
+<td>社区治理失效</td>
+</tr>
+<tr>
+<td>被封禁用户还能登录或操作</td>
+<td>封禁功能失效</td>
+</tr>
+<tr>
+<td>游客能查看私密内容</td>
+<td>隐私泄露</td>
+</tr>
+<tr>
+<td>用户A能查看用户B私信</td>
+<td>严重隐私问题</td>
+</tr>
+<tr>
+<td>普通用户能访问管理员接口</td>
+<td>后台权限失控</td>
+</tr>
+<tr>
+<td>版主能管理非负责板块</td>
+<td>管理边界错误</td>
+</tr>
+<tr>
+<td>用户通过接口绕过前端限制</td>
+<td>前端限制无效</td>
+</tr>
+</tbody></table>
+<p>这些问题有些看起来像普通功能 Bug，但本质上是权限控制问题，严重程度通常更高。</p>
+<hr>
+<h3 id="1-2-为什么权限测试要单独做"><a href="#1-2-为什么权限测试要单独做" class="headerlink" title="1.2 为什么权限测试要单独做"></a>1.2 为什么权限测试要单独做</h3><p>因为权限测试不是单个模块的问题，而是贯穿整个系统。</p>
+<p>例如“删除”这个动作，很多地方都有：</p>
+<ul>
+<li>删除帖子</li>
+<li>删除评论</li>
+<li>删除私信</li>
+<li>删除通知</li>
+<li>删除举报记录</li>
+<li>删除用户资料</li>
+<li>后台删除违规内容</li>
+</ul>
+<p>每个删除动作都要问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">谁能删？</span><br><span class="line">谁不能删？</span><br><span class="line">删自己的可以吗？</span><br><span class="line">删别人的可以吗？</span><br><span class="line">管理员可以吗？</span><br><span class="line">版主可以吗？</span><br><span class="line">封禁用户还能删吗？</span><br><span class="line">接口直接调用会怎样？</span><br></pre></td></tr></table></figure>
+
+<p>所以权限测试不能只靠功能测试顺手点一下，需要单独整理专项。</p>
+<hr>
+<p><a id="forum-perm-ch-02"></a></p>
+<h2 id="2-什么是权限测试"><a href="#2-什么是权限测试" class="headerlink" title="2. 什么是权限测试"></a>2. 什么是权限测试</h2><p>权限测试就是验证：</p>
+<blockquote>
+<p>不同用户、不同角色、不同状态下，系统是否只允许用户访问和操作自己被授权的资源。</p>
+</blockquote>
+<p>简单理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">能做的事情，要能做</span><br><span class="line">不能做的事情，必须不能做</span><br><span class="line">能看的数据，可以看</span><br><span class="line">不能看的数据，必须看不到</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="2-1-权限测试测什么"><a href="#2-1-权限测试测什么" class="headerlink" title="2.1 权限测试测什么"></a>2.1 权限测试测什么</h3><p>权限测试通常验证：</p>
+<ul>
+<li>页面入口是否展示正确</li>
+<li>按钮是否展示正确</li>
+<li>接口是否真正校验权限</li>
+<li>数据是否只返回有权限的数据</li>
+<li>后台菜单是否按角色展示</li>
+<li>用户状态变化后权限是否立即生效</li>
+<li>资源归属是否校验正确</li>
+<li>不同角色之间是否存在越权</li>
+</ul>
+<hr>
+<h3 id="2-2-权限测试不是只测按钮"><a href="#2-2-权限测试不是只测按钮" class="headerlink" title="2.2 权限测试不是只测按钮"></a>2.2 权限测试不是只测按钮</h3><p>新手很容易犯的错误是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">页面没有删除按钮，所以普通用户不能删除别人的帖子。</span><br></pre></td></tr></table></figure>
+
+<p>这是不够的。</p>
+<p>正确做法是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 页面上普通用户是否看不到删除按钮</span><br><span class="line">2. 普通用户直接调用删除接口是否失败</span><br><span class="line">3. 删除失败后帖子是否仍然存在</span><br><span class="line">4. 后台是否没有生成错误的删除记录</span><br></pre></td></tr></table></figure>
+
+<p>权限测试必须同时看：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">前端入口 + 后端接口 + 数据结果</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-03"></a></p>
+<h2 id="3-权限测试和普通功能测试有什么区别"><a href="#3-权限测试和普通功能测试有什么区别" class="headerlink" title="3. 权限测试和普通功能测试有什么区别"></a>3. 权限测试和普通功能测试有什么区别</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>普通功能测试</th>
+<th>权限测试</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关注对象</td>
+<td>功能是否可用</td>
+<td>谁可以用、谁不可以用</td>
+</tr>
+<tr>
+<td>常见视角</td>
+<td>正常用户操作</td>
+<td>多角色、多状态、多资源归属</td>
+</tr>
+<tr>
+<td>验证重点</td>
+<td>流程正确、提示正确</td>
+<td>访问控制、操作边界、越权风险</td>
+</tr>
+<tr>
+<td>是否需要多账号</td>
+<td>需要，但不一定很多</td>
+<td>必须需要多账号、多角色</td>
+</tr>
+<tr>
+<td>是否测接口</td>
+<td>可选</td>
+<td>必须测接口权限</td>
+</tr>
+<tr>
+<td>Bug 严重性</td>
+<td>视功能而定</td>
+<td>通常较高</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="3-1-举个例子：删除帖子"><a href="#3-1-举个例子：删除帖子" class="headerlink" title="3.1 举个例子：删除帖子"></a>3.1 举个例子：删除帖子</h3><p>普通功能测试会测：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">作者删除自己的帖子是否成功</span><br><span class="line">删除后页面是否提示成功</span><br><span class="line">删除后帖子是否不展示</span><br></pre></td></tr></table></figure>
+
+<p>权限测试还要测：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户B能不能删除用户A的帖子？</span><br><span class="line">游客能不能删除帖子？</span><br><span class="line">被封禁用户能不能删除自己的帖子？</span><br><span class="line">版主能不能删除非负责板块帖子？</span><br><span class="line">普通用户直接调用删除接口会怎样？</span><br><span class="line">管理员删除后是否有操作日志？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-04"></a></p>
+<h2 id="4-角色、用户状态、资源归属分别是什么"><a href="#4-角色、用户状态、资源归属分别是什么" class="headerlink" title="4. 角色、用户状态、资源归属分别是什么"></a>4. 角色、用户状态、资源归属分别是什么</h2><p>权限测试中有 3 个非常重要的概念：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">角色</span><br><span class="line">用户状态</span><br><span class="line">资源归属</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-1-角色是什么"><a href="#4-1-角色是什么" class="headerlink" title="4.1 角色是什么"></a>4.1 角色是什么</h3><p>角色表示用户在系统中的身份。</p>
+<p>社区论坛常见角色：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>游客</td>
+<td>未登录用户</td>
+</tr>
+<tr>
+<td>普通用户</td>
+<td>已注册登录用户</td>
+</tr>
+<tr>
+<td>新用户</td>
+<td>刚注册，可能有功能限制</td>
+</tr>
+<tr>
+<td>认证用户</td>
+<td>完成邮箱、手机号或身份验证</td>
+</tr>
+<tr>
+<td>VIP&#x2F;会员用户</td>
+<td>有额外权益的用户</td>
+</tr>
+<tr>
+<td>版主 Moderator</td>
+<td>管理某些板块或话题</td>
+</tr>
+<tr>
+<td>管理员 Admin</td>
+<td>管理全站内容和用户</td>
+</tr>
+<tr>
+<td>超级管理员 Super Admin</td>
+<td>拥有最高管理权限</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="4-2-用户状态是什么"><a href="#4-2-用户状态是什么" class="headerlink" title="4.2 用户状态是什么"></a>4.2 用户状态是什么</h3><p>用户状态表示用户当前是否被限制。</p>
+<p>常见状态：</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正常</td>
+<td>可以正常使用</td>
+</tr>
+<tr>
+<td>未验证邮箱</td>
+<td>可能不能发帖、评论或私信</td>
+</tr>
+<tr>
+<td>禁言</td>
+<td>不能发帖或评论</td>
+</tr>
+<tr>
+<td>临时封禁</td>
+<td>一段时间内受限</td>
+</tr>
+<tr>
+<td>永久封禁</td>
+<td>长期不可使用</td>
+</tr>
+<tr>
+<td>注销中</td>
+<td>账号正在注销流程中</td>
+</tr>
+<tr>
+<td>已注销</td>
+<td>账号不可正常使用</td>
+</tr>
+<tr>
+<td>风险账号</td>
+<td>可能被限流或限制互动</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="4-3-角色和状态的区别"><a href="#4-3-角色和状态的区别" class="headerlink" title="4.3 角色和状态的区别"></a>4.3 角色和状态的区别</h3><p>角色和状态不是一回事。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A是普通用户，但状态是禁言</span><br><span class="line">用户B是版主，但状态是正常</span><br><span class="line">用户C是管理员，但状态可能被冻结</span><br></pre></td></tr></table></figure>
+
+<p>权限判断通常同时看：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">角色 + 状态</span><br></pre></td></tr></table></figure>
+
+<p>例如普通用户正常状态可以评论，但普通用户禁言状态不能评论。</p>
+<hr>
+<h3 id="4-4-资源归属是什么"><a href="#4-4-资源归属是什么" class="headerlink" title="4.4 资源归属是什么"></a>4.4 资源归属是什么</h3><p>资源归属就是：这个内容属于谁。</p>
+<p>社区项目中的资源包括：</p>
+<ul>
+<li>帖子</li>
+<li>评论</li>
+<li>私信</li>
+<li>通知</li>
+<li>用户资料</li>
+<li>收藏记录</li>
+<li>关注关系</li>
+<li>举报记录</li>
+<li>审核记录</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">帖子 P001 是用户A发布的</span><br><span class="line">评论 C001 是用户B发布的</span><br><span class="line">私信 M001 是用户A发给用户B的</span><br><span class="line">通知 N001 属于用户C</span><br></pre></td></tr></table></figure>
+
+<p>权限测试必须确认：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户只能操作自己有权操作的资源</span><br><span class="line">不能操作别人的私有资源</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-05"></a></p>
+<h2 id="5-前端权限和后端权限怎么理解"><a href="#5-前端权限和后端权限怎么理解" class="headerlink" title="5. 前端权限和后端权限怎么理解"></a>5. 前端权限和后端权限怎么理解</h2><p>权限控制通常分为：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">前端权限</span><br><span class="line">后端权限</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-1-前端权限"><a href="#5-1-前端权限" class="headerlink" title="5.1 前端权限"></a>5.1 前端权限</h3><p>前端权限是页面层面的限制。</p>
+<p>例如：</p>
+<ul>
+<li>游客看不到发帖按钮</li>
+<li>普通用户看不到后台入口</li>
+<li>非作者看不到删除帖子按钮</li>
+<li>被禁言用户评论框置灰</li>
+<li>管理员后台菜单按角色展示</li>
+</ul>
+<p>前端权限主要影响用户体验。</p>
+<hr>
+<h3 id="5-2-后端权限"><a href="#5-2-后端权限" class="headerlink" title="5.2 后端权限"></a>5.2 后端权限</h3><p>后端权限是接口层面的限制。</p>
+<p>例如：</p>
+<ul>
+<li>未登录调用发帖接口返回 401</li>
+<li>普通用户调用删除别人帖子接口返回 403</li>
+<li>被禁言用户调用评论接口失败</li>
+<li>普通用户调用管理员审核接口失败</li>
+</ul>
+<p>后端权限才是真正的安全边界。</p>
+<hr>
+<h3 id="5-3-为什么后端权限更重要"><a href="#5-3-为什么后端权限更重要" class="headerlink" title="5.3 为什么后端权限更重要"></a>5.3 为什么后端权限更重要</h3><p>因为前端按钮可以隐藏，但接口可以被直接调用。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">页面没有删除按钮</span><br><span class="line">但用户知道 DELETE /api/posts/1001</span><br></pre></td></tr></table></figure>
+
+<p>如果后端没有限制，用户仍然可能删除别人的帖子。</p>
+<p>所以权限测试一定要记住：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">前端不展示，只是第一层</span><br><span class="line">后端不允许，才是真的权限控制</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-06"></a></p>
+<h2 id="6-什么是越权"><a href="#6-什么是越权" class="headerlink" title="6. 什么是越权"></a>6. 什么是越权</h2><p>越权就是用户做了自己不应该做的事情，或访问了自己不应该访问的数据。</p>
+<p>越权通常分为：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">水平越权</span><br><span class="line">垂直越权</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="6-1-水平越权"><a href="#6-1-水平越权" class="headerlink" title="6.1 水平越权"></a>6.1 水平越权</h3><p>水平越权是指：</p>
+<blockquote>
+<p>同等级用户之间，用户A操作了用户B的数据。</p>
+</blockquote>
+<p>例如：</p>
+<ul>
+<li>用户A查看用户B的私信</li>
+<li>用户A删除用户B的帖子</li>
+<li>用户A修改用户B的资料</li>
+<li>用户A标记用户B的通知为已读</li>
+</ul>
+<p>他们都是普通用户，但用户A不应该操作用户B的数据。</p>
+<hr>
+<h3 id="6-2-垂直越权"><a href="#6-2-垂直越权" class="headerlink" title="6.2 垂直越权"></a>6.2 垂直越权</h3><p>垂直越权是指：</p>
+<blockquote>
+<p>低权限用户操作了高权限功能。</p>
+</blockquote>
+<p>例如：</p>
+<ul>
+<li>普通用户访问管理员后台</li>
+<li>普通用户调用审核接口</li>
+<li>普通用户封禁别人</li>
+<li>版主管理非负责板块</li>
+<li>普通管理员操作超级管理员</li>
+</ul>
+<hr>
+<h3 id="6-3-越权测试为什么重要"><a href="#6-3-越权测试为什么重要" class="headerlink" title="6.3 越权测试为什么重要"></a>6.3 越权测试为什么重要</h3><p>越权问题通常很严重，因为它可能导致：</p>
+<ul>
+<li>用户隐私泄露</li>
+<li>内容被恶意删除</li>
+<li>管理功能被滥用</li>
+<li>社区秩序被破坏</li>
+<li>合规风险增加</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-07"></a></p>
+<h2 id="7-海外社区论坛为什么容易出现权限问题"><a href="#7-海外社区论坛为什么容易出现权限问题" class="headerlink" title="7. 海外社区论坛为什么容易出现权限问题"></a>7. 海外社区论坛为什么容易出现权限问题</h2><p>海外社区论坛权限复杂，主要因为它有很多角色、很多状态、很多内容治理功能。</p>
+<hr>
+<h3 id="7-1-用户类型多"><a href="#7-1-用户类型多" class="headerlink" title="7.1 用户类型多"></a>7.1 用户类型多</h3><p>社区可能同时存在：</p>
+<ul>
+<li>游客</li>
+<li>新用户</li>
+<li>普通用户</li>
+<li>认证用户</li>
+<li>VIP 用户</li>
+<li>风险用户</li>
+<li>被禁言用户</li>
+<li>被封禁用户</li>
+<li>版主</li>
+<li>管理员</li>
+</ul>
+<p>每类用户能做的事情都不完全一样。</p>
+<hr>
+<h3 id="7-2-内容状态多"><a href="#7-2-内容状态多" class="headerlink" title="7.2 内容状态多"></a>7.2 内容状态多</h3><p>内容也有不同状态：</p>
+<ul>
+<li>草稿</li>
+<li>审核中</li>
+<li>已发布</li>
+<li>审核失败</li>
+<li>已隐藏</li>
+<li>已删除</li>
+<li>仅自己可见</li>
+<li>仅粉丝可见</li>
+</ul>
+<p>不同状态下，不同用户可见性不同。</p>
+<hr>
+<h3 id="7-3-治理功能多"><a href="#7-3-治理功能多" class="headerlink" title="7.3 治理功能多"></a>7.3 治理功能多</h3><p>社区有很多治理动作：</p>
+<ul>
+<li>举报</li>
+<li>删除</li>
+<li>隐藏</li>
+<li>禁言</li>
+<li>封禁</li>
+<li>审核通过</li>
+<li>审核拒绝</li>
+<li>申诉</li>
+<li>拉黑</li>
+<li>屏蔽</li>
+</ul>
+<p>这些动作本身都需要权限控制。</p>
+<hr>
+<h3 id="7-4-海外隐私和合规风险更高"><a href="#7-4-海外隐私和合规风险更高" class="headerlink" title="7.4 海外隐私和合规风险更高"></a>7.4 海外隐私和合规风险更高</h3><p>海外社区通常更重视：</p>
+<ul>
+<li>账号注销</li>
+<li>隐私设置</li>
+<li>私信权限</li>
+<li>数据导出</li>
+<li>用户屏蔽</li>
+<li>未成年人限制</li>
+<li>Cookie 和追踪授权</li>
+</ul>
+<p>这些功能如果权限控制不好，可能造成隐私或合规问题。</p>
+<hr>
+<p><a id="forum-perm-ch-08"></a></p>
+<h2 id="8-权限测试前需要准备什么"><a href="#8-权限测试前需要准备什么" class="headerlink" title="8. 权限测试前需要准备什么"></a>8. 权限测试前需要准备什么</h2><hr>
+<h3 id="8-1-准备角色账号"><a href="#8-1-准备角色账号" class="headerlink" title="8.1 准备角色账号"></a>8.1 准备角色账号</h3><p>至少准备这些账号：</p>
+<table>
+<thead>
+<tr>
+<th>账号</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>游客</td>
+<td>未登录状态测试</td>
+</tr>
+<tr>
+<td>普通用户A</td>
+<td>创建资源，例如发帖、评论</td>
+</tr>
+<tr>
+<td>普通用户B</td>
+<td>测试访问用户A资源、越权</td>
+</tr>
+<tr>
+<td>新注册用户</td>
+<td>测试新用户限制</td>
+</tr>
+<tr>
+<td>未验证邮箱用户</td>
+<td>测试验证前限制</td>
+</tr>
+<tr>
+<td>被禁言用户</td>
+<td>测试发帖、评论限制</td>
+</tr>
+<tr>
+<td>被封禁用户</td>
+<td>测试登录、访问、互动限制</td>
+</tr>
+<tr>
+<td>版主账号</td>
+<td>测试板块管理权限</td>
+</tr>
+<tr>
+<td>管理员账号</td>
+<td>测试后台管理权限</td>
+</tr>
+<tr>
+<td>超级管理员账号</td>
+<td>测试最高权限和管理员管理</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="8-2-准备资源数据"><a href="#8-2-准备资源数据" class="headerlink" title="8.2 准备资源数据"></a>8.2 准备资源数据</h3><p>需要准备：</p>
+<ul>
+<li>用户A发布的帖子</li>
+<li>用户B发布的帖子</li>
+<li>用户A的评论</li>
+<li>用户B的评论</li>
+<li>用户A的私信</li>
+<li>用户B的通知</li>
+<li>审核中帖子</li>
+<li>已删除帖子</li>
+<li>被隐藏帖子</li>
+<li>不同板块的帖子</li>
+<li>不同状态用户</li>
+</ul>
+<hr>
+<h3 id="8-3-准备接口和后台入口"><a href="#8-3-准备接口和后台入口" class="headerlink" title="8.3 准备接口和后台入口"></a>8.3 准备接口和后台入口</h3><p>权限测试需要同时验证：</p>
+<ul>
+<li>前台页面</li>
+<li>接口请求</li>
+<li>后台管理系统</li>
+<li>数据库或日志，按权限判断</li>
+</ul>
+<p>需要准备：</p>
+<ul>
+<li>接口文档</li>
+<li>Postman&#x2F;Apifox 请求集合</li>
+<li>不同账号 Token</li>
+<li>后台账号</li>
+<li>测试环境地址</li>
+<li>操作日志查看方式，按权限判断</li>
+</ul>
+<hr>
+<h2 id="第二部分：海外社区论坛权限测试实战"><a href="#第二部分：海外社区论坛权限测试实战" class="headerlink" title="第二部分：海外社区论坛权限测试实战"></a>第二部分：海外社区论坛权限测试实战</h2><blockquote>
+<p>这一部分开始进入项目实战。</p>
+<p>测权限时，你可以先按“角色”测，再按“模块”测。角色维度能保证不同身份不漏，模块维度能保证业务功能不漏。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perm-ch-09"></a></p>
+<h2 id="9-社区论坛常见角色有哪些"><a href="#9-社区论坛常见角色有哪些" class="headerlink" title="9. 社区论坛常见角色有哪些"></a>9. 社区论坛常见角色有哪些</h2><p>海外社区论坛常见角色如下。</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>典型权限</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>游客</td>
+<td>浏览公开内容，不能发帖、评论、点赞、私信</td>
+</tr>
+<tr>
+<td>普通用户</td>
+<td>发帖、评论、点赞、收藏、关注、举报</td>
+</tr>
+<tr>
+<td>新用户</td>
+<td>可能限制发帖频率、私信、外链发布</td>
+</tr>
+<tr>
+<td>未验证用户</td>
+<td>可能限制发帖、评论、私信或修改资料</td>
+</tr>
+<tr>
+<td>认证用户</td>
+<td>拥有完整普通用户权限</td>
+</tr>
+<tr>
+<td>VIP&#x2F;会员用户</td>
+<td>可能有专属标识、更多上传额度或特殊板块权限</td>
+</tr>
+<tr>
+<td>版主</td>
+<td>管理指定板块内容和用户互动</td>
+</tr>
+<tr>
+<td>管理员</td>
+<td>管理全站内容、用户、举报、审核</td>
+</tr>
+<tr>
+<td>超级管理员</td>
+<td>管理管理员、系统配置和最高权限操作</td>
+</tr>
+</tbody></table>
+<p>测试时要注意：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">角色只是一个维度</span><br><span class="line">用户状态也是一个维度</span><br><span class="line">资源归属也是一个维度</span><br></pre></td></tr></table></figure>
+
+<p>例如：正常普通用户和被禁言普通用户，权限是不一样的。</p>
+<hr>
+<p><a id="forum-perm-ch-10"></a></p>
+<h2 id="10-游客权限怎么测"><a href="#10-游客权限怎么测" class="headerlink" title="10. 游客权限怎么测"></a>10. 游客权限怎么测</h2><p>游客是未登录用户。</p>
+<hr>
+<h3 id="10-1-游客通常可以做什么"><a href="#10-1-游客通常可以做什么" class="headerlink" title="10.1 游客通常可以做什么"></a>10.1 游客通常可以做什么</h3><p>按产品规则，游客可能可以：</p>
+<ul>
+<li>浏览公开 Feed</li>
+<li>查看公开帖子详情</li>
+<li>查看公开评论</li>
+<li>查看公开用户主页</li>
+<li>搜索公开内容</li>
+<li>查看社区规则</li>
+<li>打开注册&#x2F;登录页</li>
+</ul>
+<hr>
+<h3 id="10-2-游客通常不能做什么"><a href="#10-2-游客通常不能做什么" class="headerlink" title="10.2 游客通常不能做什么"></a>10.2 游客通常不能做什么</h3><p>游客通常不能：</p>
+<ul>
+<li>发帖</li>
+<li>评论</li>
+<li>回复</li>
+<li>点赞</li>
+<li>收藏</li>
+<li>关注</li>
+<li>私信</li>
+<li>举报，部分产品可能允许游客举报</li>
+<li>查看私密内容</li>
+<li>访问个人中心</li>
+<li>访问后台</li>
+</ul>
+<hr>
+<h3 id="10-3-游客权限测试点"><a href="#10-3-游客权限测试点" class="headerlink" title="10.3 游客权限测试点"></a>10.3 游客权限测试点</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>游客点击发帖</td>
+<td>跳转登录页或提示登录</td>
+</tr>
+<tr>
+<td>游客点击评论</td>
+<td>提示登录</td>
+</tr>
+<tr>
+<td>游客点赞帖子</td>
+<td>提示登录，不改变点赞数</td>
+</tr>
+<tr>
+<td>游客收藏帖子</td>
+<td>提示登录，不生成收藏记录</td>
+</tr>
+<tr>
+<td>游客访问个人中心</td>
+<td>跳转登录</td>
+</tr>
+<tr>
+<td>游客访问公开帖子</td>
+<td>可以查看，按产品规则</td>
+</tr>
+<tr>
+<td>游客访问审核中帖子</td>
+<td>不可查看</td>
+</tr>
+<tr>
+<td>游客访问已删除帖子</td>
+<td>提示内容不存在</td>
+</tr>
+<tr>
+<td>游客直接调用发帖接口</td>
+<td>返回未登录</td>
+</tr>
+<tr>
+<td>游客直接调用管理员接口</td>
+<td>返回未登录或无权限</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="10-4-新手容易漏的点"><a href="#10-4-新手容易漏的点" class="headerlink" title="10.4 新手容易漏的点"></a>10.4 新手容易漏的点</h3><p>游客权限不能只测页面按钮，还要测接口。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">页面点击点赞提示登录</span><br><span class="line">但直接调用点赞接口，可能仍然点赞成功</span><br></pre></td></tr></table></figure>
+
+<p>这就是权限漏洞。</p>
+<hr>
+<p><a id="forum-perm-ch-11"></a></p>
+<h2 id="11-普通用户权限怎么测"><a href="#11-普通用户权限怎么测" class="headerlink" title="11. 普通用户权限怎么测"></a>11. 普通用户权限怎么测</h2><p>普通用户是社区最主要的用户群体。</p>
+<hr>
+<h3 id="11-1-普通用户通常可以做什么"><a href="#11-1-普通用户通常可以做什么" class="headerlink" title="11.1 普通用户通常可以做什么"></a>11.1 普通用户通常可以做什么</h3><p>普通用户通常可以：</p>
+<ul>
+<li>发帖</li>
+<li>编辑自己的帖子</li>
+<li>删除自己的帖子，按需求判断</li>
+<li>评论</li>
+<li>删除自己的评论</li>
+<li>点赞</li>
+<li>收藏</li>
+<li>关注</li>
+<li>私信，按隐私设置判断</li>
+<li>举报内容</li>
+<li>修改自己的资料</li>
+<li>查看自己的通知</li>
+</ul>
+<hr>
+<h3 id="11-2-普通用户不能做什么"><a href="#11-2-普通用户不能做什么" class="headerlink" title="11.2 普通用户不能做什么"></a>11.2 普通用户不能做什么</h3><p>普通用户通常不能：</p>
+<ul>
+<li>编辑别人的帖子</li>
+<li>删除别人的帖子</li>
+<li>删除别人的评论</li>
+<li>查看别人的私信</li>
+<li>查看别人的通知列表</li>
+<li>修改别人的资料</li>
+<li>访问管理员后台</li>
+<li>调用审核接口</li>
+<li>封禁用户</li>
+<li>修改系统配置</li>
+</ul>
+<hr>
+<h3 id="11-3-普通用户权限测试点"><a href="#11-3-普通用户权限测试点" class="headerlink" title="11.3 普通用户权限测试点"></a>11.3 普通用户权限测试点</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户A发帖</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>用户A编辑自己的帖子</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>用户A编辑用户B帖子</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A删除用户B帖子</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A查看用户B公开主页</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>用户A查看用户B私信</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A修改用户B资料</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A访问后台</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A调用审核接口</td>
+<td>失败</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perm-ch-12"></a></p>
+<h2 id="12-作者和非作者权限怎么测"><a href="#12-作者和非作者权限怎么测" class="headerlink" title="12. 作者和非作者权限怎么测"></a>12. 作者和非作者权限怎么测</h2><p>社区内容通常有“作者”和“非作者”的权限差异。</p>
+<hr>
+<h3 id="12-1-作者通常有什么权限"><a href="#12-1-作者通常有什么权限" class="headerlink" title="12.1 作者通常有什么权限"></a>12.1 作者通常有什么权限</h3><p>作者通常可以：</p>
+<ul>
+<li>编辑自己的帖子</li>
+<li>删除自己的帖子，按需求判断</li>
+<li>查看自己帖子审核状态</li>
+<li>查看自己帖子被拒原因，按需求判断</li>
+<li>删除自己评论</li>
+<li>管理自己草稿</li>
+</ul>
+<hr>
+<h3 id="12-2-非作者通常不能做什么"><a href="#12-2-非作者通常不能做什么" class="headerlink" title="12.2 非作者通常不能做什么"></a>12.2 非作者通常不能做什么</h3><p>非作者通常不能：</p>
+<ul>
+<li>编辑别人的帖子</li>
+<li>删除别人的帖子</li>
+<li>修改别人的媒体内容</li>
+<li>查看别人草稿</li>
+<li>查看别人审核失败原因，按需求判断</li>
+</ul>
+<hr>
+<h3 id="12-3-作者-非作者测试方法"><a href="#12-3-作者-非作者测试方法" class="headerlink" title="12.3 作者&#x2F;非作者测试方法"></a>12.3 作者&#x2F;非作者测试方法</h3><p>准备数据：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A发布帖子 P001</span><br><span class="line">用户B登录</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A编辑 P001 → 应成功</span><br><span class="line">用户B编辑 P001 → 应失败</span><br><span class="line">用户A删除 P001 → 按需求成功</span><br><span class="line">用户B删除 P001 → 应失败</span><br><span class="line">用户B直接调用编辑/删除接口 → 应失败</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-13"></a></p>
+<h2 id="13-新用户、未验证用户权限怎么测"><a href="#13-新用户、未验证用户权限怎么测" class="headerlink" title="13. 新用户、未验证用户权限怎么测"></a>13. 新用户、未验证用户权限怎么测</h2><p>海外社区常常会限制新用户或未验证用户，防止 Spam。</p>
+<hr>
+<h3 id="13-1-新用户可能有哪些限制"><a href="#13-1-新用户可能有哪些限制" class="headerlink" title="13.1 新用户可能有哪些限制"></a>13.1 新用户可能有哪些限制</h3><p>新用户可能被限制：</p>
+<ul>
+<li>注册后多久才能发帖</li>
+<li>每天最多发几篇帖子</li>
+<li>是否能发外链</li>
+<li>是否能私信陌生人</li>
+<li>是否能上传图片&#x2F;视频</li>
+<li>是否能加入某些板块</li>
+<li>是否需要完成邮箱验证</li>
+</ul>
+<hr>
+<h3 id="13-2-未验证用户可能有哪些限制"><a href="#13-2-未验证用户可能有哪些限制" class="headerlink" title="13.2 未验证用户可能有哪些限制"></a>13.2 未验证用户可能有哪些限制</h3><p>未验证邮箱或手机号的用户可能：</p>
+<ul>
+<li>不能发帖</li>
+<li>不能评论</li>
+<li>不能私信</li>
+<li>不能修改敏感资料</li>
+<li>不能参与活动</li>
+<li>不能使用第三方绑定功能</li>
+</ul>
+<hr>
+<h3 id="13-3-测试点"><a href="#13-3-测试点" class="headerlink" title="13.3 测试点"></a>13.3 测试点</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>新用户注册后立即发帖</td>
+<td>按需求允许或限制</td>
+</tr>
+<tr>
+<td>新用户连续发帖</td>
+<td>超过限制后失败</td>
+</tr>
+<tr>
+<td>新用户发布外链</td>
+<td>按需求拦截或审核</td>
+</tr>
+<tr>
+<td>未验证邮箱用户发帖</td>
+<td>按需求限制</td>
+</tr>
+<tr>
+<td>未验证邮箱用户验证成功后发帖</td>
+<td>权限恢复</td>
+</tr>
+<tr>
+<td>未验证用户直接调用接口</td>
+<td>后端同样限制</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perm-ch-14"></a></p>
+<h2 id="14-被禁言用户权限怎么测"><a href="#14-被禁言用户权限怎么测" class="headerlink" title="14. 被禁言用户权限怎么测"></a>14. 被禁言用户权限怎么测</h2><p>禁言通常表示用户不能发布互动内容，但是否能浏览，要看产品规则。</p>
+<hr>
+<h3 id="14-1-被禁言用户通常不能做什么"><a href="#14-1-被禁言用户通常不能做什么" class="headerlink" title="14.1 被禁言用户通常不能做什么"></a>14.1 被禁言用户通常不能做什么</h3><p>通常不能：</p>
+<ul>
+<li>发帖</li>
+<li>评论</li>
+<li>回复</li>
+<li>私信，按需求判断</li>
+<li>发布带外链内容</li>
+</ul>
+<p>可能仍然可以：</p>
+<ul>
+<li>浏览帖子</li>
+<li>点赞，按需求判断</li>
+<li>收藏，按需求判断</li>
+<li>查看通知</li>
+<li>修改资料，按需求判断</li>
+</ul>
+<hr>
+<h3 id="14-2-测试点"><a href="#14-2-测试点" class="headerlink" title="14.2 测试点"></a>14.2 测试点</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>被禁言用户发帖</td>
+<td>失败，提示禁言</td>
+</tr>
+<tr>
+<td>被禁言用户评论</td>
+<td>失败，提示禁言</td>
+</tr>
+<tr>
+<td>被禁言用户回复评论</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>被禁言用户直接调用评论接口</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>禁言到期后评论</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>管理员解除禁言后发帖</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>禁言期间已登录 Token 操作</td>
+<td>权限应受限</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="14-3-新手容易漏的点"><a href="#14-3-新手容易漏的点" class="headerlink" title="14.3 新手容易漏的点"></a>14.3 新手容易漏的点</h3><p>管理员设置禁言后，用户可能已经登录并持有 Token。</p>
+<p>必须验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">禁言状态是否对已登录用户立即生效</span><br></pre></td></tr></table></figure>
+
+<p>不能出现：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户刷新页面前还能继续发帖</span><br><span class="line">用户用旧 Token 调接口还能评论</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-15"></a></p>
+<h2 id="15-被封禁用户权限怎么测"><a href="#15-被封禁用户权限怎么测" class="headerlink" title="15. 被封禁用户权限怎么测"></a>15. 被封禁用户权限怎么测</h2><p>封禁通常比禁言更严重。</p>
+<hr>
+<h3 id="15-1-封禁后可能的产品规则"><a href="#15-1-封禁后可能的产品规则" class="headerlink" title="15.1 封禁后可能的产品规则"></a>15.1 封禁后可能的产品规则</h3><p>不同产品规则可能不同，需要先确认：</p>
+<table>
+<thead>
+<tr>
+<th>封禁规则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>不能登录</td>
+<td>封禁用户登录失败</td>
+</tr>
+<tr>
+<td>可以登录但不能操作</td>
+<td>只能查看封禁提示</td>
+</tr>
+<tr>
+<td>不能访问任何内容</td>
+<td>访问时直接提示账号不可用</td>
+</tr>
+<tr>
+<td>已发布内容隐藏</td>
+<td>封禁后历史内容不可见，按需求判断</td>
+</tr>
+<tr>
+<td>历史内容保留</td>
+<td>仅限制用户继续操作</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="15-2-测试点"><a href="#15-2-测试点" class="headerlink" title="15.2 测试点"></a>15.2 测试点</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>被封禁用户登录</td>
+<td>按需求失败或受限</td>
+</tr>
+<tr>
+<td>已登录用户被封禁</td>
+<td>旧 Token 应失效或受限</td>
+</tr>
+<tr>
+<td>被封禁用户发帖</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>被封禁用户评论</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>被封禁用户私信</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>被封禁用户点赞</td>
+<td>按需求限制</td>
+</tr>
+<tr>
+<td>封禁到期后登录</td>
+<td>权限恢复</td>
+</tr>
+<tr>
+<td>管理员解封后操作</td>
+<td>权限恢复</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perm-ch-16"></a></p>
+<h2 id="16-版主-Moderator-权限怎么测"><a href="#16-版主-Moderator-权限怎么测" class="headerlink" title="16. 版主 Moderator 权限怎么测"></a>16. 版主 Moderator 权限怎么测</h2><p>版主通常管理某些板块或话题，不一定能管理全站。</p>
+<hr>
+<h3 id="16-1-版主通常可以做什么"><a href="#16-1-版主通常可以做什么" class="headerlink" title="16.1 版主通常可以做什么"></a>16.1 版主通常可以做什么</h3><p>版主可能可以：</p>
+<ul>
+<li>删除所负责板块的帖子</li>
+<li>隐藏所负责板块的评论</li>
+<li>处理所负责板块的举报</li>
+<li>置顶所负责板块的帖子</li>
+<li>禁言所负责板块用户，按需求判断</li>
+<li>查看所负责板块审核列表</li>
+</ul>
+<hr>
+<h3 id="16-2-版主通常不能做什么"><a href="#16-2-版主通常不能做什么" class="headerlink" title="16.2 版主通常不能做什么"></a>16.2 版主通常不能做什么</h3><p>版主通常不能：</p>
+<ul>
+<li>管理非负责板块内容</li>
+<li>管理全站用户</li>
+<li>操作管理员账号</li>
+<li>修改系统配置</li>
+<li>查看全站敏感数据</li>
+<li>分配其他管理员权限</li>
+</ul>
+<hr>
+<h3 id="16-3-版主权限测试方法"><a href="#16-3-版主权限测试方法" class="headerlink" title="16.3 版主权限测试方法"></a>16.3 版主权限测试方法</h3><p>准备：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">版主M负责板块 A</span><br><span class="line">用户A在板块 A 发帖</span><br><span class="line">用户B在板块 B 发帖</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>版主M删除板块A帖子</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>版主M删除板块B帖子</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>版主M处理板块A举报</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>版主M处理板块B举报</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>版主M访问全站用户管理</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>版主M调用非负责板块接口</td>
+<td>失败</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perm-ch-17"></a></p>
+<h2 id="17-管理员-Admin-权限怎么测"><a href="#17-管理员-Admin-权限怎么测" class="headerlink" title="17. 管理员 Admin 权限怎么测"></a>17. 管理员 Admin 权限怎么测</h2><p>管理员通常有较高权限，但不一定拥有最高权限。</p>
+<hr>
+<h3 id="17-1-管理员通常可以做什么"><a href="#17-1-管理员通常可以做什么" class="headerlink" title="17.1 管理员通常可以做什么"></a>17.1 管理员通常可以做什么</h3><p>管理员可能可以：</p>
+<ul>
+<li>审核帖子</li>
+<li>删除帖子</li>
+<li>隐藏评论</li>
+<li>处理举报</li>
+<li>禁言用户</li>
+<li>封禁用户</li>
+<li>查看用户列表</li>
+<li>查看内容管理后台</li>
+<li>查看操作日志</li>
+</ul>
+<hr>
+<h3 id="17-2-管理员可能不能做什么"><a href="#17-2-管理员可能不能做什么" class="headerlink" title="17.2 管理员可能不能做什么"></a>17.2 管理员可能不能做什么</h3><p>普通管理员可能不能：</p>
+<ul>
+<li>删除超级管理员</li>
+<li>修改超级管理员权限</li>
+<li>修改核心系统配置</li>
+<li>查看敏感财务或支付数据，按需求判断</li>
+<li>分配高级管理员权限，按需求判断</li>
+</ul>
+<hr>
+<h3 id="17-3-管理员权限测试点"><a href="#17-3-管理员权限测试点" class="headerlink" title="17.3 管理员权限测试点"></a>17.3 管理员权限测试点</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>管理员审核帖子</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>管理员删除违规帖子</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>管理员禁言普通用户</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>管理员封禁普通用户</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>管理员操作超级管理员</td>
+<td>失败或受限</td>
+</tr>
+<tr>
+<td>管理员修改系统配置</td>
+<td>按需求判断</td>
+</tr>
+<tr>
+<td>管理员操作后生成日志</td>
+<td>应记录操作人、时间、对象、动作</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perm-ch-18"></a></p>
+<h2 id="18-超级管理员-Super-Admin-权限怎么测"><a href="#18-超级管理员-Super-Admin-权限怎么测" class="headerlink" title="18. 超级管理员 Super Admin 权限怎么测"></a>18. 超级管理员 Super Admin 权限怎么测</h2><p>超级管理员通常拥有最高权限，但也要测试边界和安全保护。</p>
+<hr>
+<h3 id="18-1-超级管理员通常可以做什么"><a href="#18-1-超级管理员通常可以做什么" class="headerlink" title="18.1 超级管理员通常可以做什么"></a>18.1 超级管理员通常可以做什么</h3><ul>
+<li>管理管理员账号</li>
+<li>分配角色权限</li>
+<li>修改系统配置</li>
+<li>查看全站操作日志</li>
+<li>管理全站内容</li>
+<li>管理全站用户</li>
+</ul>
+<hr>
+<h3 id="18-2-超级管理员也需要限制什么"><a href="#18-2-超级管理员也需要限制什么" class="headerlink" title="18.2 超级管理员也需要限制什么"></a>18.2 超级管理员也需要限制什么</h3><p>即使是超级管理员，也要关注：</p>
+<ul>
+<li>高危操作是否需要二次确认</li>
+<li>删除管理员是否有保护机制</li>
+<li>修改权限是否记录日志</li>
+<li>是否不能删除自己，按需求判断</li>
+<li>是否有操作审计</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-19"></a></p>
+<h2 id="19-用户资料与隐私权限怎么测"><a href="#19-用户资料与隐私权限怎么测" class="headerlink" title="19. 用户资料与隐私权限怎么测"></a>19. 用户资料与隐私权限怎么测</h2><p>用户资料和隐私是海外项目的重要风险点。</p>
+<hr>
+<h3 id="19-1-公开资料和私密资料"><a href="#19-1-公开资料和私密资料" class="headerlink" title="19.1 公开资料和私密资料"></a>19.1 公开资料和私密资料</h3><p>用户资料可能分为：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>公开资料</td>
+<td>昵称、头像、简介、公开帖子</td>
+</tr>
+<tr>
+<td>半公开资料</td>
+<td>关注列表、粉丝列表，按隐私设置</td>
+</tr>
+<tr>
+<td>私密资料</td>
+<td>邮箱、手机号、登录设备、私信、通知</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="19-2-测试点"><a href="#19-2-测试点" class="headerlink" title="19.2 测试点"></a>19.2 测试点</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户A查看用户B公开主页</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>用户A查看用户B邮箱</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A查看用户B手机号</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A修改用户B资料</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A查看用户B私信</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户A查看用户B通知</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>用户B设置关注列表私密</td>
+<td>用户A不可见，按需求判断</td>
+</tr>
+<tr>
+<td>用户注销后资料展示</td>
+<td>匿名化或不可见，按需求判断</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perm-ch-20"></a></p>
+<h2 id="20-发帖、编辑、删除权限怎么测"><a href="#20-发帖、编辑、删除权限怎么测" class="headerlink" title="20. 发帖、编辑、删除权限怎么测"></a>20. 发帖、编辑、删除权限怎么测</h2><hr>
+<h3 id="20-1-发帖权限"><a href="#20-1-发帖权限" class="headerlink" title="20.1 发帖权限"></a>20.1 发帖权限</h3><p>需要验证：</p>
+<ul>
+<li>游客不能发帖</li>
+<li>普通用户可以发帖</li>
+<li>未验证用户按需求限制</li>
+<li>被禁言用户不能发帖</li>
+<li>被封禁用户不能发帖</li>
+<li>无板块权限用户不能在受限板块发帖</li>
+<li>新用户发帖频率受限，按需求判断</li>
+</ul>
+<hr>
+<h3 id="20-2-编辑权限"><a href="#20-2-编辑权限" class="headerlink" title="20.2 编辑权限"></a>20.2 编辑权限</h3><p>需要验证：</p>
+<ul>
+<li>作者可以编辑自己的帖子</li>
+<li>非作者不能编辑别人的帖子</li>
+<li>被删除帖子不能编辑</li>
+<li>审核中帖子是否可编辑，按需求判断</li>
+<li>审核失败帖子是否可编辑重提，按需求判断</li>
+<li>管理员是否可以编辑或仅能隐藏，按需求判断</li>
+</ul>
+<hr>
+<h3 id="20-3-删除权限"><a href="#20-3-删除权限" class="headerlink" title="20.3 删除权限"></a>20.3 删除权限</h3><p>需要验证：</p>
+<ul>
+<li>作者删除自己的帖子，按需求判断</li>
+<li>非作者不能删除别人帖子</li>
+<li>版主只能删除负责板块帖子</li>
+<li>管理员可以删除违规帖子</li>
+<li>被封禁用户是否能删除自己的历史帖子，按需求判断</li>
+<li>删除后权限状态同步到列表、详情、搜索、收藏、通知</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-21"></a></p>
+<h2 id="21-评论、回复、删除评论权限怎么测"><a href="#21-评论、回复、删除评论权限怎么测" class="headerlink" title="21. 评论、回复、删除评论权限怎么测"></a>21. 评论、回复、删除评论权限怎么测</h2><hr>
+<h3 id="21-1-评论权限"><a href="#21-1-评论权限" class="headerlink" title="21.1 评论权限"></a>21.1 评论权限</h3><p>需要验证：</p>
+<ul>
+<li>游客不能评论</li>
+<li>普通用户可以评论</li>
+<li>被禁言用户不能评论</li>
+<li>被封禁用户不能评论</li>
+<li>已删除帖子不能评论</li>
+<li>审核失败帖子不能评论</li>
+<li>被拉黑用户是否能评论对方帖子，按需求判断</li>
+</ul>
+<hr>
+<h3 id="21-2-删除评论权限"><a href="#21-2-删除评论权限" class="headerlink" title="21.2 删除评论权限"></a>21.2 删除评论权限</h3><p>需要验证：</p>
+<ul>
+<li>评论作者可以删除自己的评论</li>
+<li>普通用户不能删除别人评论</li>
+<li>帖子作者是否能删除帖子下评论，按需求判断</li>
+<li>版主可以删除负责板块评论</li>
+<li>管理员可以删除评论</li>
+<li>删除后评论数和通知状态正确</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-22"></a></p>
+<h2 id="22-点赞、收藏、关注权限怎么测"><a href="#22-点赞、收藏、关注权限怎么测" class="headerlink" title="22. 点赞、收藏、关注权限怎么测"></a>22. 点赞、收藏、关注权限怎么测</h2><p>这些互动功能看似简单，但也需要权限控制。</p>
+<hr>
+<h3 id="22-1-点赞权限"><a href="#22-1-点赞权限" class="headerlink" title="22.1 点赞权限"></a>22.1 点赞权限</h3><p>测试点：</p>
+<ul>
+<li>游客不能点赞</li>
+<li>普通用户可以点赞</li>
+<li>被封禁用户是否能点赞，按需求判断</li>
+<li>已删除帖子不能点赞</li>
+<li>审核失败帖子不能点赞</li>
+<li>被屏蔽内容不能点赞</li>
+</ul>
+<hr>
+<h3 id="22-2-收藏权限"><a href="#22-2-收藏权限" class="headerlink" title="22.2 收藏权限"></a>22.2 收藏权限</h3><p>测试点：</p>
+<ul>
+<li>游客不能收藏</li>
+<li>普通用户可以收藏</li>
+<li>已删除帖子不能收藏</li>
+<li>私密帖子是否能收藏，按需求判断</li>
+<li>取消收藏只能操作自己的收藏记录</li>
+</ul>
+<hr>
+<h3 id="22-3-关注权限"><a href="#22-3-关注权限" class="headerlink" title="22.3 关注权限"></a>22.3 关注权限</h3><p>测试点：</p>
+<ul>
+<li>游客不能关注</li>
+<li>普通用户可以关注</li>
+<li>不能关注自己</li>
+<li>被拉黑后是否能关注，按需求判断</li>
+<li>已注销用户是否能被关注，按需求判断</li>
+<li>取消关注只能取消自己的关注关系</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-23"></a></p>
+<h2 id="23-私信、通知权限怎么测"><a href="#23-私信、通知权限怎么测" class="headerlink" title="23. 私信、通知权限怎么测"></a>23. 私信、通知权限怎么测</h2><p>私信和通知涉及用户隐私，权限要求更高。</p>
+<hr>
+<h3 id="23-1-私信权限"><a href="#23-1-私信权限" class="headerlink" title="23.1 私信权限"></a>23.1 私信权限</h3><p>需要验证：</p>
+<ul>
+<li>游客不能发私信</li>
+<li>普通用户可以私信，按隐私设置判断</li>
+<li>被封禁用户不能私信</li>
+<li>被拉黑用户不能私信</li>
+<li>陌生人是否能私信，按用户隐私设置判断</li>
+<li>用户A不能查看用户B和用户C之间的私信</li>
+<li>用户A不能删除用户B的会话</li>
+</ul>
+<hr>
+<h3 id="23-2-通知权限"><a href="#23-2-通知权限" class="headerlink" title="23.2 通知权限"></a>23.2 通知权限</h3><p>需要验证：</p>
+<ul>
+<li>用户只能查看自己的通知</li>
+<li>用户只能标记自己的通知已读</li>
+<li>用户不能删除别人的通知</li>
+<li>管理员是否能查看用户通知，按需求和隐私规则判断</li>
+<li>通知点击后，目标资源权限仍需校验</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户收到一个帖子通知</span><br><span class="line">后来帖子被删除</span><br><span class="line">点击通知时，不应绕过删除状态继续看到内容</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-24"></a></p>
+<h2 id="24-举报、审核、封禁权限怎么测"><a href="#24-举报、审核、封禁权限怎么测" class="headerlink" title="24. 举报、审核、封禁权限怎么测"></a>24. 举报、审核、封禁权限怎么测</h2><hr>
+<h3 id="24-1-举报权限"><a href="#24-1-举报权限" class="headerlink" title="24.1 举报权限"></a>24.1 举报权限</h3><p>需要验证：</p>
+<ul>
+<li>普通用户可以举报帖子、评论、用户</li>
+<li>游客是否可以举报，按需求判断</li>
+<li>被封禁用户是否可以举报，按需求判断</li>
+<li>用户不能处理自己的举报记录</li>
+<li>举报记录只能后台有权限人员查看</li>
+</ul>
+<hr>
+<h3 id="24-2-审核权限"><a href="#24-2-审核权限" class="headerlink" title="24.2 审核权限"></a>24.2 审核权限</h3><p>需要验证：</p>
+<ul>
+<li>普通用户不能审核内容</li>
+<li>版主只能审核负责板块内容，按需求判断</li>
+<li>管理员可以审核全站内容</li>
+<li>审核操作必须记录日志</li>
+<li>审核后前台展示权限同步变化</li>
+</ul>
+<hr>
+<h3 id="24-3-封禁权限"><a href="#24-3-封禁权限" class="headerlink" title="24.3 封禁权限"></a>24.3 封禁权限</h3><p>需要验证：</p>
+<ul>
+<li>普通用户不能封禁别人</li>
+<li>版主是否能禁言用户，按需求判断</li>
+<li>管理员可以封禁普通用户</li>
+<li>管理员不能封禁超级管理员，按需求判断</li>
+<li>封禁后目标用户权限立即变化</li>
+<li>解封后权限恢复</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-25"></a></p>
+<h2 id="25-后台管理权限怎么测"><a href="#25-后台管理权限怎么测" class="headerlink" title="25. 后台管理权限怎么测"></a>25. 后台管理权限怎么测</h2><p>后台权限比前台更敏感。</p>
+<hr>
+<h3 id="25-1-后台菜单权限"><a href="#25-1-后台菜单权限" class="headerlink" title="25.1 后台菜单权限"></a>25.1 后台菜单权限</h3><p>需要验证：</p>
+<ul>
+<li>普通用户不能进入后台</li>
+<li>版主只能看到负责板块相关菜单</li>
+<li>管理员看到管理菜单</li>
+<li>超级管理员看到系统配置和权限管理菜单</li>
+<li>直接访问后台 URL 是否仍校验权限</li>
+</ul>
+<hr>
+<h3 id="25-2-后台接口权限"><a href="#25-2-后台接口权限" class="headerlink" title="25.2 后台接口权限"></a>25.2 后台接口权限</h3><p>后台页面隐藏菜单不够，还要测接口。</p>
+<p>测试点：</p>
+<ul>
+<li>普通用户调用后台接口失败</li>
+<li>版主调用非负责板块接口失败</li>
+<li>管理员调用超级管理员接口失败</li>
+<li>未登录调用后台接口失败</li>
+<li>Token 过期后后台接口失败</li>
+</ul>
+<hr>
+<h3 id="25-3-操作日志权限"><a href="#25-3-操作日志权限" class="headerlink" title="25.3 操作日志权限"></a>25.3 操作日志权限</h3><p>后台高危操作要有日志。</p>
+<p>需要验证日志记录：</p>
+<ul>
+<li>操作人</li>
+<li>操作时间</li>
+<li>操作对象</li>
+<li>操作类型</li>
+<li>操作前状态</li>
+<li>操作后状态</li>
+<li>操作原因，按需求判断</li>
+</ul>
+<hr>
+<h2 id="第三部分：权限专项测试方法"><a href="#第三部分：权限专项测试方法" class="headerlink" title="第三部分：权限专项测试方法"></a>第三部分：权限专项测试方法</h2><blockquote>
+<p>这一部分不是某一个具体模块，而是一套可以复用的权限测试方法。</p>
+<p>当你遇到“谁能不能做这件事”的问题，都可以回到这一部分找思路。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perm-ch-26"></a></p>
+<h2 id="26-权限矩阵怎么写"><a href="#26-权限矩阵怎么写" class="headerlink" title="26. 权限矩阵怎么写"></a>26. 权限矩阵怎么写</h2><p>权限矩阵是权限测试最重要的工具之一。</p>
+<p>它可以帮助你清楚列出：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">不同角色，对不同功能，到底允许还是禁止</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="26-1-权限矩阵示例"><a href="#26-1-权限矩阵示例" class="headerlink" title="26.1 权限矩阵示例"></a>26.1 权限矩阵示例</h3><table>
+<thead>
+<tr>
+<th>功能&#x2F;角色</th>
+<th>游客</th>
+<th>普通用户</th>
+<th>作者</th>
+<th>被禁言用户</th>
+<th>版主</th>
+<th>管理员</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>查看公开帖子</td>
+<td>允许</td>
+<td>允许</td>
+<td>允许</td>
+<td>允许</td>
+<td>允许</td>
+<td>允许</td>
+</tr>
+<tr>
+<td>发帖</td>
+<td>禁止</td>
+<td>允许</td>
+<td>允许</td>
+<td>禁止</td>
+<td>允许</td>
+<td>允许</td>
+</tr>
+<tr>
+<td>评论</td>
+<td>禁止</td>
+<td>允许</td>
+<td>允许</td>
+<td>禁止</td>
+<td>允许</td>
+<td>允许</td>
+</tr>
+<tr>
+<td>编辑自己的帖子</td>
+<td>禁止</td>
+<td>允许</td>
+<td>允许</td>
+<td>按需求</td>
+<td>允许</td>
+<td>允许</td>
+</tr>
+<tr>
+<td>编辑别人帖子</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>按板块</td>
+<td>按需求</td>
+</tr>
+<tr>
+<td>删除自己的帖子</td>
+<td>禁止</td>
+<td>按需求</td>
+<td>按需求</td>
+<td>按需求</td>
+<td>允许</td>
+<td>允许</td>
+</tr>
+<tr>
+<td>删除别人帖子</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>按板块</td>
+<td>允许</td>
+</tr>
+<tr>
+<td>审核内容</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>按板块</td>
+<td>允许</td>
+</tr>
+<tr>
+<td>封禁用户</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止</td>
+<td>按需求</td>
+<td>允许</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="26-2-权限矩阵怎么用"><a href="#26-2-权限矩阵怎么用" class="headerlink" title="26.2 权限矩阵怎么用"></a>26.2 权限矩阵怎么用</h3><p>拿到需求后，先整理矩阵。</p>
+<p>然后每一格都可以转成测试点。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">普通用户 + 删除别人帖子 = 禁止</span><br></pre></td></tr></table></figure>
+
+<p>就可以写成用例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A发布帖子</span><br><span class="line">用户B调用删除接口</span><br><span class="line">预期删除失败，帖子仍存在</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-27"></a></p>
+<h2 id="27-接口越权怎么测"><a href="#27-接口越权怎么测" class="headerlink" title="27. 接口越权怎么测"></a>27. 接口越权怎么测</h2><p>接口越权是权限测试重点。</p>
+<hr>
+<h3 id="27-1-基本方法"><a href="#27-1-基本方法" class="headerlink" title="27.1 基本方法"></a>27.1 基本方法</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用用户A创建资源</span><br><span class="line">2. 记录资源 ID</span><br><span class="line">3. 用用户B登录</span><br><span class="line">4. 用用户B Token 操作用户A资源</span><br><span class="line">5. 查看接口返回和数据结果</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="27-2-示例：删除帖子越权"><a href="#27-2-示例：删除帖子越权" class="headerlink" title="27.2 示例：删除帖子越权"></a>27.2 示例：删除帖子越权</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户A发布帖子 P001</span><br><span class="line">2. 用户B登录，获取 Token</span><br><span class="line">3. 用户B 调用 DELETE /api/posts/P001</span><br><span class="line">4. 查看接口返回</span><br><span class="line">5. 查询帖子 P001 是否还存在</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">返回无权限</span><br><span class="line">帖子仍然存在</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="27-3-示例：查看私信越权"><a href="#27-3-示例：查看私信越权" class="headerlink" title="27.3 示例：查看私信越权"></a>27.3 示例：查看私信越权</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户A和用户B产生私信会话 C001</span><br><span class="line">2. 用户C登录</span><br><span class="line">3. 用户C 调用获取会话 C001 消息列表接口</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户C无权查看该会话</span><br><span class="line">接口返回无权限或资源不存在</span><br><span class="line">不能返回消息内容</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-28"></a></p>
+<h2 id="28-水平越权怎么测"><a href="#28-水平越权怎么测" class="headerlink" title="28. 水平越权怎么测"></a>28. 水平越权怎么测</h2><p>水平越权重点是：同角色之间的数据隔离。</p>
+<hr>
+<h3 id="28-1-常见水平越权场景"><a href="#28-1-常见水平越权场景" class="headerlink" title="28.1 常见水平越权场景"></a>28.1 常见水平越权场景</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>修改别人资料</td>
+<td>用户A修改用户B昵称</td>
+</tr>
+<tr>
+<td>删除别人内容</td>
+<td>用户A删除用户B帖子</td>
+</tr>
+<tr>
+<td>查看别人私信</td>
+<td>用户A查看用户B会话</td>
+</tr>
+<tr>
+<td>操作别人通知</td>
+<td>用户A标记用户B通知已读</td>
+</tr>
+<tr>
+<td>操作别人收藏</td>
+<td>用户A取消用户B收藏</td>
+</tr>
+<tr>
+<td>查看别人草稿</td>
+<td>用户A查看用户B草稿</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="28-2-测试方法"><a href="#28-2-测试方法" class="headerlink" title="28.2 测试方法"></a>28.2 测试方法</h3><p>水平越权最常见方法是替换资源 ID。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A请求自己的资料接口：/api/users/A/profile</span><br><span class="line">把 A 改成 B</span><br><span class="line">用用户A Token 请求 /api/users/B/private-profile</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">只能返回公开资料</span><br><span class="line">不能返回邮箱、手机号、私密设置等敏感信息</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-29"></a></p>
+<h2 id="29-垂直越权怎么测"><a href="#29-垂直越权怎么测" class="headerlink" title="29. 垂直越权怎么测"></a>29. 垂直越权怎么测</h2><p>垂直越权重点是：低权限用户访问高权限功能。</p>
+<hr>
+<h3 id="29-1-常见垂直越权场景"><a href="#29-1-常见垂直越权场景" class="headerlink" title="29.1 常见垂直越权场景"></a>29.1 常见垂直越权场景</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>普通用户访问后台</td>
+<td>普通用户打开 &#x2F;admin</td>
+</tr>
+<tr>
+<td>普通用户调用审核接口</td>
+<td>POST &#x2F;api&#x2F;admin&#x2F;posts&#x2F;review</td>
+</tr>
+<tr>
+<td>普通用户封禁用户</td>
+<td>POST &#x2F;api&#x2F;admin&#x2F;users&#x2F;ban</td>
+</tr>
+<tr>
+<td>版主操作全站内容</td>
+<td>版主删除非负责板块帖子</td>
+</tr>
+<tr>
+<td>管理员操作超级管理员</td>
+<td>普通管理员修改超级管理员权限</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="29-2-测试方法"><a href="#29-2-测试方法" class="headerlink" title="29.2 测试方法"></a>29.2 测试方法</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用管理员账号正常操作一次，记录接口和参数</span><br><span class="line">2. 换成普通用户 Token</span><br><span class="line">3. 重新调用同一个接口</span><br><span class="line">4. 查看是否失败</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">普通用户无权限</span><br><span class="line">接口不能执行实际操作</span><br><span class="line">后台数据不应变化</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-30"></a></p>
+<h2 id="30-多端权限同步怎么测"><a href="#30-多端权限同步怎么测" class="headerlink" title="30. 多端权限同步怎么测"></a>30. 多端权限同步怎么测</h2><p>用户权限变化后，多端都应该同步。</p>
+<hr>
+<h3 id="30-1-常见场景"><a href="#30-1-常见场景" class="headerlink" title="30.1 常见场景"></a>30.1 常见场景</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>测试点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Web 已登录，App 被封禁</td>
+<td>App 和 Web 都应受限</td>
+</tr>
+<tr>
+<td>App 被禁言，Web 评论</td>
+<td>Web 也不能评论</td>
+</tr>
+<tr>
+<td>后台修改角色</td>
+<td>前台菜单和接口权限同步</td>
+</tr>
+<tr>
+<td>用户注销账号</td>
+<td>所有端登录态失效</td>
+</tr>
+<tr>
+<td>解除封禁</td>
+<td>多端权限恢复</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="30-2-示例：禁言多端同步"><a href="#30-2-示例：禁言多端同步" class="headerlink" title="30.2 示例：禁言多端同步"></a>30.2 示例：禁言多端同步</h3><p>步骤：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户A同时登录 App 和 Web</span><br><span class="line">2. 管理员后台禁言用户A</span><br><span class="line">3. 用户A在 App 尝试评论</span><br><span class="line">4. 用户A在 Web 尝试评论</span><br><span class="line">5. 用户A直接调用评论接口</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">App、Web、接口均评论失败</span><br><span class="line">提示禁言或账号受限</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-31"></a></p>
+<h2 id="31-状态变化后的权限怎么测"><a href="#31-状态变化后的权限怎么测" class="headerlink" title="31. 状态变化后的权限怎么测"></a>31. 状态变化后的权限怎么测</h2><p>权限不是固定的，用户状态变化后权限也要变化。</p>
+<hr>
+<h3 id="31-1-常见状态变化"><a href="#31-1-常见状态变化" class="headerlink" title="31.1 常见状态变化"></a>31.1 常见状态变化</h3><ul>
+<li>正常 → 禁言</li>
+<li>禁言 → 正常</li>
+<li>正常 → 封禁</li>
+<li>封禁 → 解封</li>
+<li>未验证 → 已验证</li>
+<li>普通用户 → 版主</li>
+<li>版主 → 普通用户</li>
+<li>管理员 → 普通用户</li>
+<li>注销中 → 已注销</li>
+</ul>
+<hr>
+<h3 id="31-2-测试重点"><a href="#31-2-测试重点" class="headerlink" title="31.2 测试重点"></a>31.2 测试重点</h3><p>每次状态变化后都要验证：</p>
+<ul>
+<li>页面入口是否变化</li>
+<li>按钮是否置灰或隐藏</li>
+<li>接口是否真正限制</li>
+<li>已登录 Token 是否仍有效</li>
+<li>多端是否同步</li>
+<li>历史数据是否按规则展示</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-32"></a></p>
+<h2 id="32-权限与数据一致性怎么结合验证"><a href="#32-权限与数据一致性怎么结合验证" class="headerlink" title="32. 权限与数据一致性怎么结合验证"></a>32. 权限与数据一致性怎么结合验证</h2><p>权限测试不能只看接口返回，还要看数据是否真的没变。</p>
+<hr>
+<h3 id="32-1-示例：越权删除失败后要查数据"><a href="#32-1-示例：越权删除失败后要查数据" class="headerlink" title="32.1 示例：越权删除失败后要查数据"></a>32.1 示例：越权删除失败后要查数据</h3><p>用户B越权删除用户A帖子，接口返回失败后，还要验证：</p>
+<ul>
+<li>帖子详情仍可访问</li>
+<li>Feed 仍展示该帖子</li>
+<li>数据库状态没有变成 deleted</li>
+<li>没有生成错误删除日志</li>
+</ul>
+<hr>
+<h3 id="32-2-示例：封禁后数据状态"><a href="#32-2-示例：封禁后数据状态" class="headerlink" title="32.2 示例：封禁后数据状态"></a>32.2 示例：封禁后数据状态</h3><p>用户被封禁后，要验证：</p>
+<ul>
+<li>不能继续发帖</li>
+<li>不能继续评论</li>
+<li>历史帖子是否展示，按需求判断</li>
+<li>历史评论是否展示，按需求判断</li>
+<li>关注关系是否保留，按需求判断</li>
+<li>私信是否可见，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-perm-ch-33"></a></p>
+<h2 id="33-权限测试如何定位问题"><a href="#33-权限测试如何定位问题" class="headerlink" title="33. 权限测试如何定位问题"></a>33. 权限测试如何定位问题</h2><p>权限问题可以按这几个层次定位。</p>
+<hr>
+<h3 id="33-1-定位思路"><a href="#33-1-定位思路" class="headerlink" title="33.1 定位思路"></a>33.1 定位思路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">页面入口是否错误？</span><br><span class="line">接口是否允许了错误操作？</span><br><span class="line">用户角色是否判断错误？</span><br><span class="line">用户状态是否没有同步？</span><br><span class="line">资源归属是否没有校验？</span><br><span class="line">后台权限配置是否错误？</span><br><span class="line">缓存中权限是否是旧数据？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="33-2-简单判断方法"><a href="#33-2-简单判断方法" class="headerlink" title="33.2 简单判断方法"></a>33.2 简单判断方法</h3><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>可能原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>页面显示了不该显示的按钮，但接口失败</td>
+<td>前端权限展示问题</td>
+</tr>
+<tr>
+<td>页面隐藏按钮，但接口成功</td>
+<td>后端权限漏洞</td>
+</tr>
+<tr>
+<td>只有某个端权限错误</td>
+<td>多端权限同步或前端判断问题</td>
+</tr>
+<tr>
+<td>状态修改后旧 Token 还能操作</td>
+<td>后端没有实时校验用户状态</td>
+</tr>
+<tr>
+<td>版主能操作其他板块</td>
+<td>资源范围校验错误</td>
+</tr>
+<tr>
+<td>用户A能操作用户B数据</td>
+<td>资源归属校验错误</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="第四部分：用例、Bug-与总结"><a href="#第四部分：用例、Bug-与总结" class="headerlink" title="第四部分：用例、Bug 与总结"></a>第四部分：用例、Bug 与总结</h2><blockquote>
+<p>权限测试用例一定要写清楚：谁操作、操作谁的资源、预期允许还是禁止。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perm-ch-34"></a></p>
+<h2 id="34-权限测试用例怎么写"><a href="#34-权限测试用例怎么写" class="headerlink" title="34. 权限测试用例怎么写"></a>34. 权限测试用例怎么写</h2><p>权限测试用例建议包含：</p>
+<ul>
+<li>用例编号</li>
+<li>模块</li>
+<li>操作角色</li>
+<li>目标资源归属</li>
+<li>用户状态</li>
+<li>前置条件</li>
+<li>操作步骤</li>
+<li>预期结果</li>
+<li>是否验证接口</li>
+<li>是否验证数据</li>
+<li>优先级</li>
+</ul>
+<hr>
+<h3 id="34-1-用例模板"><a href="#34-1-用例模板" class="headerlink" title="34.1 用例模板"></a>34.1 用例模板</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>AUTH_POST_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>帖子</td>
+</tr>
+<tr>
+<td>用例标题</td>
+<td>普通用户不能删除别人的帖子</td>
+</tr>
+<tr>
+<td>操作角色</td>
+<td>普通用户B</td>
+</tr>
+<tr>
+<td>目标资源归属</td>
+<td>用户A的帖子 P001</td>
+</tr>
+<tr>
+<td>用户状态</td>
+<td>用户B正常</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>用户A已发布帖子 P001，用户B已登录</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>用户B调用删除帖子接口删除 P001</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>删除失败，返回无权限，P001 仍然存在</td>
+</tr>
+<tr>
+<td>是否验证接口</td>
+<td>是</td>
+</tr>
+<tr>
+<td>是否验证数据</td>
+<td>是</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="34-2-示例用例：被禁言用户不能评论"><a href="#34-2-示例用例：被禁言用户不能评论" class="headerlink" title="34.2 示例用例：被禁言用户不能评论"></a>34.2 示例用例：被禁言用户不能评论</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>AUTH_COMMENT_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>评论</td>
+</tr>
+<tr>
+<td>用例标题</td>
+<td>被禁言用户不能发表评论</td>
+</tr>
+<tr>
+<td>操作角色</td>
+<td>普通用户A</td>
+</tr>
+<tr>
+<td>用户状态</td>
+<td>已禁言</td>
+</tr>
+<tr>
+<td>目标资源</td>
+<td>正常公开帖子 P001</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>管理员已将用户A设置为禁言</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>用户A在页面发表评论，并直接调用评论接口</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>页面评论失败；接口返回账号受限；评论列表不新增评论；评论数不增加</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="34-3-示例用例：版主不能管理非负责板块"><a href="#34-3-示例用例：版主不能管理非负责板块" class="headerlink" title="34.3 示例用例：版主不能管理非负责板块"></a>34.3 示例用例：版主不能管理非负责板块</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>AUTH_MOD_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>版主管理</td>
+</tr>
+<tr>
+<td>用例标题</td>
+<td>版主不能删除非负责板块帖子</td>
+</tr>
+<tr>
+<td>操作角色</td>
+<td>版主M</td>
+</tr>
+<tr>
+<td>目标资源</td>
+<td>板块B的帖子 P002</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>版主M只负责板块A；用户B在板块B发布帖子P002</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>版主M调用删除帖子接口删除P002</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>删除失败，返回无权限；P002仍然存在；后台不生成有效删除记录</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perm-ch-35"></a></p>
+<h2 id="35-权限类-Bug-怎么提交"><a href="#35-权限类-Bug-怎么提交" class="headerlink" title="35. 权限类 Bug 怎么提交"></a>35. 权限类 Bug 怎么提交</h2><p>权限类 Bug 一定要写清楚：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">哪个角色</span><br><span class="line">在什么状态下</span><br><span class="line">操作了谁的资源</span><br><span class="line">实际发生了什么越权结果</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="35-1-权限类-Bug-应包含"><a href="#35-1-权限类-Bug-应包含" class="headerlink" title="35.1 权限类 Bug 应包含"></a>35.1 权限类 Bug 应包含</h3><ul>
+<li>Bug 标题</li>
+<li>测试环境</li>
+<li>操作账号</li>
+<li>操作账号角色</li>
+<li>操作账号状态</li>
+<li>目标资源 ID</li>
+<li>目标资源归属</li>
+<li>操作方式：页面或接口</li>
+<li>请求信息，如果是接口</li>
+<li>实际结果</li>
+<li>预期结果</li>
+<li>数据是否发生变化</li>
+<li>严重程度</li>
+</ul>
+<hr>
+<h3 id="35-2-示例-Bug：普通用户删除别人帖子成功"><a href="#35-2-示例-Bug：普通用户删除别人帖子成功" class="headerlink" title="35.2 示例 Bug：普通用户删除别人帖子成功"></a>35.2 示例 Bug：普通用户删除别人帖子成功</h3><h4 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[权限漏洞] 普通用户可通过删除接口删除其他用户帖子</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Test 环境</span><br></pre></td></tr></table></figure>
+
+<h4 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A发布帖子 P001</span><br><span class="line">用户B为普通用户，账号状态正常</span><br></pre></td></tr></table></figure>
+
+<h4 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户B登录，获取 userB_token</span><br><span class="line">2. 用户B 调用删除帖子接口：DELETE /api/posts/P001</span><br><span class="line">3. 查看接口返回</span><br><span class="line">4. 使用用户A查询帖子详情</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果"><a href="#实际结果" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">接口返回删除成功</span><br><span class="line">帖子 P001 已不可访问</span><br><span class="line">Feed 中该帖子消失</span><br></pre></td></tr></table></figure>
+
+<h4 id="预期结果"><a href="#预期结果" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户B不是帖子作者，也不是管理员，不应删除用户A的帖子。</span><br><span class="line">接口应返回无权限，帖子 P001 应保持正常状态。</span><br></pre></td></tr></table></figure>
+
+<h4 id="严重程度"><a href="#严重程度" class="headerlink" title="严重程度"></a>严重程度</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Critical</span><br></pre></td></tr></table></figure>
+
+<p>原因：普通用户可删除他人内容，属于严重越权问题。</p>
+<hr>
+<h3 id="35-3-示例-Bug：禁言状态未对旧-Token-生效"><a href="#35-3-示例-Bug：禁言状态未对旧-Token-生效" class="headerlink" title="35.3 示例 Bug：禁言状态未对旧 Token 生效"></a>35.3 示例 Bug：禁言状态未对旧 Token 生效</h3><h4 id="标题-1"><a href="#标题-1" class="headerlink" title="标题"></a>标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[权限问题] 用户被禁言后仍可使用旧 Token 调用评论接口成功</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果-1"><a href="#实际结果-1" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">管理员后台禁言用户A后，用户A在页面评论入口已置灰，但使用禁言前获取的 Token 调用评论接口仍返回成功，评论列表新增评论。</span><br></pre></td></tr></table></figure>
+
+<h4 id="预期结果-1"><a href="#预期结果-1" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">禁言状态应对已登录 Token 立即生效。用户A调用评论接口应失败，评论列表不应新增数据。</span><br></pre></td></tr></table></figure>
+
+<h4 id="严重程度-1"><a href="#严重程度-1" class="headerlink" title="严重程度"></a>严重程度</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Critical</span><br></pre></td></tr></table></figure>
+
+<p>原因：可绕过前端限制，导致禁言功能失效。</p>
+<hr>
+<p><a id="forum-perm-ch-36"></a></p>
+<h2 id="36-新手常见误区"><a href="#36-新手常见误区" class="headerlink" title="36. 新手常见误区"></a>36. 新手常见误区</h2><h3 id="36-1-只看按钮是否隐藏"><a href="#36-1-只看按钮是否隐藏" class="headerlink" title="36.1 只看按钮是否隐藏"></a>36.1 只看按钮是否隐藏</h3><p>错误做法：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">页面没有按钮，所以权限没问题。</span><br></pre></td></tr></table></figure>
+
+<p>正确做法：</p>
+<p>还要直接调接口，验证后端是否真正限制。</p>
+<hr>
+<h3 id="36-2-只测一个账号"><a href="#36-2-只测一个账号" class="headerlink" title="36.2 只测一个账号"></a>36.2 只测一个账号</h3><p>权限测试必须多账号。</p>
+<p>至少要有：</p>
+<ul>
+<li>用户A：资源拥有者</li>
+<li>用户B：非资源拥有者</li>
+<li>管理员：高权限用户</li>
+<li>受限用户：禁言或封禁状态</li>
+</ul>
+<hr>
+<h3 id="36-3-不验证数据是否变化"><a href="#36-3-不验证数据是否变化" class="headerlink" title="36.3 不验证数据是否变化"></a>36.3 不验证数据是否变化</h3><p>接口返回失败后，也要确认数据没有被错误修改。</p>
+<p>例如删除失败后，要确认帖子仍然存在。</p>
+<hr>
+<h3 id="36-4-不区分角色和状态"><a href="#36-4-不区分角色和状态" class="headerlink" title="36.4 不区分角色和状态"></a>36.4 不区分角色和状态</h3><p>普通用户和被禁言普通用户不是同一种权限。</p>
+<p>管理员和被停用管理员也不是同一种权限。</p>
+<hr>
+<h3 id="36-5-忽略旧-Token"><a href="#36-5-忽略旧-Token" class="headerlink" title="36.5 忽略旧 Token"></a>36.5 忽略旧 Token</h3><p>用户被封禁、禁言、降级后，旧 Token 是否还能继续操作非常关键。</p>
+<p>一定要测：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">状态变化前已登录</span><br><span class="line">状态变化后继续用旧 Token 操作</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perm-ch-37"></a></p>
+<h2 id="37-最后总结"><a href="#37-最后总结" class="headerlink" title="37. 最后总结"></a>37. 最后总结</h2><p>权限测试的核心不是“页面有没有按钮”，而是要理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">谁在操作？</span><br><span class="line">他的角色是什么？</span><br><span class="line">他的状态是什么？</span><br><span class="line">他操作的是谁的资源？</span><br><span class="line">这个操作应该允许还是禁止？</span><br><span class="line">前端有没有限制？</span><br><span class="line">后端接口有没有限制？</span><br><span class="line">数据有没有被错误修改？</span><br><span class="line">多端和旧 Token 是否同步生效？</span><br></pre></td></tr></table></figure>
+
+<p>对于海外社区论坛项目，权限测试最重要的几个方向是：</p>
+<ul>
+<li>游客权限</li>
+<li>普通用户权限</li>
+<li>作者和非作者权限</li>
+<li>禁言和封禁状态</li>
+<li>版主板块边界</li>
+<li>管理员后台权限</li>
+<li>用户隐私数据权限</li>
+<li>私信和通知权限</li>
+<li>举报、审核、封禁权限</li>
+<li>接口越权</li>
+<li>多端权限同步</li>
+<li>旧 Token 权限失效</li>
+</ul>
+<p>你可以记住一个万能权限测试公式：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">角色 + 状态 + 资源归属 + 操作动作 = 是否允许</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">普通用户B + 正常状态 + 用户A的帖子 + 删除 = 不允许</span><br><span class="line">作者用户A + 正常状态 + 自己的帖子 + 编辑 = 允许</span><br><span class="line">版主M + 正常状态 + 非负责板块帖子 + 删除 = 不允许</span><br><span class="line">被禁言用户 + 禁言状态 + 任意帖子 + 评论 = 不允许</span><br></pre></td></tr></table></figure>
+
+<p>只要你每次测试权限时都按这个公式去拆，权限测试思路就会越来越清晰。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-11-overseas-forum-permission-testing-guide/">https://linn0813.github.io/2026-05-11-overseas-forum-permission-testing-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B/">社区论坛</a><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a><a class="post-meta__tags" href="/tags/%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95/">权限测试</a><a class="post-meta__tags" href="/tags/%E8%B6%8A%E6%9D%83%E6%B5%8B%E8%AF%95/">越权测试</a><a class="post-meta__tags" href="/tags/RBAC/">RBAC</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-permission-testing-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-10</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-09-overseas-forum-api-testing-guide/" title="学习笔记：海外社区论坛 - 接口测试入门"><img class="cover" src="/img/overseas-forum-api-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-09</div><div class="info-item-2">学习笔记：海外社区论坛 - 接口测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-12</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-07-overseas-forum-functional-testing-guide/" title="学习笔记：海外社区论坛 - 功能测试入门"><img class="cover" src="/img/overseas-forum-functional-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-07</div><div class="info-item-2">学习笔记：海外社区论坛 - 功能测试入门</div></div><div class="info-2"><div class="info-item-1">结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。</div></div></div></a><a class="pagination-related" href="/2026-05-13-overseas-forum-i18n-l10n-guide/" title="学习笔记：海外社区论坛 - 国际化与本地化专项入门"><img class="cover" src="/img/overseas-forum-i18n-l10n-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-13</div><div class="info-item-2">学习笔记：海外社区论坛 - 国际化与本地化专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛国际化与本地化专项入门：I18N/L10N 基础、各模块实战、文案布局与时区等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-14</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-06-community-forum-testing-strategy/" title="新阶段开启：海外版社区论坛测试方案学习"><img class="cover" src="/img/testing-strategy-cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-06</div><div class="info-item-2">新阶段开启：海外版社区论坛测试方案学习</div></div><div class="info-2"><div class="info-item-1">开启测试能力进阶的新阶段，围绕海外版社区论坛测试方案系统学习，覆盖功能、海外化、合规、安全、性能、自动化与 AI 辅助测试。</div></div></div></a><a class="pagination-related" href="/2026-05-15-overseas-forum-performance-guide/" title="学习笔记：海外社区论坛 - 性能测试入门"><img class="cover" src="/img/overseas-forum-performance-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-15</div><div class="info-item-2">学习笔记：海外社区论坛 - 性能测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">第一部分：权限测试基础概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%81%9A%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E4%B8%93%E9%A1%B9"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么要做权限测试专项</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%B8%B8%E8%A7%81%E6%9D%83%E9%99%90%E4%BA%8B%E6%95%85"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 社区论坛常见权限事故</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E8%A6%81%E5%8D%95%E7%8B%AC%E5%81%9A"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 为什么权限测试要单独做</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text">2. 什么是权限测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E6%B5%8B%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 权限测试测什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E4%B8%8D%E6%98%AF%E5%8F%AA%E6%B5%8B%E6%8C%89%E9%92%AE"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 权限测试不是只测按钮</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E5%92%8C%E6%99%AE%E9%80%9A%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">3. 权限测试和普通功能测试有什么区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%9A%E5%88%A0%E9%99%A4%E5%B8%96%E5%AD%90"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 举个例子：删除帖子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%A7%92%E8%89%B2%E3%80%81%E7%94%A8%E6%88%B7%E7%8A%B6%E6%80%81%E3%80%81%E8%B5%84%E6%BA%90%E5%BD%92%E5%B1%9E%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">5.</span> <span class="toc-text">4. 角色、用户状态、资源归属分别是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E8%A7%92%E8%89%B2%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 角色是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E7%94%A8%E6%88%B7%E7%8A%B6%E6%80%81%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 用户状态是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E8%A7%92%E8%89%B2%E5%92%8C%E7%8A%B6%E6%80%81%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 角色和状态的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E8%B5%84%E6%BA%90%E5%BD%92%E5%B1%9E%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">5.4.</span> <span class="toc-text">4.4 资源归属是什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%89%8D%E7%AB%AF%E6%9D%83%E9%99%90%E5%92%8C%E5%90%8E%E7%AB%AF%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3"><span class="toc-number">6.</span> <span class="toc-text">5. 前端权限和后端权限怎么理解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%89%8D%E7%AB%AF%E6%9D%83%E9%99%90"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 前端权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%90%8E%E7%AB%AF%E6%9D%83%E9%99%90"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 后端权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%90%8E%E7%AB%AF%E6%9D%83%E9%99%90%E6%9B%B4%E9%87%8D%E8%A6%81"><span class="toc-number">6.3.</span> <span class="toc-text">5.3 为什么后端权限更重要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%80%E4%B9%88%E6%98%AF%E8%B6%8A%E6%9D%83"><span class="toc-number">7.</span> <span class="toc-text">6. 什么是越权</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%B0%B4%E5%B9%B3%E8%B6%8A%E6%9D%83"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 水平越权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%9E%82%E7%9B%B4%E8%B6%8A%E6%9D%83"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 垂直越权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E8%B6%8A%E6%9D%83%E6%B5%8B%E8%AF%95%E4%B8%BA%E4%BB%80%E4%B9%88%E9%87%8D%E8%A6%81"><span class="toc-number">7.3.</span> <span class="toc-text">6.3 越权测试为什么重要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%B9%E6%98%93%E5%87%BA%E7%8E%B0%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98"><span class="toc-number">8.</span> <span class="toc-text">7. 海外社区论坛为什么容易出现权限问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E7%94%A8%E6%88%B7%E7%B1%BB%E5%9E%8B%E5%A4%9A"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 用户类型多</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E5%86%85%E5%AE%B9%E7%8A%B6%E6%80%81%E5%A4%9A"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 内容状态多</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E5%A4%9A"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 治理功能多</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E6%B5%B7%E5%A4%96%E9%9A%90%E7%A7%81%E5%92%8C%E5%90%88%E8%A7%84%E9%A3%8E%E9%99%A9%E6%9B%B4%E9%AB%98"><span class="toc-number">8.4.</span> <span class="toc-text">7.4 海外隐私和合规风险更高</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E5%89%8D%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">9.</span> <span class="toc-text">8. 权限测试前需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%87%86%E5%A4%87%E8%A7%92%E8%89%B2%E8%B4%A6%E5%8F%B7"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 准备角色账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E5%87%86%E5%A4%87%E8%B5%84%E6%BA%90%E6%95%B0%E6%8D%AE"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 准备资源数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%87%86%E5%A4%87%E6%8E%A5%E5%8F%A3%E5%92%8C%E5%90%8E%E5%8F%B0%E5%85%A5%E5%8F%A3"><span class="toc-number">9.3.</span> <span class="toc-text">8.3 准备接口和后台入口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E5%AE%9E%E6%88%98"><span class="toc-number">10.</span> <span class="toc-text">第二部分：海外社区论坛权限测试实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%B8%B8%E8%A7%81%E8%A7%92%E8%89%B2%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">11.</span> <span class="toc-text">9. 社区论坛常见角色有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%B8%B8%E5%AE%A2%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">12.</span> <span class="toc-text">10. 游客权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E6%B8%B8%E5%AE%A2%E9%80%9A%E5%B8%B8%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">12.1.</span> <span class="toc-text">10.1 游客通常可以做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E6%B8%B8%E5%AE%A2%E9%80%9A%E5%B8%B8%E4%B8%8D%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">12.2.</span> <span class="toc-text">10.2 游客通常不能做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E6%B8%B8%E5%AE%A2%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">12.3.</span> <span class="toc-text">10.3 游客权限测试点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-%E6%96%B0%E6%89%8B%E5%AE%B9%E6%98%93%E6%BC%8F%E7%9A%84%E7%82%B9"><span class="toc-number">12.4.</span> <span class="toc-text">10.4 新手容易漏的点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">13.</span> <span class="toc-text">11. 普通用户权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E9%80%9A%E5%B8%B8%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">13.1.</span> <span class="toc-text">11.1 普通用户通常可以做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8D%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">13.2.</span> <span class="toc-text">11.2 普通用户不能做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">13.3.</span> <span class="toc-text">11.3 普通用户权限测试点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E4%BD%9C%E8%80%85%E5%92%8C%E9%9D%9E%E4%BD%9C%E8%80%85%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">14.</span> <span class="toc-text">12. 作者和非作者权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E4%BD%9C%E8%80%85%E9%80%9A%E5%B8%B8%E6%9C%89%E4%BB%80%E4%B9%88%E6%9D%83%E9%99%90"><span class="toc-number">14.1.</span> <span class="toc-text">12.1 作者通常有什么权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E9%9D%9E%E4%BD%9C%E8%80%85%E9%80%9A%E5%B8%B8%E4%B8%8D%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">14.2.</span> <span class="toc-text">12.2 非作者通常不能做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E4%BD%9C%E8%80%85-%E9%9D%9E%E4%BD%9C%E8%80%85%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">14.3.</span> <span class="toc-text">12.3 作者&#x2F;非作者测试方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E6%96%B0%E7%94%A8%E6%88%B7%E3%80%81%E6%9C%AA%E9%AA%8C%E8%AF%81%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">15.</span> <span class="toc-text">13. 新用户、未验证用户权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E6%96%B0%E7%94%A8%E6%88%B7%E5%8F%AF%E8%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B%E9%99%90%E5%88%B6"><span class="toc-number">15.1.</span> <span class="toc-text">13.1 新用户可能有哪些限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E6%9C%AA%E9%AA%8C%E8%AF%81%E7%94%A8%E6%88%B7%E5%8F%AF%E8%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B%E9%99%90%E5%88%B6"><span class="toc-number">15.2.</span> <span class="toc-text">13.2 未验证用户可能有哪些限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">15.3.</span> <span class="toc-text">13.3 测试点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E8%A2%AB%E7%A6%81%E8%A8%80%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">16.</span> <span class="toc-text">14. 被禁言用户权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E8%A2%AB%E7%A6%81%E8%A8%80%E7%94%A8%E6%88%B7%E9%80%9A%E5%B8%B8%E4%B8%8D%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">16.1.</span> <span class="toc-text">14.1 被禁言用户通常不能做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">16.2.</span> <span class="toc-text">14.2 测试点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-3-%E6%96%B0%E6%89%8B%E5%AE%B9%E6%98%93%E6%BC%8F%E7%9A%84%E7%82%B9"><span class="toc-number">16.3.</span> <span class="toc-text">14.3 新手容易漏的点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E8%A2%AB%E5%B0%81%E7%A6%81%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">17.</span> <span class="toc-text">15. 被封禁用户权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E5%B0%81%E7%A6%81%E5%90%8E%E5%8F%AF%E8%83%BD%E7%9A%84%E4%BA%A7%E5%93%81%E8%A7%84%E5%88%99"><span class="toc-number">17.1.</span> <span class="toc-text">15.1 封禁后可能的产品规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">17.2.</span> <span class="toc-text">15.2 测试点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E7%89%88%E4%B8%BB-Moderator-%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">18.</span> <span class="toc-text">16. 版主 Moderator 权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E7%89%88%E4%B8%BB%E9%80%9A%E5%B8%B8%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">18.1.</span> <span class="toc-text">16.1 版主通常可以做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-%E7%89%88%E4%B8%BB%E9%80%9A%E5%B8%B8%E4%B8%8D%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">18.2.</span> <span class="toc-text">16.2 版主通常不能做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-3-%E7%89%88%E4%B8%BB%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">18.3.</span> <span class="toc-text">16.3 版主权限测试方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E7%AE%A1%E7%90%86%E5%91%98-Admin-%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">19.</span> <span class="toc-text">17. 管理员 Admin 权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E7%AE%A1%E7%90%86%E5%91%98%E9%80%9A%E5%B8%B8%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">19.1.</span> <span class="toc-text">17.1 管理员通常可以做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-%E7%AE%A1%E7%90%86%E5%91%98%E5%8F%AF%E8%83%BD%E4%B8%8D%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">19.2.</span> <span class="toc-text">17.2 管理员可能不能做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-3-%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">19.3.</span> <span class="toc-text">17.3 管理员权限测试点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98-Super-Admin-%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">20.</span> <span class="toc-text">18. 超级管理员 Super Admin 权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#18-1-%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E9%80%9A%E5%B8%B8%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">20.1.</span> <span class="toc-text">18.1 超级管理员通常可以做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-2-%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E4%B9%9F%E9%9C%80%E8%A6%81%E9%99%90%E5%88%B6%E4%BB%80%E4%B9%88"><span class="toc-number">20.2.</span> <span class="toc-text">18.2 超级管理员也需要限制什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E7%94%A8%E6%88%B7%E8%B5%84%E6%96%99%E4%B8%8E%E9%9A%90%E7%A7%81%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">21.</span> <span class="toc-text">19. 用户资料与隐私权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E5%85%AC%E5%BC%80%E8%B5%84%E6%96%99%E5%92%8C%E7%A7%81%E5%AF%86%E8%B5%84%E6%96%99"><span class="toc-number">21.1.</span> <span class="toc-text">19.1 公开资料和私密资料</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">21.2.</span> <span class="toc-text">19.2 测试点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%8F%91%E5%B8%96%E3%80%81%E7%BC%96%E8%BE%91%E3%80%81%E5%88%A0%E9%99%A4%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">22.</span> <span class="toc-text">20. 发帖、编辑、删除权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#20-1-%E5%8F%91%E5%B8%96%E6%9D%83%E9%99%90"><span class="toc-number">22.1.</span> <span class="toc-text">20.1 发帖权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-2-%E7%BC%96%E8%BE%91%E6%9D%83%E9%99%90"><span class="toc-number">22.2.</span> <span class="toc-text">20.2 编辑权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-3-%E5%88%A0%E9%99%A4%E6%9D%83%E9%99%90"><span class="toc-number">22.3.</span> <span class="toc-text">20.3 删除权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E8%AF%84%E8%AE%BA%E3%80%81%E5%9B%9E%E5%A4%8D%E3%80%81%E5%88%A0%E9%99%A4%E8%AF%84%E8%AE%BA%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">23.</span> <span class="toc-text">21. 评论、回复、删除评论权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-%E8%AF%84%E8%AE%BA%E6%9D%83%E9%99%90"><span class="toc-number">23.1.</span> <span class="toc-text">21.1 评论权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-%E5%88%A0%E9%99%A4%E8%AF%84%E8%AE%BA%E6%9D%83%E9%99%90"><span class="toc-number">23.2.</span> <span class="toc-text">21.2 删除评论权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E7%82%B9%E8%B5%9E%E3%80%81%E6%94%B6%E8%97%8F%E3%80%81%E5%85%B3%E6%B3%A8%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">24.</span> <span class="toc-text">22. 点赞、收藏、关注权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E7%82%B9%E8%B5%9E%E6%9D%83%E9%99%90"><span class="toc-number">24.1.</span> <span class="toc-text">22.1 点赞权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E6%94%B6%E8%97%8F%E6%9D%83%E9%99%90"><span class="toc-number">24.2.</span> <span class="toc-text">22.2 收藏权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-3-%E5%85%B3%E6%B3%A8%E6%9D%83%E9%99%90"><span class="toc-number">24.3.</span> <span class="toc-text">22.3 关注权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E7%A7%81%E4%BF%A1%E3%80%81%E9%80%9A%E7%9F%A5%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">25.</span> <span class="toc-text">23. 私信、通知权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#23-1-%E7%A7%81%E4%BF%A1%E6%9D%83%E9%99%90"><span class="toc-number">25.1.</span> <span class="toc-text">23.1 私信权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-2-%E9%80%9A%E7%9F%A5%E6%9D%83%E9%99%90"><span class="toc-number">25.2.</span> <span class="toc-text">23.2 通知权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E4%B8%BE%E6%8A%A5%E3%80%81%E5%AE%A1%E6%A0%B8%E3%80%81%E5%B0%81%E7%A6%81%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">26.</span> <span class="toc-text">24. 举报、审核、封禁权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#24-1-%E4%B8%BE%E6%8A%A5%E6%9D%83%E9%99%90"><span class="toc-number">26.1.</span> <span class="toc-text">24.1 举报权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-2-%E5%AE%A1%E6%A0%B8%E6%9D%83%E9%99%90"><span class="toc-number">26.2.</span> <span class="toc-text">24.2 审核权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-3-%E5%B0%81%E7%A6%81%E6%9D%83%E9%99%90"><span class="toc-number">26.3.</span> <span class="toc-text">24.3 封禁权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">27.</span> <span class="toc-text">25. 后台管理权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#25-1-%E5%90%8E%E5%8F%B0%E8%8F%9C%E5%8D%95%E6%9D%83%E9%99%90"><span class="toc-number">27.1.</span> <span class="toc-text">25.1 后台菜单权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-2-%E5%90%8E%E5%8F%B0%E6%8E%A5%E5%8F%A3%E6%9D%83%E9%99%90"><span class="toc-number">27.2.</span> <span class="toc-text">25.2 后台接口权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-3-%E6%93%8D%E4%BD%9C%E6%97%A5%E5%BF%97%E6%9D%83%E9%99%90"><span class="toc-number">27.3.</span> <span class="toc-text">25.3 操作日志权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E6%9D%83%E9%99%90%E4%B8%93%E9%A1%B9%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">28.</span> <span class="toc-text">第三部分：权限专项测试方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E6%9D%83%E9%99%90%E7%9F%A9%E9%98%B5%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">29.</span> <span class="toc-text">26. 权限矩阵怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#26-1-%E6%9D%83%E9%99%90%E7%9F%A9%E9%98%B5%E7%A4%BA%E4%BE%8B"><span class="toc-number">29.1.</span> <span class="toc-text">26.1 权限矩阵示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-2-%E6%9D%83%E9%99%90%E7%9F%A9%E9%98%B5%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">29.2.</span> <span class="toc-text">26.2 权限矩阵怎么用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E6%8E%A5%E5%8F%A3%E8%B6%8A%E6%9D%83%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">30.</span> <span class="toc-text">27. 接口越权怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#27-1-%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95"><span class="toc-number">30.1.</span> <span class="toc-text">27.1 基本方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-2-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E5%88%A0%E9%99%A4%E5%B8%96%E5%AD%90%E8%B6%8A%E6%9D%83"><span class="toc-number">30.2.</span> <span class="toc-text">27.2 示例：删除帖子越权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-3-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%9F%A5%E7%9C%8B%E7%A7%81%E4%BF%A1%E8%B6%8A%E6%9D%83"><span class="toc-number">30.3.</span> <span class="toc-text">27.3 示例：查看私信越权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E6%B0%B4%E5%B9%B3%E8%B6%8A%E6%9D%83%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">31.</span> <span class="toc-text">28. 水平越权怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#28-1-%E5%B8%B8%E8%A7%81%E6%B0%B4%E5%B9%B3%E8%B6%8A%E6%9D%83%E5%9C%BA%E6%99%AF"><span class="toc-number">31.1.</span> <span class="toc-text">28.1 常见水平越权场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-2-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">31.2.</span> <span class="toc-text">28.2 测试方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E5%9E%82%E7%9B%B4%E8%B6%8A%E6%9D%83%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">32.</span> <span class="toc-text">29. 垂直越权怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#29-1-%E5%B8%B8%E8%A7%81%E5%9E%82%E7%9B%B4%E8%B6%8A%E6%9D%83%E5%9C%BA%E6%99%AF"><span class="toc-number">32.1.</span> <span class="toc-text">29.1 常见垂直越权场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-2-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">32.2.</span> <span class="toc-text">29.2 测试方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E5%A4%9A%E7%AB%AF%E6%9D%83%E9%99%90%E5%90%8C%E6%AD%A5%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">33.</span> <span class="toc-text">30. 多端权限同步怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#30-1-%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF"><span class="toc-number">33.1.</span> <span class="toc-text">30.1 常见场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-2-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E7%A6%81%E8%A8%80%E5%A4%9A%E7%AB%AF%E5%90%8C%E6%AD%A5"><span class="toc-number">33.2.</span> <span class="toc-text">30.2 示例：禁言多端同步</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E7%8A%B6%E6%80%81%E5%8F%98%E5%8C%96%E5%90%8E%E7%9A%84%E6%9D%83%E9%99%90%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">34.</span> <span class="toc-text">31. 状态变化后的权限怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-1-%E5%B8%B8%E8%A7%81%E7%8A%B6%E6%80%81%E5%8F%98%E5%8C%96"><span class="toc-number">34.1.</span> <span class="toc-text">31.1 常见状态变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-2-%E6%B5%8B%E8%AF%95%E9%87%8D%E7%82%B9"><span class="toc-number">34.2.</span> <span class="toc-text">31.2 测试重点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E6%9D%83%E9%99%90%E4%B8%8E%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E6%80%8E%E4%B9%88%E7%BB%93%E5%90%88%E9%AA%8C%E8%AF%81"><span class="toc-number">35.</span> <span class="toc-text">32. 权限与数据一致性怎么结合验证</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32-1-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E8%B6%8A%E6%9D%83%E5%88%A0%E9%99%A4%E5%A4%B1%E8%B4%A5%E5%90%8E%E8%A6%81%E6%9F%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">35.1.</span> <span class="toc-text">32.1 示例：越权删除失败后要查数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-2-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E5%B0%81%E7%A6%81%E5%90%8E%E6%95%B0%E6%8D%AE%E7%8A%B6%E6%80%81"><span class="toc-number">35.2.</span> <span class="toc-text">32.2 示例：封禁后数据状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D%E9%97%AE%E9%A2%98"><span class="toc-number">36.</span> <span class="toc-text">33. 权限测试如何定位问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#33-1-%E5%AE%9A%E4%BD%8D%E6%80%9D%E8%B7%AF"><span class="toc-number">36.1.</span> <span class="toc-text">33.1 定位思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-2-%E7%AE%80%E5%8D%95%E5%88%A4%E6%96%AD%E6%96%B9%E6%B3%95"><span class="toc-number">36.2.</span> <span class="toc-text">33.2 简单判断方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E7%94%A8%E4%BE%8B%E3%80%81Bug-%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">37.</span> <span class="toc-text">第四部分：用例、Bug 与总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">38.</span> <span class="toc-text">34. 权限测试用例怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#34-1-%E7%94%A8%E4%BE%8B%E6%A8%A1%E6%9D%BF"><span class="toc-number">38.1.</span> <span class="toc-text">34.1 用例模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-2-%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B%EF%BC%9A%E8%A2%AB%E7%A6%81%E8%A8%80%E7%94%A8%E6%88%B7%E4%B8%8D%E8%83%BD%E8%AF%84%E8%AE%BA"><span class="toc-number">38.2.</span> <span class="toc-text">34.2 示例用例：被禁言用户不能评论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-3-%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B%EF%BC%9A%E7%89%88%E4%B8%BB%E4%B8%8D%E8%83%BD%E7%AE%A1%E7%90%86%E9%9D%9E%E8%B4%9F%E8%B4%A3%E6%9D%BF%E5%9D%97"><span class="toc-number">38.3.</span> <span class="toc-text">34.3 示例用例：版主不能管理非负责板块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-%E6%9D%83%E9%99%90%E7%B1%BB-Bug-%E6%80%8E%E4%B9%88%E6%8F%90%E4%BA%A4"><span class="toc-number">39.</span> <span class="toc-text">35. 权限类 Bug 怎么提交</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#35-1-%E6%9D%83%E9%99%90%E7%B1%BB-Bug-%E5%BA%94%E5%8C%85%E5%90%AB"><span class="toc-number">39.1.</span> <span class="toc-text">35.1 权限类 Bug 应包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-2-%E7%A4%BA%E4%BE%8B-Bug%EF%BC%9A%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E5%88%A0%E9%99%A4%E5%88%AB%E4%BA%BA%E5%B8%96%E5%AD%90%E6%88%90%E5%8A%9F"><span class="toc-number">39.2.</span> <span class="toc-text">35.2 示例 Bug：普通用户删除别人帖子成功</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98"><span class="toc-number">39.2.1.</span> <span class="toc-text">标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">39.2.2.</span> <span class="toc-text">测试环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="toc-number">39.2.3.</span> <span class="toc-text">前置条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-number">39.2.4.</span> <span class="toc-text">操作步骤</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C"><span class="toc-number">39.2.5.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C"><span class="toc-number">39.2.6.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6"><span class="toc-number">39.2.7.</span> <span class="toc-text">严重程度</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-3-%E7%A4%BA%E4%BE%8B-Bug%EF%BC%9A%E7%A6%81%E8%A8%80%E7%8A%B6%E6%80%81%E6%9C%AA%E5%AF%B9%E6%97%A7-Token-%E7%94%9F%E6%95%88"><span class="toc-number">39.3.</span> <span class="toc-text">35.3 示例 Bug：禁言状态未对旧 Token 生效</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98-1"><span class="toc-number">39.3.1.</span> <span class="toc-text">标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C-1"><span class="toc-number">39.3.2.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C-1"><span class="toc-number">39.3.3.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6-1"><span class="toc-number">39.3.4.</span> <span class="toc-text">严重程度</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">40.</span> <span class="toc-text">36. 新手常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#36-1-%E5%8F%AA%E7%9C%8B%E6%8C%89%E9%92%AE%E6%98%AF%E5%90%A6%E9%9A%90%E8%97%8F"><span class="toc-number">40.1.</span> <span class="toc-text">36.1 只看按钮是否隐藏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-2-%E5%8F%AA%E6%B5%8B%E4%B8%80%E4%B8%AA%E8%B4%A6%E5%8F%B7"><span class="toc-number">40.2.</span> <span class="toc-text">36.2 只测一个账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-3-%E4%B8%8D%E9%AA%8C%E8%AF%81%E6%95%B0%E6%8D%AE%E6%98%AF%E5%90%A6%E5%8F%98%E5%8C%96"><span class="toc-number">40.3.</span> <span class="toc-text">36.3 不验证数据是否变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-4-%E4%B8%8D%E5%8C%BA%E5%88%86%E8%A7%92%E8%89%B2%E5%92%8C%E7%8A%B6%E6%80%81"><span class="toc-number">40.4.</span> <span class="toc-text">36.4 不区分角色和状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-5-%E5%BF%BD%E7%95%A5%E6%97%A7-Token"><span class="toc-number">40.5.</span> <span class="toc-text">36.5 忽略旧 Token</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">41.</span> <span class="toc-text">37. 最后总结</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

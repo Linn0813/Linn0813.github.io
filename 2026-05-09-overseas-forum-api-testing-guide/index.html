@@ -1,0 +1,2046 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - 接口测试入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - 接口测试入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-09-overseas-forum-api-testing-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-api-testing-guide.png">
+<meta property="article:published_time" content="2026-05-09T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-09T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="API测试">
+<meta property="article:tag" content="Postman">
+<meta property="article:tag" content="接口测试">
+<meta property="article:tag" content="社区论坛">
+<meta property="article:tag" content="海外社区">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-api-testing-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - 接口测试入门",
+  "url": "https://linn0813.github.io/2026-05-09-overseas-forum-api-testing-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-api-testing-guide.png",
+  "datePublished": "2026-05-09T02:00:00.000Z",
+  "dateModified": "2026-05-09T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-09-overseas-forum-api-testing-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - 接口测试入门',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-api-testing-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - 接口测试入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - 接口测试入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-09T02:00:00.000Z" title="发表于 2026-05-09 10:00:00">2026-05-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-09T02:00:00.000Z" title="更新于 2026-05-09 10:00:00">2026-05-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95/">接口测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">10.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>33分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>学习记录</strong>：把<strong>接口测试</strong>相关要点整理成一篇入门笔记，结合个人实践，并与 AI 一起补全结构，方便按模块查阅。</p>
+<p>若你在测海外论坛类后台接口，希望这篇能当手册用。</p>
+<blockquote>
+<p><strong>适合对象</strong>：已做过功能测试、准备系统学接口测试的同学；文中不默认你已熟悉 HTTP、Token、请求响应结构。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文按「基础 → 论坛接口实战 → 通用专项 → 用例与 Bug」四块展开；配合页面 <strong>TOC</strong> 或下方折叠目录跳转。<strong>第 11～21 章</strong>与业务模块对应，适合对照接口文档逐个过。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 31 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-api-ch-01">为什么功能测试之后要学接口测试</a></li>
+<li><a href="#forum-api-ch-02">什么是接口测试</a></li>
+<li><a href="#forum-api-ch-03">接口测试和功能测试有什么区别</a></li>
+<li><a href="#forum-api-ch-04">接口测试需要掌握哪些基础概念</a></li>
+<li><a href="#forum-api-ch-05">HTTP 请求方法怎么理解</a></li>
+<li><a href="#forum-api-ch-06">请求参数有哪些类型</a></li>
+<li><a href="#forum-api-ch-07">响应结果应该怎么看</a></li>
+<li><a href="#forum-api-ch-08">Token、登录态、鉴权是什么</a></li>
+<li><a href="#forum-api-ch-09">接口测试前需要准备什么</a></li>
+<li><a href="#forum-api-ch-10">常用接口测试工具：Postman &#x2F; Apifox</a></li>
+<li><a href="#forum-api-ch-11">海外社区论坛常见接口有哪些</a></li>
+<li><a href="#forum-api-ch-12">注册登录接口怎么测</a></li>
+<li><a href="#forum-api-ch-13">用户资料接口怎么测</a></li>
+<li><a href="#forum-api-ch-14">发帖接口怎么测</a></li>
+<li><a href="#forum-api-ch-15">评论与回复接口怎么测</a></li>
+<li><a href="#forum-api-ch-16">点赞、收藏、关注接口怎么测</a></li>
+<li><a href="#forum-api-ch-17">Feed 信息流接口怎么测</a></li>
+<li><a href="#forum-api-ch-18">搜索接口怎么测</a></li>
+<li><a href="#forum-api-ch-19">通知消息接口怎么测</a></li>
+<li><a href="#forum-api-ch-20">私信接口怎么测</a></li>
+<li><a href="#forum-api-ch-21">举报与审核接口怎么测</a></li>
+<li><a href="#forum-api-ch-22">权限类接口怎么测</a></li>
+<li><a href="#forum-api-ch-23">参数校验怎么测</a></li>
+<li><a href="#forum-api-ch-24">幂等性怎么测</a></li>
+<li><a href="#forum-api-ch-25">分页接口怎么测</a></li>
+<li><a href="#forum-api-ch-26">文件上传接口怎么测</a></li>
+<li><a href="#forum-api-ch-27">多语言、时区相关接口怎么测</a></li>
+<li><a href="#forum-api-ch-28">接口测试用例怎么写</a></li>
+<li><a href="#forum-api-ch-29">接口 Bug 怎么提交</a></li>
+<li><a href="#forum-api-ch-30">新手常见误区</a></li>
+<li><a href="#forum-api-ch-31">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<h2 id="第一部分：接口测试基础概念"><a href="#第一部分：接口测试基础概念" class="headerlink" title="第一部分：接口测试基础概念"></a>第一部分：接口测试基础概念</h2><blockquote>
+<p>如果你是接口测试新手，建议先完整学习这一部分。</p>
+<p>如果你已经了解接口基础，可以直接跳到 <strong>第二部分：海外社区论坛项目接口实战</strong>。</p>
+</blockquote>
+<hr>
+<p><a id="forum-api-ch-01"></a></p>
+<h2 id="1-为什么功能测试之后要学接口测试"><a href="#1-为什么功能测试之后要学接口测试" class="headerlink" title="1. 为什么功能测试之后要学接口测试"></a>1. 为什么功能测试之后要学接口测试</h2><p>功能测试主要是站在用户角度看系统能不能正常使用。</p>
+<p>例如用户点击“发布帖子”按钮，页面提示发布成功，列表里出现了帖子，这就是功能测试关注的内容。</p>
+<p>但是在真实项目中，页面只是表象。页面背后真正发生的是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">前端页面</span><br><span class="line">  ↓ 发送请求</span><br><span class="line">后端接口</span><br><span class="line">  ↓ 处理逻辑</span><br><span class="line">数据库/缓存/消息队列</span><br><span class="line">  ↓ 返回结果</span><br><span class="line">前端页面展示结果</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，你在页面上点击一个按钮，其实前端会调用一个接口。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">点击发布帖子</span><br><span class="line">  ↓</span><br><span class="line">调用发帖接口</span><br><span class="line">  ↓</span><br><span class="line">后端校验用户权限</span><br><span class="line">  ↓</span><br><span class="line">保存帖子内容</span><br><span class="line">  ↓</span><br><span class="line">返回发布成功</span><br><span class="line">  ↓</span><br><span class="line">前端展示帖子详情页</span><br></pre></td></tr></table></figure>
+
+<p>功能测试只能看到“结果”，接口测试可以看到“过程”。</p>
+<hr>
+<h3 id="1-1-举个例子：点赞功能"><a href="#1-1-举个例子：点赞功能" class="headerlink" title="1.1 举个例子：点赞功能"></a>1.1 举个例子：点赞功能</h3><p>功能测试会这样测：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 打开帖子详情页</span><br><span class="line">2. 点击点赞按钮</span><br><span class="line">3. 查看点赞按钮是否变亮</span><br><span class="line">4. 查看点赞数是否 +1</span><br></pre></td></tr></table></figure>
+
+<p>接口测试会进一步关注：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 点赞接口请求地址是什么？</span><br><span class="line">2. 请求方法是 POST 还是 PUT？</span><br><span class="line">3. 是否携带 Token？</span><br><span class="line">4. 帖子 ID 参数是否正确？</span><br><span class="line">5. 接口返回是否成功？</span><br><span class="line">6. 重复点赞会不会重复加数？</span><br><span class="line">7. 未登录调用点赞接口是否失败？</span><br><span class="line">8. 被封禁用户调用点赞接口是否失败？</span><br><span class="line">9. 点赞成功后数据库中的点赞状态是否正确？</span><br></pre></td></tr></table></figure>
+
+<p>所以，接口测试能帮助你发现很多功能测试不容易发现的问题。</p>
+<hr>
+<h3 id="1-2-接口测试能发现什么问题"><a href="#1-2-接口测试能发现什么问题" class="headerlink" title="1.2 接口测试能发现什么问题"></a>1.2 接口测试能发现什么问题</h3><p>接口测试常见能发现这些问题：</p>
+<table>
+<thead>
+<tr>
+<th>问题类型</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>参数校验问题</td>
+<td>标题为空，接口仍然创建帖子</td>
+</tr>
+<tr>
+<td>权限校验问题</td>
+<td>普通用户通过接口删除了别人的帖子</td>
+</tr>
+<tr>
+<td>重复提交问题</td>
+<td>连续调用评论接口，生成多条重复评论</td>
+</tr>
+<tr>
+<td>数据错误问题</td>
+<td>点赞接口成功，但点赞数没有变化</td>
+</tr>
+<tr>
+<td>状态错误问题</td>
+<td>被禁言用户仍然可以通过接口发帖</td>
+</tr>
+<tr>
+<td>异常处理问题</td>
+<td>参数错误时接口返回 500，而不是明确错误码</td>
+</tr>
+<tr>
+<td>兼容问题</td>
+<td>多语言字符、Emoji、时区字段处理异常</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-api-ch-02"></a></p>
+<h2 id="2-什么是接口测试"><a href="#2-什么是接口测试" class="headerlink" title="2. 什么是接口测试"></a>2. 什么是接口测试</h2><p>接口测试就是：</p>
+<blockquote>
+<p>不通过页面操作，而是直接向后端接口发送请求，验证接口返回结果、业务逻辑、数据处理、权限控制是否正确。</p>
+</blockquote>
+<p>你可以简单理解为：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">功能测试：像用户一样点页面</span><br><span class="line">接口测试：像前端一样直接请求后端</span><br></pre></td></tr></table></figure>
+
+<p>接口测试不是为了取代功能测试，而是补充功能测试。</p>
+<p>功能测试回答：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户在页面上能不能完成操作？</span><br></pre></td></tr></table></figure>
+
+<p>接口测试回答：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">后端接口是否真的按规则处理了这个操作？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="2-1-接口是什么"><a href="#2-1-接口是什么" class="headerlink" title="2.1 接口是什么"></a>2.1 接口是什么</h3><p>接口可以理解为前端和后端沟通的通道。</p>
+<p>比如前端想获取帖子列表，就会向后端发请求：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/posts</span><br></pre></td></tr></table></figure>
+
+<p>后端返回帖子数据：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;success&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;list&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;postId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1001&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hello community&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;authorName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Alice&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;likeCount&quot;</span><span class="punctuation">:</span> <span class="number">10</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>前端拿到这些数据后，再展示成页面。</p>
+<hr>
+<h3 id="2-2-接口测试在测什么"><a href="#2-2-接口测试在测什么" class="headerlink" title="2.2 接口测试在测什么"></a>2.2 接口测试在测什么</h3><p>接口测试通常测这些内容：</p>
+<ul>
+<li>请求地址是否正确</li>
+<li>请求方法是否正确</li>
+<li>请求参数是否正确</li>
+<li>必填参数是否校验</li>
+<li>参数类型是否校验</li>
+<li>参数边界是否校验</li>
+<li>是否需要登录</li>
+<li>是否校验用户权限</li>
+<li>返回状态码是否正确</li>
+<li>返回字段是否完整</li>
+<li>返回数据是否正确</li>
+<li>异常场景是否返回明确错误</li>
+<li>多次请求是否会产生重复数据</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-03"></a></p>
+<h2 id="3-接口测试和功能测试有什么区别"><a href="#3-接口测试和功能测试有什么区别" class="headerlink" title="3. 接口测试和功能测试有什么区别"></a>3. 接口测试和功能测试有什么区别</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>功能测试</th>
+<th>接口测试</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>测试对象</td>
+<td>页面和用户操作流程</td>
+<td>后端接口和数据逻辑</td>
+</tr>
+<tr>
+<td>操作方式</td>
+<td>点击页面、输入内容</td>
+<td>使用工具发送 HTTP 请求</td>
+</tr>
+<tr>
+<td>关注重点</td>
+<td>页面展示、交互、流程</td>
+<td>参数、返回值、权限、数据</td>
+</tr>
+<tr>
+<td>是否依赖前端</td>
+<td>依赖前端页面</td>
+<td>不一定依赖前端</td>
+</tr>
+<tr>
+<td>发现问题类型</td>
+<td>页面问题、流程问题</td>
+<td>后端逻辑、权限、数据问题</td>
+</tr>
+<tr>
+<td>常用工具</td>
+<td>浏览器、App</td>
+<td>Postman、Apifox、curl、自动化脚本</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="3-1-为什么接口测试更容易发现权限问题"><a href="#3-1-为什么接口测试更容易发现权限问题" class="headerlink" title="3.1 为什么接口测试更容易发现权限问题"></a>3.1 为什么接口测试更容易发现权限问题</h3><p>因为页面按钮可以隐藏，但接口可能还在。</p>
+<p>例如普通用户不能删除别人的帖子。前端可能没有显示删除按钮。</p>
+<p>但是如果用户知道删除接口：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">DELETE /api/posts/1001</span><br></pre></td></tr></table></figure>
+
+<p>如果后端没有校验权限，普通用户仍然可能删除别人的帖子。</p>
+<p>所以接口测试一定要验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">没有按钮 ≠ 没有权限问题</span><br><span class="line">后端接口必须真正限制权限</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-api-ch-04"></a></p>
+<h2 id="4-接口测试需要掌握哪些基础概念"><a href="#4-接口测试需要掌握哪些基础概念" class="headerlink" title="4. 接口测试需要掌握哪些基础概念"></a>4. 接口测试需要掌握哪些基础概念</h2><p>刚开始学接口测试，需要先理解这些词：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>简单解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>URL</td>
+<td>接口地址</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>请求方法，例如 GET、POST</td>
+</tr>
+<tr>
+<td>Header</td>
+<td>请求头，常放 Token、语言、设备信息</td>
+</tr>
+<tr>
+<td>Query 参数</td>
+<td>拼在 URL 后面的参数</td>
+</tr>
+<tr>
+<td>Path 参数</td>
+<td>URL 路径中的参数</td>
+</tr>
+<tr>
+<td>Body 参数</td>
+<td>请求体参数，常用于 POST 请求</td>
+</tr>
+<tr>
+<td>Status Code</td>
+<td>HTTP 状态码，例如 200、401、500</td>
+</tr>
+<tr>
+<td>Response</td>
+<td>接口返回结果</td>
+</tr>
+<tr>
+<td>Token</td>
+<td>登录凭证</td>
+</tr>
+<tr>
+<td>Cookie</td>
+<td>Web 登录态常用凭证</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>接口最常见的数据格式</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="4-1-一个接口请求长什么样"><a href="#4-1-一个接口请求长什么样" class="headerlink" title="4.1 一个接口请求长什么样"></a>4.1 一个接口请求长什么样</h3><p>示例：获取帖子详情。</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/posts/1001</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Bearer xxxxxx</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>en-US</span><br></pre></td></tr></table></figure>
+
+<p>这里包含：</p>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>请求方法</td>
+</tr>
+<tr>
+<td>&#x2F;api&#x2F;posts&#x2F;1001</td>
+<td>请求地址</td>
+</tr>
+<tr>
+<td>1001</td>
+<td>帖子 ID，属于 Path 参数</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>登录凭证</td>
+</tr>
+<tr>
+<td>Accept-Language</td>
+<td>当前语言</td>
+</tr>
+</tbody></table>
+<p>接口返回：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;success&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;postId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1001&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hello community&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;This is my first post.&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;likeCount&quot;</span><span class="punctuation">:</span> <span class="number">10</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;commentCount&quot;</span><span class="punctuation">:</span> <span class="number">3</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-api-ch-05"></a></p>
+<h2 id="5-HTTP-请求方法怎么理解"><a href="#5-HTTP-请求方法怎么理解" class="headerlink" title="5. HTTP 请求方法怎么理解"></a>5. HTTP 请求方法怎么理解</h2><p>HTTP 请求方法可以理解为“你想对资源做什么操作”。</p>
+<p>常见方法如下：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>常见含义</th>
+<th>社区项目示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>查询数据</td>
+<td>获取帖子列表、获取用户资料</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>新增数据</td>
+<td>发布帖子、发表评论、点赞</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>整体更新数据</td>
+<td>修改完整用户资料</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>部分更新数据</td>
+<td>修改昵称、修改简介</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>删除数据</td>
+<td>删除帖子、删除评论</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-1-GET-请求"><a href="#5-1-GET-请求" class="headerlink" title="5.1 GET 请求"></a>5.1 GET 请求</h3><p>GET 通常用于查询。</p>
+<p>示例：获取帖子列表。</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/posts?page=1&amp;pageSize=20</span><br></pre></td></tr></table></figure>
+
+<p>测试重点：</p>
+<ul>
+<li>参数为空时是否有默认值</li>
+<li>page 为 0 是否处理正确</li>
+<li>pageSize 超大是否限制</li>
+<li>返回列表是否正确</li>
+<li>排序是否正确</li>
+<li>无数据时是否返回空列表</li>
+</ul>
+<hr>
+<h3 id="5-2-POST-请求"><a href="#5-2-POST-请求" class="headerlink" title="5.2 POST 请求"></a>5.2 POST 请求</h3><p>POST 通常用于新增或提交操作。</p>
+<p>示例：发布帖子。</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/posts</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;title&quot;: &quot;My first post&quot;,</span><br><span class="line">  &quot;content&quot;: &quot;Hello everyone&quot;,</span><br><span class="line">  &quot;topicId&quot;: &quot;t100&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试重点：</p>
+<ul>
+<li>必填参数校验</li>
+<li>参数长度校验</li>
+<li>重复提交处理</li>
+<li>权限校验</li>
+<li>创建成功后数据是否正确</li>
+</ul>
+<hr>
+<h3 id="5-3-PUT-PATCH-请求"><a href="#5-3-PUT-PATCH-请求" class="headerlink" title="5.3 PUT &#x2F; PATCH 请求"></a>5.3 PUT &#x2F; PATCH 请求</h3><p>PUT &#x2F; PATCH 通常用于修改。</p>
+<p>示例：修改用户简介。</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">PATCH /api/users/me/profile</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;bio&quot;: &quot;I love smart rings.&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试重点：</p>
+<ul>
+<li>只能修改自己的资料</li>
+<li>字段为空是否允许</li>
+<li>字段超长是否拦截</li>
+<li>修改成功后再次查询是否更新</li>
+</ul>
+<hr>
+<h3 id="5-4-DELETE-请求"><a href="#5-4-DELETE-请求" class="headerlink" title="5.4 DELETE 请求"></a>5.4 DELETE 请求</h3><p>DELETE 通常用于删除。</p>
+<p>示例：删除评论。</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">DELETE /api/comments/9001</span><br></pre></td></tr></table></figure>
+
+<p>测试重点：</p>
+<ul>
+<li>作者是否能删除自己的评论</li>
+<li>普通用户是否不能删除别人的评论</li>
+<li>管理员是否能删除评论</li>
+<li>重复删除如何处理</li>
+<li>删除后评论数是否减少</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-06"></a></p>
+<h2 id="6-请求参数有哪些类型"><a href="#6-请求参数有哪些类型" class="headerlink" title="6. 请求参数有哪些类型"></a>6. 请求参数有哪些类型</h2><p>接口请求参数一般分为 4 类：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Path 参数</span><br><span class="line">Query 参数</span><br><span class="line">Body 参数</span><br><span class="line">Header 参数</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="6-1-Path-参数"><a href="#6-1-Path-参数" class="headerlink" title="6.1 Path 参数"></a>6.1 Path 参数</h3><p>Path 参数在 URL 路径中。</p>
+<p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/posts/1001</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>1001</code> 就是帖子 ID。</p>
+<p>测试点：</p>
+<ul>
+<li>ID 存在</li>
+<li>ID 不存在</li>
+<li>ID 为空</li>
+<li>ID 格式错误</li>
+<li>ID 是别人的资源</li>
+<li>ID 是已删除资源</li>
+</ul>
+<hr>
+<h3 id="6-2-Query-参数"><a href="#6-2-Query-参数" class="headerlink" title="6.2 Query 参数"></a>6.2 Query 参数</h3><p>Query 参数在 URL 的 <code>?</code> 后面。</p>
+<p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/posts?page=1&amp;pageSize=20&amp;sort=latest</span><br></pre></td></tr></table></figure>
+
+<p>这里的参数是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">page = 1</span><br><span class="line">pageSize = 20</span><br><span class="line">sort = latest</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>page 为空</li>
+<li>page 为 0</li>
+<li>page 为负数</li>
+<li>pageSize 超大</li>
+<li>sort 传不存在的值</li>
+<li>多个筛选条件组合</li>
+</ul>
+<hr>
+<h3 id="6-3-Body-参数"><a href="#6-3-Body-参数" class="headerlink" title="6.3 Body 参数"></a>6.3 Body 参数</h3><p>Body 参数通常用于 POST、PUT、PATCH。</p>
+<p>示例：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hello&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;This is a post.&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>必填字段缺失</li>
+<li>字段为空字符串</li>
+<li>字段为 null</li>
+<li>字段类型错误</li>
+<li>字段超长</li>
+<li>多传无关字段</li>
+<li>传入特殊字符</li>
+</ul>
+<hr>
+<h3 id="6-4-Header-参数"><a href="#6-4-Header-参数" class="headerlink" title="6.4 Header 参数"></a>6.4 Header 参数</h3><p>Header 常用于传递登录态、语言、设备、版本等信息。</p>
+<p>常见 Header：</p>
+<table>
+<thead>
+<tr>
+<th>Header</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Authorization</td>
+<td>登录 Token</td>
+</tr>
+<tr>
+<td>Content-Type</td>
+<td>请求体格式</td>
+</tr>
+<tr>
+<td>Accept-Language</td>
+<td>当前语言</td>
+</tr>
+<tr>
+<td>User-Agent</td>
+<td>设备或浏览器信息</td>
+</tr>
+<tr>
+<td>X-App-Version</td>
+<td>App 版本</td>
+</tr>
+<tr>
+<td>X-Timezone</td>
+<td>用户时区，如果产品使用</td>
+</tr>
+<tr>
+<td>X-Device-Id</td>
+<td>设备 ID，如果产品使用</td>
+</tr>
+</tbody></table>
+<p>测试点：</p>
+<ul>
+<li>不传 Token</li>
+<li>Token 过期</li>
+<li>Token 伪造</li>
+<li>语言 Header 不同</li>
+<li>时区 Header 不同</li>
+<li>App 版本过低</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-07"></a></p>
+<h2 id="7-响应结果应该怎么看"><a href="#7-响应结果应该怎么看" class="headerlink" title="7. 响应结果应该怎么看"></a>7. 响应结果应该怎么看</h2><p>接口返回结果通常包括：</p>
+<ul>
+<li>HTTP 状态码</li>
+<li>业务错误码</li>
+<li>message 提示</li>
+<li>data 数据</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;success&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;postId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1001&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="7-1-HTTP-状态码"><a href="#7-1-HTTP-状态码" class="headerlink" title="7.1 HTTP 状态码"></a>7.1 HTTP 状态码</h3><p>常见状态码：</p>
+<table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>200</td>
+<td>请求成功</td>
+<td>查询成功、操作成功</td>
+</tr>
+<tr>
+<td>201</td>
+<td>创建成功</td>
+<td>发帖成功、注册成功</td>
+</tr>
+<tr>
+<td>400</td>
+<td>参数错误</td>
+<td>标题为空、参数格式错</td>
+</tr>
+<tr>
+<td>401</td>
+<td>未登录</td>
+<td>没有 Token 或 Token 失效</td>
+</tr>
+<tr>
+<td>403</td>
+<td>无权限</td>
+<td>普通用户删除别人帖子</td>
+</tr>
+<tr>
+<td>404</td>
+<td>资源不存在</td>
+<td>帖子不存在</td>
+</tr>
+<tr>
+<td>409</td>
+<td>冲突</td>
+<td>重复注册、重复绑定</td>
+</tr>
+<tr>
+<td>429</td>
+<td>请求太频繁</td>
+<td>频繁获取验证码</td>
+</tr>
+<tr>
+<td>500</td>
+<td>服务器异常</td>
+<td>后端报错</td>
+</tr>
+</tbody></table>
+<p>新手注意：</p>
+<blockquote>
+<p>不是所有失败都应该返回 500。</p>
+</blockquote>
+<p>如果用户参数传错了，通常应该是 400 类错误；如果没有权限，应该是 401 或 403；如果接口直接 500，说明后端异常处理可能不好。</p>
+<hr>
+<h3 id="7-2-业务错误码"><a href="#7-2-业务错误码" class="headerlink" title="7.2 业务错误码"></a>7.2 业务错误码</h3><p>很多系统即使 HTTP 状态码返回 200，也会在响应体里用业务 code 表示成功或失败。</p>
+<p>示例：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">10001</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;title is required&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">null</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>测试时要看：</p>
+<ul>
+<li>code 是否符合接口文档</li>
+<li>message 是否清楚</li>
+<li>data 是否符合失败场景</li>
+<li>多语言下 message 是否翻译正确，按产品设计判断</li>
+</ul>
+<hr>
+<h3 id="7-3-data-字段"><a href="#7-3-data-字段" class="headerlink" title="7.3 data 字段"></a>7.3 data 字段</h3><p>成功响应通常会返回 data。</p>
+<p>测试时要看：</p>
+<ul>
+<li>字段是否完整</li>
+<li>字段类型是否正确</li>
+<li>字段值是否正确</li>
+<li>空数据时是返回 null、空对象还是空数组</li>
+<li>金额、时间、数量是否格式正确</li>
+</ul>
+<p>例如帖子列表接口返回：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;list&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;total&quot;</span><span class="punctuation">:</span> <span class="number">0</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>比直接返回 <code>null</code> 更容易让前端处理。</p>
+<hr>
+<p><a id="forum-api-ch-08"></a></p>
+<h2 id="8-Token、登录态、鉴权是什么"><a href="#8-Token、登录态、鉴权是什么" class="headerlink" title="8. Token、登录态、鉴权是什么"></a>8. Token、登录态、鉴权是什么</h2><p>接口测试中非常重要的一块是登录态和权限。</p>
+<h3 id="8-1-Token-是什么"><a href="#8-1-Token-是什么" class="headerlink" title="8.1 Token 是什么"></a>8.1 Token 是什么</h3><p>Token 可以理解为用户登录后的“通行证”。</p>
+<p>流程如下：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户登录成功</span><br><span class="line">  ↓</span><br><span class="line">后端返回 Token</span><br><span class="line">  ↓</span><br><span class="line">前端保存 Token</span><br><span class="line">  ↓</span><br><span class="line">之后请求接口时带上 Token</span><br><span class="line">  ↓</span><br><span class="line">后端通过 Token 判断用户是谁</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Bearer eyJhbGciOi...</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="8-2-没有-Token-会怎样"><a href="#8-2-没有-Token-会怎样" class="headerlink" title="8.2 没有 Token 会怎样"></a>8.2 没有 Token 会怎样</h3><p>如果接口需要登录，但请求没有带 Token，应该返回未登录。</p>
+<p>例如：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/posts</span><br></pre></td></tr></table></figure>
+
+<p>不带 Token 发帖，预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">发帖失败</span><br><span class="line">返回 401 或业务未登录错误码</span><br><span class="line">不会创建帖子</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="8-3-Token-过期怎么测"><a href="#8-3-Token-过期怎么测" class="headerlink" title="8.3 Token 过期怎么测"></a>8.3 Token 过期怎么测</h3><p>测试点：</p>
+<ul>
+<li>使用过期 Token 请求接口</li>
+<li>使用错误 Token 请求接口</li>
+<li>使用空 Token 请求接口</li>
+<li>退出登录后继续使用旧 Token</li>
+<li>修改密码后旧 Token 是否失效，按需求判断</li>
+<li>封禁账号后旧 Token 是否还能访问接口</li>
+</ul>
+<hr>
+<h3 id="8-4-鉴权和权限有什么区别"><a href="#8-4-鉴权和权限有什么区别" class="headerlink" title="8.4 鉴权和权限有什么区别"></a>8.4 鉴权和权限有什么区别</h3><p>可以简单理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">鉴权：判断你是谁</span><br><span class="line">权限：判断你能不能做这件事</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<ul>
+<li>Token 能识别你是用户 A，这是鉴权</li>
+<li>用户 A 能不能删除用户 B 的帖子，这是权限</li>
+</ul>
+<p>接口测试中，两者都要测。</p>
+<hr>
+<p><a id="forum-api-ch-09"></a></p>
+<h2 id="9-接口测试前需要准备什么"><a href="#9-接口测试前需要准备什么" class="headerlink" title="9. 接口测试前需要准备什么"></a>9. 接口测试前需要准备什么</h2><h3 id="9-1-准备接口文档"><a href="#9-1-准备接口文档" class="headerlink" title="9.1 准备接口文档"></a>9.1 准备接口文档</h3><p>常见接口文档来源：</p>
+<ul>
+<li>Apifox</li>
+<li>Swagger</li>
+<li>YApi</li>
+<li>Postman Collection</li>
+<li>后端提供的 Markdown 文档</li>
+<li>需求文档里的接口说明</li>
+</ul>
+<p>接口文档至少要看这些：</p>
+<ul>
+<li>接口地址</li>
+<li>请求方法</li>
+<li>请求 Header</li>
+<li>请求参数</li>
+<li>参数是否必填</li>
+<li>参数类型</li>
+<li>响应示例</li>
+<li>错误码</li>
+<li>是否需要登录</li>
+<li>权限限制</li>
+</ul>
+<hr>
+<h3 id="9-2-准备测试账号"><a href="#9-2-准备测试账号" class="headerlink" title="9.2 准备测试账号"></a>9.2 准备测试账号</h3><p>接口测试同样需要多账号。</p>
+<table>
+<thead>
+<tr>
+<th>账号</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>游客</td>
+<td>测试未登录接口</td>
+</tr>
+<tr>
+<td>用户A</td>
+<td>创建资源，例如发帖</td>
+</tr>
+<tr>
+<td>用户B</td>
+<td>测试访问、评论、越权</td>
+</tr>
+<tr>
+<td>被禁言用户</td>
+<td>测试发帖&#x2F;评论限制</td>
+</tr>
+<tr>
+<td>被封禁用户</td>
+<td>测试登录和访问限制</td>
+</tr>
+<tr>
+<td>管理员</td>
+<td>测试审核、删除、封禁接口</td>
+</tr>
+<tr>
+<td>版主</td>
+<td>测试局部管理权限</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="9-3-准备测试数据"><a href="#9-3-准备测试数据" class="headerlink" title="9.3 准备测试数据"></a>9.3 准备测试数据</h3><h4 id="文本数据"><a href="#文本数据" class="headerlink" title="文本数据"></a>文本数据</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">普通英文</span><br><span class="line">中文内容</span><br><span class="line">こんにちは</span><br><span class="line">안녕하세요</span><br><span class="line">مرحبا</span><br><span class="line">Emoji 😀🔥🎉</span><br><span class="line">超长文本</span><br><span class="line">特殊字符 !@#$%^&amp;*()</span><br><span class="line">HTML 标签 &lt;script&gt;alert(1)&lt;/script&gt;</span><br><span class="line">URL 链接 https://example.com</span><br></pre></td></tr></table></figure>
+
+<h4 id="ID-数据"><a href="#ID-数据" class="headerlink" title="ID 数据"></a>ID 数据</h4><ul>
+<li>存在的帖子 ID</li>
+<li>不存在的帖子 ID</li>
+<li>已删除的帖子 ID</li>
+<li>属于用户A的帖子 ID</li>
+<li>属于用户B的帖子 ID</li>
+<li>审核中的帖子 ID</li>
+<li>被隐藏的帖子 ID</li>
+</ul>
+<h4 id="文件数据"><a href="#文件数据" class="headerlink" title="文件数据"></a>文件数据</h4><ul>
+<li>正常 JPG</li>
+<li>正常 PNG</li>
+<li>GIF</li>
+<li>WebP</li>
+<li>超大图片</li>
+<li>不支持格式文件</li>
+<li>损坏文件</li>
+</ul>
+<hr>
+<h3 id="9-4-准备环境信息"><a href="#9-4-准备环境信息" class="headerlink" title="9.4 准备环境信息"></a>9.4 准备环境信息</h3><p>需要确认：</p>
+<ul>
+<li>测试环境域名</li>
+<li>是否需要 VPN</li>
+<li>是否需要测试账号白名单</li>
+<li>是否有验证码绕过方式</li>
+<li>是否有测试短信服务</li>
+<li>是否有第三方登录测试账号</li>
+<li>是否有管理员后台账号</li>
+<li>是否可以查数据库或日志</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-10"></a></p>
+<h2 id="10-常用接口测试工具：Postman-Apifox"><a href="#10-常用接口测试工具：Postman-Apifox" class="headerlink" title="10. 常用接口测试工具：Postman &#x2F; Apifox"></a>10. 常用接口测试工具：Postman &#x2F; Apifox</h2><h3 id="10-1-Postman-是什么"><a href="#10-1-Postman-是什么" class="headerlink" title="10.1 Postman 是什么"></a>10.1 Postman 是什么</h3><p>Postman 是常见接口测试工具，可以用来：</p>
+<ul>
+<li>发送接口请求</li>
+<li>保存接口集合</li>
+<li>设置环境变量</li>
+<li>设置 Token</li>
+<li>编写简单断言</li>
+<li>批量运行接口</li>
+</ul>
+<h3 id="10-2-Apifox-是什么"><a href="#10-2-Apifox-是什么" class="headerlink" title="10.2 Apifox 是什么"></a>10.2 Apifox 是什么</h3><p>Apifox 更适合团队协作，常用于：</p>
+<ul>
+<li>写接口文档</li>
+<li>调试接口</li>
+<li>生成 Mock 数据</li>
+<li>管理环境变量</li>
+<li>编写自动化测试</li>
+</ul>
+<p>如果公司已经使用 Apifox，建议优先用 Apifox，因为接口文档和调试可以在同一个工具里完成。</p>
+<hr>
+<h3 id="10-3-新手使用工具的基本步骤"><a href="#10-3-新手使用工具的基本步骤" class="headerlink" title="10.3 新手使用工具的基本步骤"></a>10.3 新手使用工具的基本步骤</h3><p>以 Postman &#x2F; Apifox 都适用：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 新建请求</span><br><span class="line">2. 填写接口 URL</span><br><span class="line">3. 选择请求方法 GET/POST/DELETE</span><br><span class="line">4. 填写 Header</span><br><span class="line">5. 填写参数</span><br><span class="line">6. 点击 Send</span><br><span class="line">7. 查看状态码</span><br><span class="line">8. 查看响应体</span><br><span class="line">9. 判断是否符合预期</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="10-4-建议设置环境变量"><a href="#10-4-建议设置环境变量" class="headerlink" title="10.4 建议设置环境变量"></a>10.4 建议设置环境变量</h3><p>不要每个接口都手动写完整域名和 Token。</p>
+<p>建议设置：</p>
+<table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>base_url</td>
+<td><a target="_blank" rel="noopener" href="https://test-api.example.com/">https://test-api.example.com</a></td>
+</tr>
+<tr>
+<td>userA_token</td>
+<td>用户A登录 Token</td>
+</tr>
+<tr>
+<td>userB_token</td>
+<td>用户B登录 Token</td>
+</tr>
+<tr>
+<td>admin_token</td>
+<td>管理员 Token</td>
+</tr>
+<tr>
+<td>post_id</td>
+<td>测试帖子 ID</td>
+</tr>
+<tr>
+<td>comment_id</td>
+<td>测试评论 ID</td>
+</tr>
+</tbody></table>
+<p>这样请求可以写成：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&#123;&#123;base_url&#125;&#125;/api/posts/&#123;&#123;post_id&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第二部分：海外社区论坛项目接口实战"><a href="#第二部分：海外社区论坛项目接口实战" class="headerlink" title="第二部分：海外社区论坛项目接口实战"></a>第二部分：海外社区论坛项目接口实战</h2><blockquote>
+<p>这一部分开始进入项目实战。</p>
+<p>前面的基础概念解决的是“接口测试是什么、怎么看请求和响应”；这一部分解决的是“海外社区论坛项目到底有哪些接口、每类接口应该怎么测”。</p>
+</blockquote>
+<hr>
+<p><a id="forum-api-ch-11"></a></p>
+<h2 id="11-海外社区论坛常见接口有哪些"><a href="#11-海外社区论坛常见接口有哪些" class="headerlink" title="11. 海外社区论坛常见接口有哪些"></a>11. 海外社区论坛常见接口有哪些</h2><p>社区论坛常见接口可以按模块拆分：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>常见接口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>注册登录</td>
+<td>注册、登录、验证码、第三方授权、刷新 Token、退出登录</td>
+</tr>
+<tr>
+<td>用户资料</td>
+<td>获取资料、修改头像、修改昵称、修改简介</td>
+</tr>
+<tr>
+<td>发帖</td>
+<td>创建帖子、编辑帖子、删除帖子、获取帖子详情</td>
+</tr>
+<tr>
+<td>Feed</td>
+<td>首页推荐流、关注流、热门流、板块流</td>
+</tr>
+<tr>
+<td>评论</td>
+<td>创建评论、回复评论、删除评论、评论列表</td>
+</tr>
+<tr>
+<td>点赞收藏</td>
+<td>点赞、取消点赞、收藏、取消收藏</td>
+</tr>
+<tr>
+<td>关注</td>
+<td>关注用户、取消关注、粉丝列表、关注列表</td>
+</tr>
+<tr>
+<td>搜索</td>
+<td>搜索帖子、搜索用户、搜索话题</td>
+</tr>
+<tr>
+<td>通知</td>
+<td>通知列表、未读数、标记已读、删除通知</td>
+</tr>
+<tr>
+<td>私信</td>
+<td>会话列表、发送消息、消息列表、已读回执</td>
+</tr>
+<tr>
+<td>举报</td>
+<td>举报帖子、举报评论、举报用户</td>
+</tr>
+<tr>
+<td>审核后台</td>
+<td>待审核列表、审核通过、审核拒绝、封禁用户</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-api-ch-12"></a></p>
+<h2 id="12-注册登录接口怎么测"><a href="#12-注册登录接口怎么测" class="headerlink" title="12. 注册登录接口怎么测"></a>12. 注册登录接口怎么测</h2><p>注册登录接口是接口测试的第一关。</p>
+<h3 id="12-1-邮箱注册接口"><a href="#12-1-邮箱注册接口" class="headerlink" title="12.1 邮箱注册接口"></a>12.1 邮箱注册接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/auth/register/email</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;email&quot;: &quot;test@gmail.com&quot;,</span><br><span class="line">  &quot;password&quot;: &quot;Test123456&quot;,</span><br><span class="line">  &quot;code&quot;: &quot;123456&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="正常场景"><a href="#正常场景" class="headerlink" title="正常场景"></a>正常场景</h4><ul>
+<li>Gmail 注册成功</li>
+<li>Outlook 注册成功</li>
+<li>Yahoo 注册成功</li>
+<li>公司邮箱注册成功</li>
+<li>带 <code>+</code> 别名邮箱按规则处理</li>
+<li>大小写邮箱按规则处理</li>
+</ul>
+<h4 id="异常场景"><a href="#异常场景" class="headerlink" title="异常场景"></a>异常场景</h4><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>email 为空</td>
+<td>注册失败，提示邮箱必填</td>
+</tr>
+<tr>
+<td>email 格式错误</td>
+<td>注册失败，提示邮箱格式错误</td>
+</tr>
+<tr>
+<td>password 为空</td>
+<td>注册失败，提示密码必填</td>
+</tr>
+<tr>
+<td>password 太短</td>
+<td>注册失败，提示密码不符合规则</td>
+</tr>
+<tr>
+<td>code 为空</td>
+<td>注册失败，提示验证码必填</td>
+</tr>
+<tr>
+<td>code 错误</td>
+<td>注册失败</td>
+</tr>
+<tr>
+<td>code 过期</td>
+<td>注册失败</td>
+</tr>
+<tr>
+<td>邮箱已注册</td>
+<td>注册失败或提示登录</td>
+</tr>
+<tr>
+<td>连续调用注册接口</td>
+<td>只能创建一个账号</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="12-2-登录接口"><a href="#12-2-登录接口" class="headerlink" title="12.2 登录接口"></a>12.2 登录接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/auth/login</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;email&quot;: &quot;test@gmail.com&quot;,</span><br><span class="line">  &quot;password&quot;: &quot;Test123456&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>正确账号密码登录成功</li>
+<li>错误密码登录失败</li>
+<li>不存在账号登录失败</li>
+<li>被封禁账号登录失败或受限</li>
+<li>未验证邮箱登录处理正确</li>
+<li>登录成功返回 Token</li>
+<li>登录成功返回用户基础信息</li>
+<li>登录失败不应返回 Token</li>
+</ul>
+<hr>
+<h3 id="12-3-第三方登录接口"><a href="#12-3-第三方登录接口" class="headerlink" title="12.3 第三方登录接口"></a>12.3 第三方登录接口</h3><p>第三方登录一般不是一个简单接口，通常涉及授权 code。</p>
+<p>大概流程：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">前端跳转第三方授权</span><br><span class="line">  ↓</span><br><span class="line">第三方返回 authorization code</span><br><span class="line">  ↓</span><br><span class="line">前端把 code 给后端</span><br><span class="line">  ↓</span><br><span class="line">后端向第三方换取用户信息</span><br><span class="line">  ↓</span><br><span class="line">后端创建账号或登录账号</span><br><span class="line">  ↓</span><br><span class="line">后端返回平台 Token</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>Google 授权 code 有效时登录成功</li>
+<li>code 为空时失败</li>
+<li>code 已使用时失败</li>
+<li>code 过期时失败</li>
+<li>第三方返回邮箱为空时处理正确</li>
+<li>第三方返回头像为空时处理正确</li>
+<li>同一第三方账号二次登录不会重复创建账号</li>
+<li>同邮箱不同登录方式按产品规则处理</li>
+</ul>
+<hr>
+<h3 id="12-4-Token-刷新接口"><a href="#12-4-Token-刷新接口" class="headerlink" title="12.4 Token 刷新接口"></a>12.4 Token 刷新接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/auth/refresh-token</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;refreshToken&quot;: &quot;xxxx&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>refreshToken 有效时返回新 Token</li>
+<li>refreshToken 过期时刷新失败</li>
+<li>refreshToken 为空时失败</li>
+<li>退出登录后 refreshToken 是否失效</li>
+<li>被封禁用户是否还能刷新 Token</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-13"></a></p>
+<h2 id="13-用户资料接口怎么测"><a href="#13-用户资料接口怎么测" class="headerlink" title="13. 用户资料接口怎么测"></a>13. 用户资料接口怎么测</h2><h3 id="13-1-获取用户资料接口"><a href="#13-1-获取用户资料接口" class="headerlink" title="13.1 获取用户资料接口"></a>13.1 获取用户资料接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/users/1001/profile</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>获取自己的资料</li>
+<li>获取别人的公开资料</li>
+<li>获取不存在用户资料</li>
+<li>获取已注销用户资料</li>
+<li>获取被封禁用户资料</li>
+<li>游客是否可以查看用户主页，按需求判断</li>
+</ul>
+<hr>
+<h3 id="13-2-修改用户资料接口"><a href="#13-2-修改用户资料接口" class="headerlink" title="13.2 修改用户资料接口"></a>13.2 修改用户资料接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">PATCH /api/users/me/profile</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;nickname&quot;: &quot;Alice&quot;,</span><br><span class="line">  &quot;bio&quot;: &quot;Hello world&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>修改昵称成功</li>
+<li>修改简介成功</li>
+<li>昵称为空</li>
+<li>昵称超长</li>
+<li>昵称重复</li>
+<li>昵称包含 Emoji</li>
+<li>昵称包含多语言字符</li>
+<li>简介包含链接</li>
+<li>简介包含敏感词</li>
+<li>用户A不能修改用户B资料</li>
+<li>未登录不能修改资料</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-14"></a></p>
+<h2 id="14-发帖接口怎么测"><a href="#14-发帖接口怎么测" class="headerlink" title="14. 发帖接口怎么测"></a>14. 发帖接口怎么测</h2><h3 id="14-1-创建帖子接口"><a href="#14-1-创建帖子接口" class="headerlink" title="14.1 创建帖子接口"></a>14.1 创建帖子接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/posts</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;title&quot;: &quot;My first post&quot;,</span><br><span class="line">  &quot;content&quot;: &quot;Hello community&quot;,</span><br><span class="line">  &quot;topicId&quot;: &quot;topic_001&quot;,</span><br><span class="line">  &quot;mediaIds&quot;: [&quot;img_001&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="正常场景-1"><a href="#正常场景-1" class="headerlink" title="正常场景"></a>正常场景</h4><ul>
+<li>发布纯文本帖子成功</li>
+<li>发布图文帖子成功</li>
+<li>发布带视频帖子成功，如果支持</li>
+<li>发布到指定板块成功</li>
+<li>发布后返回帖子 ID</li>
+<li>发布后帖子详情可查询</li>
+<li>发布后 Feed 流可展示，按审核规则判断</li>
+</ul>
+<h4 id="参数异常"><a href="#参数异常" class="headerlink" title="参数异常"></a>参数异常</h4><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>title 为空</td>
+<td>创建失败</td>
+</tr>
+<tr>
+<td>title 超长</td>
+<td>创建失败</td>
+</tr>
+<tr>
+<td>content 为空</td>
+<td>按需求判断是否允许</td>
+</tr>
+<tr>
+<td>content 超长</td>
+<td>创建失败</td>
+</tr>
+<tr>
+<td>topicId 不存在</td>
+<td>创建失败</td>
+</tr>
+<tr>
+<td>mediaIds 包含不存在文件</td>
+<td>创建失败</td>
+</tr>
+<tr>
+<td>多传无关字段</td>
+<td>后端忽略或报错，按接口规范</td>
+</tr>
+</tbody></table>
+<h4 id="权限异常"><a href="#权限异常" class="headerlink" title="权限异常"></a>权限异常</h4><ul>
+<li>未登录不能发帖</li>
+<li>被禁言用户不能发帖</li>
+<li>被封禁用户不能发帖</li>
+<li>无板块权限的用户不能发帖</li>
+<li>新用户发帖限制，按需求判断</li>
+</ul>
+<hr>
+<h3 id="14-2-编辑帖子接口"><a href="#14-2-编辑帖子接口" class="headerlink" title="14.2 编辑帖子接口"></a>14.2 编辑帖子接口</h3><p>测试点：</p>
+<ul>
+<li>作者编辑自己的帖子成功</li>
+<li>用户B编辑用户A帖子失败</li>
+<li>管理员编辑或隐藏帖子，按需求判断</li>
+<li>编辑标题成功</li>
+<li>编辑正文成功</li>
+<li>编辑媒体成功</li>
+<li>编辑后是否重新审核，按需求判断</li>
+<li>编辑已删除帖子失败</li>
+</ul>
+<hr>
+<h3 id="14-3-删除帖子接口"><a href="#14-3-删除帖子接口" class="headerlink" title="14.3 删除帖子接口"></a>14.3 删除帖子接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">DELETE /api/posts/1001</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>作者删除自己的帖子成功</li>
+<li>用户B删除用户A帖子失败</li>
+<li>管理员删除帖子成功</li>
+<li>重复删除同一帖子如何处理</li>
+<li>删除不存在帖子返回正确错误</li>
+<li>删除后详情接口不可正常返回内容</li>
+<li>删除后 Feed 不再展示</li>
+<li>删除后评论、点赞、收藏状态按需求处理</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-15"></a></p>
+<h2 id="15-评论与回复接口怎么测"><a href="#15-评论与回复接口怎么测" class="headerlink" title="15. 评论与回复接口怎么测"></a>15. 评论与回复接口怎么测</h2><h3 id="15-1-创建评论接口"><a href="#15-1-创建评论接口" class="headerlink" title="15.1 创建评论接口"></a>15.1 创建评论接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/posts/1001/comments</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;content&quot;: &quot;Nice post!&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>评论成功</li>
+<li>空评论失败</li>
+<li>超长评论失败</li>
+<li>Emoji 评论成功</li>
+<li>多语言评论成功</li>
+<li>敏感词评论进入审核或失败</li>
+<li>未登录评论失败</li>
+<li>被禁言用户评论失败</li>
+<li>评论已删除帖子失败</li>
+</ul>
+<hr>
+<h3 id="15-2-回复评论接口"><a href="#15-2-回复评论接口" class="headerlink" title="15.2 回复评论接口"></a>15.2 回复评论接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/comments/9001/replies</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;content&quot;: &quot;I agree.&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>回复一级评论成功</li>
+<li>回复二级评论成功，按产品层级限制</li>
+<li>回复不存在评论失败</li>
+<li>回复已删除评论失败</li>
+<li>回复后被回复用户收到通知</li>
+<li>回复关系字段正确，例如 parentId、replyToUserId</li>
+</ul>
+<hr>
+<h3 id="15-3-删除评论接口"><a href="#15-3-删除评论接口" class="headerlink" title="15.3 删除评论接口"></a>15.3 删除评论接口</h3><p>测试点：</p>
+<ul>
+<li>评论作者删除自己的评论成功</li>
+<li>普通用户删除别人评论失败</li>
+<li>帖子作者是否能删除帖子下评论，按需求判断</li>
+<li>管理员删除评论成功</li>
+<li>删除后评论数减少</li>
+<li>删除后回复如何展示，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-16"></a></p>
+<h2 id="16-点赞、收藏、关注接口怎么测"><a href="#16-点赞、收藏、关注接口怎么测" class="headerlink" title="16. 点赞、收藏、关注接口怎么测"></a>16. 点赞、收藏、关注接口怎么测</h2><p>这些接口看起来简单，但很容易出现重复计数和状态错误。</p>
+<h3 id="16-1-点赞接口"><a href="#16-1-点赞接口" class="headerlink" title="16.1 点赞接口"></a>16.1 点赞接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/posts/1001/like</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>点赞成功</li>
+<li>取消点赞成功</li>
+<li>重复点赞不应重复增加点赞数</li>
+<li>重复取消点赞不应导致点赞数负数</li>
+<li>未登录点赞失败</li>
+<li>被封禁用户点赞失败，按需求判断</li>
+<li>点赞不存在帖子失败</li>
+<li>点赞已删除帖子失败</li>
+<li>点赞成功后查询帖子详情，likeCount 正确</li>
+<li>点赞成功后当前用户 likeStatus 正确</li>
+</ul>
+<hr>
+<h3 id="16-2-收藏接口"><a href="#16-2-收藏接口" class="headerlink" title="16.2 收藏接口"></a>16.2 收藏接口</h3><p>测试点：</p>
+<ul>
+<li>收藏帖子成功</li>
+<li>取消收藏成功</li>
+<li>重复收藏不重复生成记录</li>
+<li>收藏列表能查询到该帖子</li>
+<li>帖子删除后收藏列表展示符合需求</li>
+<li>未登录收藏失败</li>
+</ul>
+<hr>
+<h3 id="16-3-关注接口"><a href="#16-3-关注接口" class="headerlink" title="16.3 关注接口"></a>16.3 关注接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/users/1002/follow</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>关注用户成功</li>
+<li>取消关注成功</li>
+<li>重复关注不重复增加粉丝数</li>
+<li>不能关注自己</li>
+<li>不能关注不存在用户</li>
+<li>被拉黑后是否能关注，按需求判断</li>
+<li>关注后 followerCount 和 followingCount 正确</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-17"></a></p>
+<h2 id="17-Feed-信息流接口怎么测"><a href="#17-Feed-信息流接口怎么测" class="headerlink" title="17. Feed 信息流接口怎么测"></a>17. Feed 信息流接口怎么测</h2><p>Feed 接口是社区项目核心。</p>
+<p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/feed?type=recommend&amp;cursor=xxx&amp;pageSize=20</span><br></pre></td></tr></table></figure>
+
+<h3 id="17-1-基础测试点"><a href="#17-1-基础测试点" class="headerlink" title="17.1 基础测试点"></a>17.1 基础测试点</h3><ul>
+<li>获取推荐流成功</li>
+<li>获取最新流成功</li>
+<li>获取关注流成功</li>
+<li>获取热门流成功</li>
+<li>pageSize 默认值正确</li>
+<li>pageSize 超大时有限制</li>
+<li>cursor 为空时返回第一页</li>
+<li>cursor 错误时处理正确</li>
+<li>无更多数据时返回 hasMore&#x3D;false</li>
+</ul>
+<hr>
+<h3 id="17-2-数据正确性"><a href="#17-2-数据正确性" class="headerlink" title="17.2 数据正确性"></a>17.2 数据正确性</h3><p>需要验证：</p>
+<ul>
+<li>返回帖子字段完整</li>
+<li>不返回已删除帖子</li>
+<li>不返回审核未通过帖子</li>
+<li>不返回被屏蔽用户内容，按需求判断</li>
+<li>关注流只返回关注用户帖子</li>
+<li>最新流按发布时间排序</li>
+<li>热门流按热度规则排序，按需求判断</li>
+</ul>
+<hr>
+<h3 id="17-3-分页重点"><a href="#17-3-分页重点" class="headerlink" title="17.3 分页重点"></a>17.3 分页重点</h3><p>Feed 分页常见问题：</p>
+<ul>
+<li>重复帖子</li>
+<li>漏帖子</li>
+<li>cursor 失效</li>
+<li>新内容插入导致顺序混乱</li>
+</ul>
+<p>测试方法：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 请求第一页 Feed</span><br><span class="line">2. 记录最后一条数据的 cursor</span><br><span class="line">3. 使用 cursor 请求第二页</span><br><span class="line">4. 检查第一页和第二页是否有重复帖子</span><br><span class="line">5. 连续请求多页</span><br><span class="line">6. 检查排序是否稳定</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-api-ch-18"></a></p>
+<h2 id="18-搜索接口怎么测"><a href="#18-搜索接口怎么测" class="headerlink" title="18. 搜索接口怎么测"></a>18. 搜索接口怎么测</h2><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/search?keyword=battery&amp;type=post&amp;page=1&amp;pageSize=20</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>搜索帖子成功</li>
+<li>搜索用户成功</li>
+<li>搜索话题成功</li>
+<li>keyword 为空</li>
+<li>keyword 为空格</li>
+<li>keyword 超长</li>
+<li>keyword 包含特殊字符</li>
+<li>keyword 包含 Emoji</li>
+<li>英文大小写搜索</li>
+<li>中文搜索</li>
+<li>日文搜索</li>
+<li>韩文搜索</li>
+<li>带重音字符搜索，例如 café &#x2F; cafe</li>
+<li>无结果时返回空列表</li>
+<li>搜索结果分页正确</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-19"></a></p>
+<h2 id="19-通知消息接口怎么测"><a href="#19-通知消息接口怎么测" class="headerlink" title="19. 通知消息接口怎么测"></a>19. 通知消息接口怎么测</h2><h3 id="19-1-通知列表接口"><a href="#19-1-通知列表接口" class="headerlink" title="19.1 通知列表接口"></a>19.1 通知列表接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/notifications?page=1&amp;pageSize=20</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>获取通知列表成功</li>
+<li>通知按时间倒序</li>
+<li>未读通知状态正确</li>
+<li>已读通知状态正确</li>
+<li>无通知时返回空列表</li>
+<li>分页正确</li>
+</ul>
+<hr>
+<h3 id="19-2-未读数接口"><a href="#19-2-未读数接口" class="headerlink" title="19.2 未读数接口"></a>19.2 未读数接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/notifications/unread-count</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>新评论产生未读通知</li>
+<li>新点赞产生未读通知，按需求判断</li>
+<li>新关注产生未读通知</li>
+<li>读取通知后未读数减少</li>
+<li>全部已读后未读数为 0</li>
+<li>多端已读状态同步，按需求判断</li>
+</ul>
+<hr>
+<h3 id="19-3-标记已读接口"><a href="#19-3-标记已读接口" class="headerlink" title="19.3 标记已读接口"></a>19.3 标记已读接口</h3><p>测试点：</p>
+<ul>
+<li>单条通知标记已读成功</li>
+<li>全部通知标记已读成功</li>
+<li>重复标记已读不会报错或按规则返回</li>
+<li>用户A不能标记用户B通知</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-20"></a></p>
+<h2 id="20-私信接口怎么测"><a href="#20-私信接口怎么测" class="headerlink" title="20. 私信接口怎么测"></a>20. 私信接口怎么测</h2><h3 id="20-1-发送消息接口"><a href="#20-1-发送消息接口" class="headerlink" title="20.1 发送消息接口"></a>20.1 发送消息接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/messages</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;receiverId&quot;: &quot;1002&quot;,</span><br><span class="line">  &quot;content&quot;: &quot;Hello&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>发送文本消息成功</li>
+<li>发送 Emoji 成功</li>
+<li>发送图片消息成功，按需求判断</li>
+<li>receiverId 不存在失败</li>
+<li>content 为空失败</li>
+<li>content 超长失败</li>
+<li>未登录发送失败</li>
+<li>被拉黑后发送失败</li>
+<li>被封禁用户发送失败，按需求判断</li>
+<li>发送成功后对方消息列表可见</li>
+</ul>
+<hr>
+<h3 id="20-2-消息列表接口"><a href="#20-2-消息列表接口" class="headerlink" title="20.2 消息列表接口"></a>20.2 消息列表接口</h3><p>测试点：</p>
+<ul>
+<li>获取会话列表成功</li>
+<li>获取某个会话消息成功</li>
+<li>消息按时间排序</li>
+<li>分页加载正确</li>
+<li>已读未读状态正确</li>
+<li>删除会话后展示符合需求</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-21"></a></p>
+<h2 id="21-举报与审核接口怎么测"><a href="#21-举报与审核接口怎么测" class="headerlink" title="21. 举报与审核接口怎么测"></a>21. 举报与审核接口怎么测</h2><h3 id="21-1-举报接口"><a href="#21-1-举报接口" class="headerlink" title="21.1 举报接口"></a>21.1 举报接口</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/reports</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;targetType&quot;: &quot;post&quot;,</span><br><span class="line">  &quot;targetId&quot;: &quot;1001&quot;,</span><br><span class="line">  &quot;reason&quot;: &quot;spam&quot;,</span><br><span class="line">  &quot;description&quot;: &quot;This is spam.&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>举报帖子成功</li>
+<li>举报评论成功</li>
+<li>举报用户成功</li>
+<li>targetType 为空失败</li>
+<li>targetId 不存在失败</li>
+<li>reason 为空失败</li>
+<li>description 超长失败</li>
+<li>重复举报按规则处理</li>
+<li>举报后后台能看到记录</li>
+</ul>
+<hr>
+<h3 id="21-2-审核接口"><a href="#21-2-审核接口" class="headerlink" title="21.2 审核接口"></a>21.2 审核接口</h3><p>管理员接口示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/admin/posts/1001/review</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;action&quot;: &quot;reject&quot;,</span><br><span class="line">  &quot;reason&quot;: &quot;spam&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>管理员审核通过成功</li>
+<li>管理员审核拒绝成功</li>
+<li>普通用户调用审核接口失败</li>
+<li>版主只能审核自己负责板块，按需求判断</li>
+<li>审核后前台展示状态正确</li>
+<li>审核拒绝后用户收到通知，按需求判断</li>
+</ul>
+<hr>
+<h2 id="第三部分：接口测试通用专项能力"><a href="#第三部分：接口测试通用专项能力" class="headerlink" title="第三部分：接口测试通用专项能力"></a>第三部分：接口测试通用专项能力</h2><blockquote>
+<p>这一部分不是某一个具体模块，而是接口测试中反复会用到的专项能力。</p>
+<p>例如权限测试、参数校验、幂等性、分页、文件上传、多语言和时区，这些能力在注册、发帖、评论、点赞、Feed 等模块中都会用到。</p>
+</blockquote>
+<hr>
+<p><a id="forum-api-ch-22"></a></p>
+<h2 id="22-权限类接口怎么测"><a href="#22-权限类接口怎么测" class="headerlink" title="22. 权限类接口怎么测"></a>22. 权限类接口怎么测</h2><p>权限测试是接口测试中非常重要的部分。</p>
+<h3 id="22-1-常见权限场景"><a href="#22-1-常见权限场景" class="headerlink" title="22.1 常见权限场景"></a>22.1 常见权限场景</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>测试目标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>未登录访问需要登录的接口</td>
+<td>应返回未登录</td>
+</tr>
+<tr>
+<td>普通用户访问管理员接口</td>
+<td>应返回无权限</td>
+</tr>
+<tr>
+<td>用户A修改用户B资料</td>
+<td>应失败</td>
+</tr>
+<tr>
+<td>用户A删除用户B帖子</td>
+<td>应失败</td>
+</tr>
+<tr>
+<td>被禁言用户发帖</td>
+<td>应失败</td>
+</tr>
+<tr>
+<td>被封禁用户点赞&#x2F;评论</td>
+<td>按需求限制</td>
+</tr>
+<tr>
+<td>版主操作非负责板块</td>
+<td>应失败</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="22-2-怎么测越权"><a href="#22-2-怎么测越权" class="headerlink" title="22.2 怎么测越权"></a>22.2 怎么测越权</h3><p>以删除帖子为例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户A创建帖子，得到 postId</span><br><span class="line">2. 用户B登录，拿到 userB_token</span><br><span class="line">3. 用户B 使用 userB_token 调用删除接口删除用户A的帖子</span><br><span class="line">4. 查看接口返回</span><br><span class="line">5. 再用用户A或游客查询帖子详情</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户B删除失败</span><br><span class="line">返回无权限</span><br><span class="line">帖子仍然存在</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-api-ch-23"></a></p>
+<h2 id="23-参数校验怎么测"><a href="#23-参数校验怎么测" class="headerlink" title="23. 参数校验怎么测"></a>23. 参数校验怎么测</h2><p>参数校验是接口测试基础能力。</p>
+<h3 id="23-1-必填参数"><a href="#23-1-必填参数" class="headerlink" title="23.1 必填参数"></a>23.1 必填参数</h3><p>例如发帖接口 title 必填。</p>
+<p>要测：</p>
+<ul>
+<li>不传 title</li>
+<li>title 为空字符串</li>
+<li>title 为 null</li>
+<li>title 只有空格</li>
+</ul>
+<h3 id="23-2-参数类型"><a href="#23-2-参数类型" class="headerlink" title="23.2 参数类型"></a>23.2 参数类型</h3><p>例如 pageSize 应该是数字。</p>
+<p>要测：</p>
+<ul>
+<li>pageSize 传字符串</li>
+<li>pageSize 传小数</li>
+<li>pageSize 传负数</li>
+<li>pageSize 传超大数字</li>
+</ul>
+<h3 id="23-3-字符长度"><a href="#23-3-字符长度" class="headerlink" title="23.3 字符长度"></a>23.3 字符长度</h3><p>例如昵称最多 30 个字符。</p>
+<p>要测：</p>
+<ul>
+<li>29 个字符</li>
+<li>30 个字符</li>
+<li>31 个字符</li>
+<li>中文 30 个字符</li>
+<li>Emoji 30 个字符</li>
+</ul>
+<h3 id="23-4-枚举值"><a href="#23-4-枚举值" class="headerlink" title="23.4 枚举值"></a>23.4 枚举值</h3><p>例如举报原因 reason 只能是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">spam</span><br><span class="line">harassment</span><br><span class="line">violence</span><br><span class="line">other</span><br></pre></td></tr></table></figure>
+
+<p>要测：</p>
+<ul>
+<li>传合法枚举</li>
+<li>传不存在枚举</li>
+<li>传空值</li>
+<li>传大小写不同的值</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-24"></a></p>
+<h2 id="24-幂等性怎么测"><a href="#24-幂等性怎么测" class="headerlink" title="24. 幂等性怎么测"></a>24. 幂等性怎么测</h2><p>幂等性简单理解：</p>
+<blockquote>
+<p>同一个操作重复执行多次，结果不应该异常重复。</p>
+</blockquote>
+<p>社区项目中，幂等性非常重要。</p>
+<h3 id="24-1-哪些接口需要关注幂等"><a href="#24-1-哪些接口需要关注幂等" class="headerlink" title="24.1 哪些接口需要关注幂等"></a>24.1 哪些接口需要关注幂等</h3><table>
+<thead>
+<tr>
+<th>接口</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>注册</td>
+<td>连续请求创建多个账号</td>
+</tr>
+<tr>
+<td>发帖</td>
+<td>连续点击发布生成重复帖子</td>
+</tr>
+<tr>
+<td>评论</td>
+<td>连续点击发送生成重复评论</td>
+</tr>
+<tr>
+<td>点赞</td>
+<td>点一次加多次点赞数</td>
+</tr>
+<tr>
+<td>收藏</td>
+<td>重复生成收藏记录</td>
+</tr>
+<tr>
+<td>关注</td>
+<td>粉丝数重复增加</td>
+</tr>
+<tr>
+<td>支付&#x2F;订阅</td>
+<td>重复扣款，如果涉及支付</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="24-2-怎么测幂等"><a href="#24-2-怎么测幂等" class="headerlink" title="24.2 怎么测幂等"></a>24.2 怎么测幂等</h3><p>以点赞为例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户A登录</span><br><span class="line">2. 连续快速调用点赞接口 5 次</span><br><span class="line">3. 查询帖子详情</span><br><span class="line">4. 查看 likeCount 和 likeStatus</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">likeStatus = true</span><br><span class="line">likeCount 只增加 1</span><br><span class="line">不会生成 5 条点赞记录</span><br></pre></td></tr></table></figure>
+
+<p>以评论为例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 准备同一个 comment request</span><br><span class="line">2. 连续发送 3 次</span><br><span class="line">3. 查看评论列表</span><br></pre></td></tr></table></figure>
+
+<p>预期要看产品规则：</p>
+<ul>
+<li>如果允许重复评论，可能会生成 3 条</li>
+<li>如果不允许重复提交，应该只生成 1 条</li>
+</ul>
+<p>所以幂等性测试要结合产品规则和接口设计。</p>
+<hr>
+<p><a id="forum-api-ch-25"></a></p>
+<h2 id="25-分页接口怎么测"><a href="#25-分页接口怎么测" class="headerlink" title="25. 分页接口怎么测"></a>25. 分页接口怎么测</h2><p>分页接口常见于：</p>
+<ul>
+<li>Feed 列表</li>
+<li>评论列表</li>
+<li>粉丝列表</li>
+<li>通知列表</li>
+<li>私信消息列表</li>
+<li>搜索结果</li>
+</ul>
+<h3 id="25-1-page-pageSize-分页"><a href="#25-1-page-pageSize-分页" class="headerlink" title="25.1 page&#x2F;pageSize 分页"></a>25.1 page&#x2F;pageSize 分页</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/posts?page=1&amp;pageSize=20</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>page&#x3D;1 正常</li>
+<li>page&#x3D;0</li>
+<li>page&#x3D;-1</li>
+<li>pageSize&#x3D;0</li>
+<li>pageSize 超大</li>
+<li>最后一页</li>
+<li>超过最后一页</li>
+<li>无数据</li>
+</ul>
+<h3 id="25-2-cursor-分页"><a href="#25-2-cursor-分页" class="headerlink" title="25.2 cursor 分页"></a>25.2 cursor 分页</h3><p>Feed 流常用 cursor 分页。</p>
+<p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">GET /api/feed?cursor=abc&amp;pageSize=20</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>cursor 为空返回第一页</li>
+<li>使用返回的 nextCursor 获取下一页</li>
+<li>cursor 错误时处理正确</li>
+<li>多页之间无重复</li>
+<li>多页之间无明显漏数据</li>
+<li>hasMore 字段正确</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-26"></a></p>
+<h2 id="26-文件上传接口怎么测"><a href="#26-文件上传接口怎么测" class="headerlink" title="26. 文件上传接口怎么测"></a>26. 文件上传接口怎么测</h2><p>社区项目常见上传：</p>
+<ul>
+<li>头像</li>
+<li>帖子图片</li>
+<li>评论图片</li>
+<li>视频</li>
+<li>私信图片</li>
+</ul>
+<h3 id="26-1-图片上传测试"><a href="#26-1-图片上传测试" class="headerlink" title="26.1 图片上传测试"></a>26.1 图片上传测试</h3><p>测试点：</p>
+<ul>
+<li>JPG 上传成功</li>
+<li>PNG 上传成功</li>
+<li>GIF 上传成功，按需求判断</li>
+<li>WebP 上传成功，按需求判断</li>
+<li>超大图片上传失败</li>
+<li>不支持格式上传失败</li>
+<li>损坏图片上传失败</li>
+<li>上传成功后返回 fileId 或 URL</li>
+<li>使用返回 fileId 发帖成功</li>
+</ul>
+<h3 id="26-2-视频上传测试"><a href="#26-2-视频上传测试" class="headerlink" title="26.2 视频上传测试"></a>26.2 视频上传测试</h3><p>测试点：</p>
+<ul>
+<li>MP4 上传成功</li>
+<li>视频过大失败</li>
+<li>视频时长超过限制失败</li>
+<li>视频转码中状态正确</li>
+<li>转码成功后可播放</li>
+<li>转码失败后有错误状态</li>
+</ul>
+<h3 id="26-3-上传权限测试"><a href="#26-3-上传权限测试" class="headerlink" title="26.3 上传权限测试"></a>26.3 上传权限测试</h3><ul>
+<li>未登录不能上传</li>
+<li>被封禁用户不能上传</li>
+<li>普通用户不能上传后台文件</li>
+<li>上传后的文件只能被正确业务引用</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-27"></a></p>
+<h2 id="27-多语言、时区相关接口怎么测"><a href="#27-多语言、时区相关接口怎么测" class="headerlink" title="27. 多语言、时区相关接口怎么测"></a>27. 多语言、时区相关接口怎么测</h2><p>海外社区接口测试要关注 Header 和字段。</p>
+<h3 id="27-1-多语言-Header"><a href="#27-1-多语言-Header" class="headerlink" title="27.1 多语言 Header"></a>27.1 多语言 Header</h3><p>示例：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>en-US</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>ja-JP</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>ar-SA</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>不同语言下错误提示是否正确</li>
+<li>不同语言下枚举文案是否正确</li>
+<li>不支持语言时是否使用默认语言</li>
+<li>语言 Header 为空时是否有默认值</li>
+</ul>
+<h3 id="27-2-时区-Header"><a href="#27-2-时区-Header" class="headerlink" title="27.2 时区 Header"></a>27.2 时区 Header</h3><p>如果接口支持时区 Header：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">X-Timezone</span><span class="punctuation">: </span>Asia/Singapore</span><br><span class="line"><span class="attribute">X-Timezone</span><span class="punctuation">: </span>America/New_York</span><br><span class="line"><span class="attribute">X-Timezone</span><span class="punctuation">: </span>Europe/London</span><br></pre></td></tr></table></figure>
+
+<p>测试点：</p>
+<ul>
+<li>不同时区返回时间是否符合规则</li>
+<li>错误时区值是否处理正确</li>
+<li>时区为空时是否使用默认时区</li>
+<li>活动开始&#x2F;结束时间是否转换正确</li>
+<li>夏令时地区时间是否正确</li>
+</ul>
+<h3 id="27-3-时间字段格式"><a href="#27-3-时间字段格式" class="headerlink" title="27.3 时间字段格式"></a>27.3 时间字段格式</h3><p>接口返回时间建议关注：</p>
+<ul>
+<li>是否带时区</li>
+<li>是否统一 UTC</li>
+<li>是否为时间戳</li>
+<li>前端是否能正确解析</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;createdAt&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-05-08T12:00:00Z&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>比下面这种更清晰：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;createdAt&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-05-08 12:00:00&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>因为后者不知道是什么时区。</p>
+<hr>
+<h2 id="第四部分：用例、Bug-与总结"><a href="#第四部分：用例、Bug-与总结" class="headerlink" title="第四部分：用例、Bug 与总结"></a>第四部分：用例、Bug 与总结</h2><blockquote>
+<p>学接口测试不能只停留在“知道怎么测”，还要能写出测试用例、提交清晰 Bug，并总结出自己的测试思路。</p>
+</blockquote>
+<hr>
+<p><a id="forum-api-ch-28"></a></p>
+<h2 id="28-接口测试用例怎么写"><a href="#28-接口测试用例怎么写" class="headerlink" title="28. 接口测试用例怎么写"></a>28. 接口测试用例怎么写</h2><p>接口测试用例建议包含：</p>
+<ul>
+<li>用例编号</li>
+<li>模块</li>
+<li>接口名称</li>
+<li>请求方法</li>
+<li>请求地址</li>
+<li>前置条件</li>
+<li>请求参数</li>
+<li>操作步骤</li>
+<li>预期结果</li>
+<li>优先级</li>
+</ul>
+<h3 id="28-1-用例模板"><a href="#28-1-用例模板" class="headerlink" title="28.1 用例模板"></a>28.1 用例模板</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>API_POST_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>发帖</td>
+</tr>
+<tr>
+<td>接口名称</td>
+<td>创建帖子接口</td>
+</tr>
+<tr>
+<td>请求方法</td>
+<td>POST</td>
+</tr>
+<tr>
+<td>请求地址</td>
+<td>&#x2F;api&#x2F;posts</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>用户A已登录，账号状态正常</td>
+</tr>
+<tr>
+<td>请求参数</td>
+<td>title、content、topicId</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>使用用户A Token 调用创建帖子接口</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>返回创建成功，生成 postId，详情接口可查询</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="28-2-示例用例：发帖成功"><a href="#28-2-示例用例：发帖成功" class="headerlink" title="28.2 示例用例：发帖成功"></a>28.2 示例用例：发帖成功</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>API_POST_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>发帖</td>
+</tr>
+<tr>
+<td>接口名称</td>
+<td>创建帖子接口</td>
+</tr>
+<tr>
+<td>请求方法</td>
+<td>POST</td>
+</tr>
+<tr>
+<td>请求地址</td>
+<td>&#x2F;api&#x2F;posts</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>用户A已登录，账号状态正常</td>
+</tr>
+<tr>
+<td>请求参数</td>
+<td>title&#x3D;My first post，content&#x3D;Hello，topicId&#x3D;topic_001</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>发送创建帖子请求</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>HTTP 状态码成功；业务 code 成功；返回 postId；查询详情接口能查到该帖子</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="28-3-示例用例：未登录发帖失败"><a href="#28-3-示例用例：未登录发帖失败" class="headerlink" title="28.3 示例用例：未登录发帖失败"></a>28.3 示例用例：未登录发帖失败</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>API_POST_002</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>发帖</td>
+</tr>
+<tr>
+<td>接口名称</td>
+<td>创建帖子接口</td>
+</tr>
+<tr>
+<td>请求方法</td>
+<td>POST</td>
+</tr>
+<tr>
+<td>请求地址</td>
+<td>&#x2F;api&#x2F;posts</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>不携带 Token</td>
+</tr>
+<tr>
+<td>请求参数</td>
+<td>title&#x3D;My first post，content&#x3D;Hello</td>
+</tr>
+<tr>
+<td>操作步骤</td>
+<td>不带 Authorization Header 发送请求</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>返回未登录错误；不会创建帖子</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-api-ch-29"></a></p>
+<h2 id="29-接口-Bug-怎么提交"><a href="#29-接口-Bug-怎么提交" class="headerlink" title="29. 接口 Bug 怎么提交"></a>29. 接口 Bug 怎么提交</h2><p>接口 Bug 要比功能 Bug 写得更具体，最好包含请求和响应。</p>
+<h3 id="29-1-接口-Bug-应包含"><a href="#29-1-接口-Bug-应包含" class="headerlink" title="29.1 接口 Bug 应包含"></a>29.1 接口 Bug 应包含</h3><ul>
+<li>Bug 标题</li>
+<li>测试环境</li>
+<li>接口地址</li>
+<li>请求方法</li>
+<li>请求 Header</li>
+<li>请求参数</li>
+<li>响应结果</li>
+<li>预期结果</li>
+<li>实际结果</li>
+<li>复现步骤</li>
+<li>复现概率</li>
+<li>关联账号或数据 ID</li>
+</ul>
+<hr>
+<h3 id="29-2-示例-Bug"><a href="#29-2-示例-Bug" class="headerlink" title="29.2 示例 Bug"></a>29.2 示例 Bug</h3><h4 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[发帖接口] 被禁言用户调用创建帖子接口仍然发布成功</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Test 环境</span><br></pre></td></tr></table></figure>
+
+<h4 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A已被管理员设置为禁言状态。</span><br></pre></td></tr></table></figure>
+
+<h4 id="请求信息"><a href="#请求信息" class="headerlink" title="请求信息"></a>请求信息</h4><figure class="highlight http"><table><tr><td class="code"><pre><span class="line">POST /api/posts</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Bearer 用户A_token</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;title&quot;: &quot;test title&quot;,</span><br><span class="line">  &quot;content&quot;: &quot;test content&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果"><a href="#实际结果" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;success&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;postId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1001&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>实际创建了帖子，帖子详情接口可查询。</p>
+<h4 id="预期结果"><a href="#预期结果" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">被禁言用户不允许发帖，接口应返回无权限或账号受限错误，不应创建帖子。</span><br></pre></td></tr></table></figure>
+
+<h4 id="严重程度"><a href="#严重程度" class="headerlink" title="严重程度"></a>严重程度</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Critical</span><br></pre></td></tr></table></figure>
+
+<p>原因：绕过前端限制，影响社区治理能力。</p>
+<hr>
+<p><a id="forum-api-ch-30"></a></p>
+<h2 id="30-新手常见误区"><a href="#30-新手常见误区" class="headerlink" title="30. 新手常见误区"></a>30. 新手常见误区</h2><h3 id="30-1-只看接口返回-success"><a href="#30-1-只看接口返回-success" class="headerlink" title="30.1 只看接口返回 success"></a>30.1 只看接口返回 success</h3><p>错误做法：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">接口返回 success，就认为通过。</span><br></pre></td></tr></table></figure>
+
+<p>正确做法：</p>
+<p>还要验证：</p>
+<ul>
+<li>数据是否真的创建</li>
+<li>字段是否正确</li>
+<li>列表能否查询到</li>
+<li>数量是否变化</li>
+<li>状态是否正确</li>
+</ul>
+<hr>
+<h3 id="30-2-不测权限"><a href="#30-2-不测权限" class="headerlink" title="30.2 不测权限"></a>30.2 不测权限</h3><p>接口测试一定要测权限。</p>
+<p>页面不显示按钮，不代表接口安全。</p>
+<hr>
+<h3 id="30-3-不测重复请求"><a href="#30-3-不测重复请求" class="headerlink" title="30.3 不测重复请求"></a>30.3 不测重复请求</h3><p>社区项目很多问题来自重复点击、网络重试、接口重复调用。</p>
+<p>一定要测：</p>
+<ul>
+<li>重复发帖</li>
+<li>重复评论</li>
+<li>重复点赞</li>
+<li>重复关注</li>
+<li>重复获取验证码</li>
+</ul>
+<hr>
+<h3 id="30-4-不保存测试数据"><a href="#30-4-不保存测试数据" class="headerlink" title="30.4 不保存测试数据"></a>30.4 不保存测试数据</h3><p>接口测试经常需要用上一步返回的数据。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">创建帖子 → 得到 postId → 查询帖子 → 评论帖子 → 删除帖子</span><br></pre></td></tr></table></figure>
+
+<p>新手要学会保存变量，例如 postId、commentId、token。</p>
+<hr>
+<h3 id="30-5-不看错误码"><a href="#30-5-不看错误码" class="headerlink" title="30.5 不看错误码"></a>30.5 不看错误码</h3><p>失败场景也要认真测。</p>
+<p>例如标题为空，接口返回失败是对的，但还要看：</p>
+<ul>
+<li>错误码是否正确</li>
+<li>message 是否清楚</li>
+<li>是否错误返回 500</li>
+<li>是否创建了脏数据</li>
+</ul>
+<hr>
+<p><a id="forum-api-ch-31"></a></p>
+<h2 id="31-最后总结"><a href="#31-最后总结" class="headerlink" title="31. 最后总结"></a>31. 最后总结</h2><p>接口测试的核心不是“会用 Postman 点 Send”，而是要理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">这个接口是做什么的？</span><br><span class="line">谁可以调用？</span><br><span class="line">需要传什么参数？</span><br><span class="line">参数错了会怎样？</span><br><span class="line">调用成功后数据是否真的变化？</span><br><span class="line">重复调用会不会出问题？</span><br><span class="line">没有权限的人能不能绕过前端直接调用？</span><br></pre></td></tr></table></figure>
+
+<p>对于海外社区论坛项目，接口测试最重要的几个方向是：</p>
+<ul>
+<li>登录态和 Token</li>
+<li>参数校验</li>
+<li>权限校验</li>
+<li>重复提交</li>
+<li>数据一致性</li>
+<li>分页稳定性</li>
+<li>多语言和时区字段</li>
+<li>第三方登录链路</li>
+</ul>
+<p>只要你每个接口都围绕这些问题去测，接口测试思路就会越来越清晰。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-09-overseas-forum-api-testing-guide/">https://linn0813.github.io/2026-05-09-overseas-forum-api-testing-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/API%E6%B5%8B%E8%AF%95/">API测试</a><a class="post-meta__tags" href="/tags/Postman/">Postman</a><a class="post-meta__tags" href="/tags/%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95/">接口测试</a><a class="post-meta__tags" href="/tags/%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B/">社区论坛</a><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-api-testing-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-05-07-overseas-forum-functional-testing-guide/" title="学习笔记：海外社区论坛 - 功能测试入门"><img class="cover" src="/img/overseas-forum-functional-testing-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 功能测试入门</div></div><div class="info-2"><div class="info-item-1">结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。</div></div></div></a><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-05-18-postman/" title="📨 Postman 使用指南 —— 测试工程师的快乐源泉"><img class="cover" src="/img/postman.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-18</div><div class="info-item-2">📨 Postman 使用指南 —— 测试工程师的快乐源泉</div></div><div class="info-2"><div class="info-item-1">详细介绍 Postman 这一强大的 API 开发与测试工具，涵盖安装方法、基本使用、进阶功能，如环境变量管理、自动化测试、Postman Collection 等，帮助测试工程师提升工作效率。</div></div></div></a><a class="pagination-related" href="/2025-06-20-postman-class/" title="从入门到实战：一篇文章掌握接口测试与 Postman 全流程"><img class="cover" src="/img/postman-class.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-20</div><div class="info-item-2">从入门到实战：一篇文章掌握接口测试与 Postman 全流程</div></div><div class="info-2"><div class="info-item-1">分享码尚教育Postman课程的学习内容，详细介绍接口测试的概念、分类、流程与用例设计，全面讲解 Postman 的使用方法，包括界面操作、断言设置、数据驱动测试和 Mock Server 等功能，适合接口测试初学者与自动化测试入门者学习。</div></div></div></a><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-10</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-12</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-07-overseas-forum-functional-testing-guide/" title="学习笔记：海外社区论坛 - 功能测试入门"><img class="cover" src="/img/overseas-forum-functional-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-07</div><div class="info-item-2">学习笔记：海外社区论坛 - 功能测试入门</div></div><div class="info-2"><div class="info-item-1">结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。</div></div></div></a><a class="pagination-related" href="/2026-05-11-overseas-forum-permission-testing-guide/" title="学习笔记：海外社区论坛 - 权限测试专项入门"><img class="cover" src="/img/overseas-forum-permission-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-11</div><div class="info-item-2">学习笔记：海外社区论坛 - 权限测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛权限测试专项入门：角色与状态、前后端权限、越权与权限矩阵、按模块实战及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-13-overseas-forum-i18n-l10n-guide/" title="学习笔记：海外社区论坛 - 国际化与本地化专项入门"><img class="cover" src="/img/overseas-forum-i18n-l10n-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-13</div><div class="info-item-2">学习笔记：海外社区论坛 - 国际化与本地化专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛国际化与本地化专项入门：I18N/L10N 基础、各模块实战、文案布局与时区等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-14</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">第一部分：接口测试基础概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E4%B9%8B%E5%90%8E%E8%A6%81%E5%AD%A6%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么功能测试之后要学接口测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%9A%E7%82%B9%E8%B5%9E%E5%8A%9F%E8%83%BD"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 举个例子：点赞功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E8%83%BD%E5%8F%91%E7%8E%B0%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 接口测试能发现什么问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text">2. 什么是接口测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%8E%A5%E5%8F%A3%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 接口是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E5%9C%A8%E6%B5%8B%E4%BB%80%E4%B9%88"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 接口测试在测什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E5%92%8C%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">3. 接口测试和功能测试有什么区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E6%9B%B4%E5%AE%B9%E6%98%93%E5%8F%91%E7%8E%B0%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 为什么接口测试更容易发现权限问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E9%9C%80%E8%A6%81%E6%8E%8C%E6%8F%A1%E5%93%AA%E4%BA%9B%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">5.</span> <span class="toc-text">4. 接口测试需要掌握哪些基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%B8%80%E4%B8%AA%E6%8E%A5%E5%8F%A3%E8%AF%B7%E6%B1%82%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 一个接口请求长什么样</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-HTTP-%E8%AF%B7%E6%B1%82%E6%96%B9%E6%B3%95%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3"><span class="toc-number">6.</span> <span class="toc-text">5. HTTP 请求方法怎么理解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-GET-%E8%AF%B7%E6%B1%82"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 GET 请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-POST-%E8%AF%B7%E6%B1%82"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 POST 请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-PUT-PATCH-%E8%AF%B7%E6%B1%82"><span class="toc-number">6.3.</span> <span class="toc-text">5.3 PUT &#x2F; PATCH 请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-DELETE-%E8%AF%B7%E6%B1%82"><span class="toc-number">6.4.</span> <span class="toc-text">5.4 DELETE 请求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E6%9C%89%E5%93%AA%E4%BA%9B%E7%B1%BB%E5%9E%8B"><span class="toc-number">7.</span> <span class="toc-text">6. 请求参数有哪些类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-Path-%E5%8F%82%E6%95%B0"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 Path 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-Query-%E5%8F%82%E6%95%B0"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 Query 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-Body-%E5%8F%82%E6%95%B0"><span class="toc-number">7.3.</span> <span class="toc-text">6.3 Body 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-Header-%E5%8F%82%E6%95%B0"><span class="toc-number">7.4.</span> <span class="toc-text">6.4 Header 参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%93%8D%E5%BA%94%E7%BB%93%E6%9E%9C%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E7%9C%8B"><span class="toc-number">8.</span> <span class="toc-text">7. 响应结果应该怎么看</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-HTTP-%E7%8A%B6%E6%80%81%E7%A0%81"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 HTTP 状态码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%B8%9A%E5%8A%A1%E9%94%99%E8%AF%AF%E7%A0%81"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 业务错误码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-data-%E5%AD%97%E6%AE%B5"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 data 字段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-Token%E3%80%81%E7%99%BB%E5%BD%95%E6%80%81%E3%80%81%E9%89%B4%E6%9D%83%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">9.</span> <span class="toc-text">8. Token、登录态、鉴权是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-Token-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 Token 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E6%B2%A1%E6%9C%89-Token-%E4%BC%9A%E6%80%8E%E6%A0%B7"><span class="toc-number">9.2.</span> <span class="toc-text">8.2 没有 Token 会怎样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-Token-%E8%BF%87%E6%9C%9F%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">9.3.</span> <span class="toc-text">8.3 Token 过期怎么测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E9%89%B4%E6%9D%83%E5%92%8C%E6%9D%83%E9%99%90%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">9.4.</span> <span class="toc-text">8.4 鉴权和权限有什么区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E5%89%8D%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">10.</span> <span class="toc-text">9. 接口测试前需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E5%87%86%E5%A4%87%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3"><span class="toc-number">10.1.</span> <span class="toc-text">9.1 准备接口文档</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E8%B4%A6%E5%8F%B7"><span class="toc-number">10.2.</span> <span class="toc-text">9.2 准备测试账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="toc-number">10.3.</span> <span class="toc-text">9.3 准备测试数据</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE"><span class="toc-number">10.3.1.</span> <span class="toc-text">文本数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ID-%E6%95%B0%E6%8D%AE"><span class="toc-number">10.3.2.</span> <span class="toc-text">ID 数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE"><span class="toc-number">10.3.3.</span> <span class="toc-text">文件数据</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E5%87%86%E5%A4%87%E7%8E%AF%E5%A2%83%E4%BF%A1%E6%81%AF"><span class="toc-number">10.4.</span> <span class="toc-text">9.4 准备环境信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%EF%BC%9APostman-Apifox"><span class="toc-number">11.</span> <span class="toc-text">10. 常用接口测试工具：Postman &#x2F; Apifox</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-Postman-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">11.1.</span> <span class="toc-text">10.1 Postman 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-Apifox-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">11.2.</span> <span class="toc-text">10.2 Apifox 是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E6%96%B0%E6%89%8B%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%AA%A4"><span class="toc-number">11.3.</span> <span class="toc-text">10.3 新手使用工具的基本步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-%E5%BB%BA%E8%AE%AE%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">11.4.</span> <span class="toc-text">10.4 建议设置环境变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E9%A1%B9%E7%9B%AE%E6%8E%A5%E5%8F%A3%E5%AE%9E%E6%88%98"><span class="toc-number">12.</span> <span class="toc-text">第二部分：海外社区论坛项目接口实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%B8%B8%E8%A7%81%E6%8E%A5%E5%8F%A3%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">13.</span> <span class="toc-text">11. 海外社区论坛常见接口有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E6%B3%A8%E5%86%8C%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">14.</span> <span class="toc-text">12. 注册登录接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E9%82%AE%E7%AE%B1%E6%B3%A8%E5%86%8C%E6%8E%A5%E5%8F%A3"><span class="toc-number">14.1.</span> <span class="toc-text">12.1 邮箱注册接口</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A3%E5%B8%B8%E5%9C%BA%E6%99%AF"><span class="toc-number">14.1.1.</span> <span class="toc-text">正常场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF"><span class="toc-number">14.1.2.</span> <span class="toc-text">异常场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3"><span class="toc-number">14.2.</span> <span class="toc-text">12.2 登录接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3"><span class="toc-number">14.3.</span> <span class="toc-text">12.3 第三方登录接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-4-Token-%E5%88%B7%E6%96%B0%E6%8E%A5%E5%8F%A3"><span class="toc-number">14.4.</span> <span class="toc-text">12.4 Token 刷新接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E7%94%A8%E6%88%B7%E8%B5%84%E6%96%99%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">15.</span> <span class="toc-text">13. 用户资料接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E8%B5%84%E6%96%99%E6%8E%A5%E5%8F%A3"><span class="toc-number">15.1.</span> <span class="toc-text">13.1 获取用户资料接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E4%BF%AE%E6%94%B9%E7%94%A8%E6%88%B7%E8%B5%84%E6%96%99%E6%8E%A5%E5%8F%A3"><span class="toc-number">15.2.</span> <span class="toc-text">13.2 修改用户资料接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%8F%91%E5%B8%96%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">16.</span> <span class="toc-text">14. 发帖接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E5%88%9B%E5%BB%BA%E5%B8%96%E5%AD%90%E6%8E%A5%E5%8F%A3"><span class="toc-number">16.1.</span> <span class="toc-text">14.1 创建帖子接口</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A3%E5%B8%B8%E5%9C%BA%E6%99%AF-1"><span class="toc-number">16.1.1.</span> <span class="toc-text">正常场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E5%BC%82%E5%B8%B8"><span class="toc-number">16.1.2.</span> <span class="toc-text">参数异常</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E5%BC%82%E5%B8%B8"><span class="toc-number">16.1.3.</span> <span class="toc-text">权限异常</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E7%BC%96%E8%BE%91%E5%B8%96%E5%AD%90%E6%8E%A5%E5%8F%A3"><span class="toc-number">16.2.</span> <span class="toc-text">14.2 编辑帖子接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-3-%E5%88%A0%E9%99%A4%E5%B8%96%E5%AD%90%E6%8E%A5%E5%8F%A3"><span class="toc-number">16.3.</span> <span class="toc-text">14.3 删除帖子接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E8%AF%84%E8%AE%BA%E4%B8%8E%E5%9B%9E%E5%A4%8D%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">17.</span> <span class="toc-text">15. 评论与回复接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E5%88%9B%E5%BB%BA%E8%AF%84%E8%AE%BA%E6%8E%A5%E5%8F%A3"><span class="toc-number">17.1.</span> <span class="toc-text">15.1 创建评论接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E5%9B%9E%E5%A4%8D%E8%AF%84%E8%AE%BA%E6%8E%A5%E5%8F%A3"><span class="toc-number">17.2.</span> <span class="toc-text">15.2 回复评论接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-3-%E5%88%A0%E9%99%A4%E8%AF%84%E8%AE%BA%E6%8E%A5%E5%8F%A3"><span class="toc-number">17.3.</span> <span class="toc-text">15.3 删除评论接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E7%82%B9%E8%B5%9E%E3%80%81%E6%94%B6%E8%97%8F%E3%80%81%E5%85%B3%E6%B3%A8%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">18.</span> <span class="toc-text">16. 点赞、收藏、关注接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E7%82%B9%E8%B5%9E%E6%8E%A5%E5%8F%A3"><span class="toc-number">18.1.</span> <span class="toc-text">16.1 点赞接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-%E6%94%B6%E8%97%8F%E6%8E%A5%E5%8F%A3"><span class="toc-number">18.2.</span> <span class="toc-text">16.2 收藏接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-3-%E5%85%B3%E6%B3%A8%E6%8E%A5%E5%8F%A3"><span class="toc-number">18.3.</span> <span class="toc-text">16.3 关注接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-Feed-%E4%BF%A1%E6%81%AF%E6%B5%81%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">19.</span> <span class="toc-text">17. Feed 信息流接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E5%9F%BA%E7%A1%80%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">19.1.</span> <span class="toc-text">17.1 基础测试点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-%E6%95%B0%E6%8D%AE%E6%AD%A3%E7%A1%AE%E6%80%A7"><span class="toc-number">19.2.</span> <span class="toc-text">17.2 数据正确性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-3-%E5%88%86%E9%A1%B5%E9%87%8D%E7%82%B9"><span class="toc-number">19.3.</span> <span class="toc-text">17.3 分页重点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E6%90%9C%E7%B4%A2%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">20.</span> <span class="toc-text">18. 搜索接口怎么测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E9%80%9A%E7%9F%A5%E6%B6%88%E6%81%AF%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">21.</span> <span class="toc-text">19. 通知消息接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E9%80%9A%E7%9F%A5%E5%88%97%E8%A1%A8%E6%8E%A5%E5%8F%A3"><span class="toc-number">21.1.</span> <span class="toc-text">19.1 通知列表接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E6%9C%AA%E8%AF%BB%E6%95%B0%E6%8E%A5%E5%8F%A3"><span class="toc-number">21.2.</span> <span class="toc-text">19.2 未读数接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-3-%E6%A0%87%E8%AE%B0%E5%B7%B2%E8%AF%BB%E6%8E%A5%E5%8F%A3"><span class="toc-number">21.3.</span> <span class="toc-text">19.3 标记已读接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E7%A7%81%E4%BF%A1%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">22.</span> <span class="toc-text">20. 私信接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#20-1-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E6%8E%A5%E5%8F%A3"><span class="toc-number">22.1.</span> <span class="toc-text">20.1 发送消息接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-2-%E6%B6%88%E6%81%AF%E5%88%97%E8%A1%A8%E6%8E%A5%E5%8F%A3"><span class="toc-number">22.2.</span> <span class="toc-text">20.2 消息列表接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E4%B8%BE%E6%8A%A5%E4%B8%8E%E5%AE%A1%E6%A0%B8%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">23.</span> <span class="toc-text">21. 举报与审核接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-%E4%B8%BE%E6%8A%A5%E6%8E%A5%E5%8F%A3"><span class="toc-number">23.1.</span> <span class="toc-text">21.1 举报接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-%E5%AE%A1%E6%A0%B8%E6%8E%A5%E5%8F%A3"><span class="toc-number">23.2.</span> <span class="toc-text">21.2 审核接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E9%80%9A%E7%94%A8%E4%B8%93%E9%A1%B9%E8%83%BD%E5%8A%9B"><span class="toc-number">24.</span> <span class="toc-text">第三部分：接口测试通用专项能力</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E6%9D%83%E9%99%90%E7%B1%BB%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">25.</span> <span class="toc-text">22. 权限类接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E5%B8%B8%E8%A7%81%E6%9D%83%E9%99%90%E5%9C%BA%E6%99%AF"><span class="toc-number">25.1.</span> <span class="toc-text">22.1 常见权限场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E6%80%8E%E4%B9%88%E6%B5%8B%E8%B6%8A%E6%9D%83"><span class="toc-number">25.2.</span> <span class="toc-text">22.2 怎么测越权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">26.</span> <span class="toc-text">23. 参数校验怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#23-1-%E5%BF%85%E5%A1%AB%E5%8F%82%E6%95%B0"><span class="toc-number">26.1.</span> <span class="toc-text">23.1 必填参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-2-%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="toc-number">26.2.</span> <span class="toc-text">23.2 参数类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-3-%E5%AD%97%E7%AC%A6%E9%95%BF%E5%BA%A6"><span class="toc-number">26.3.</span> <span class="toc-text">23.3 字符长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-4-%E6%9E%9A%E4%B8%BE%E5%80%BC"><span class="toc-number">26.4.</span> <span class="toc-text">23.4 枚举值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E5%B9%82%E7%AD%89%E6%80%A7%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">27.</span> <span class="toc-text">24. 幂等性怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#24-1-%E5%93%AA%E4%BA%9B%E6%8E%A5%E5%8F%A3%E9%9C%80%E8%A6%81%E5%85%B3%E6%B3%A8%E5%B9%82%E7%AD%89"><span class="toc-number">27.1.</span> <span class="toc-text">24.1 哪些接口需要关注幂等</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-2-%E6%80%8E%E4%B9%88%E6%B5%8B%E5%B9%82%E7%AD%89"><span class="toc-number">27.2.</span> <span class="toc-text">24.2 怎么测幂等</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E5%88%86%E9%A1%B5%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">28.</span> <span class="toc-text">25. 分页接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#25-1-page-pageSize-%E5%88%86%E9%A1%B5"><span class="toc-number">28.1.</span> <span class="toc-text">25.1 page&#x2F;pageSize 分页</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-2-cursor-%E5%88%86%E9%A1%B5"><span class="toc-number">28.2.</span> <span class="toc-text">25.2 cursor 分页</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">29.</span> <span class="toc-text">26. 文件上传接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#26-1-%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E6%B5%8B%E8%AF%95"><span class="toc-number">29.1.</span> <span class="toc-text">26.1 图片上传测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-2-%E8%A7%86%E9%A2%91%E4%B8%8A%E4%BC%A0%E6%B5%8B%E8%AF%95"><span class="toc-number">29.2.</span> <span class="toc-text">26.2 视频上传测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-3-%E4%B8%8A%E4%BC%A0%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95"><span class="toc-number">29.3.</span> <span class="toc-text">26.3 上传权限测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E5%A4%9A%E8%AF%AD%E8%A8%80%E3%80%81%E6%97%B6%E5%8C%BA%E7%9B%B8%E5%85%B3%E6%8E%A5%E5%8F%A3%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">30.</span> <span class="toc-text">27. 多语言、时区相关接口怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#27-1-%E5%A4%9A%E8%AF%AD%E8%A8%80-Header"><span class="toc-number">30.1.</span> <span class="toc-text">27.1 多语言 Header</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-2-%E6%97%B6%E5%8C%BA-Header"><span class="toc-number">30.2.</span> <span class="toc-text">27.2 时区 Header</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-3-%E6%97%B6%E9%97%B4%E5%AD%97%E6%AE%B5%E6%A0%BC%E5%BC%8F"><span class="toc-number">30.3.</span> <span class="toc-text">27.3 时间字段格式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E7%94%A8%E4%BE%8B%E3%80%81Bug-%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">31.</span> <span class="toc-text">第四部分：用例、Bug 与总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">32.</span> <span class="toc-text">28. 接口测试用例怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#28-1-%E7%94%A8%E4%BE%8B%E6%A8%A1%E6%9D%BF"><span class="toc-number">32.1.</span> <span class="toc-text">28.1 用例模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-2-%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B%EF%BC%9A%E5%8F%91%E5%B8%96%E6%88%90%E5%8A%9F"><span class="toc-number">32.2.</span> <span class="toc-text">28.2 示例用例：发帖成功</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-3-%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B%EF%BC%9A%E6%9C%AA%E7%99%BB%E5%BD%95%E5%8F%91%E5%B8%96%E5%A4%B1%E8%B4%A5"><span class="toc-number">32.3.</span> <span class="toc-text">28.3 示例用例：未登录发帖失败</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E6%8E%A5%E5%8F%A3-Bug-%E6%80%8E%E4%B9%88%E6%8F%90%E4%BA%A4"><span class="toc-number">33.</span> <span class="toc-text">29. 接口 Bug 怎么提交</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#29-1-%E6%8E%A5%E5%8F%A3-Bug-%E5%BA%94%E5%8C%85%E5%90%AB"><span class="toc-number">33.1.</span> <span class="toc-text">29.1 接口 Bug 应包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-2-%E7%A4%BA%E4%BE%8B-Bug"><span class="toc-number">33.2.</span> <span class="toc-text">29.2 示例 Bug</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98"><span class="toc-number">33.2.1.</span> <span class="toc-text">标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">33.2.2.</span> <span class="toc-text">测试环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="toc-number">33.2.3.</span> <span class="toc-text">前置条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E4%BF%A1%E6%81%AF"><span class="toc-number">33.2.4.</span> <span class="toc-text">请求信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C"><span class="toc-number">33.2.5.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C"><span class="toc-number">33.2.6.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6"><span class="toc-number">33.2.7.</span> <span class="toc-text">严重程度</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">34.</span> <span class="toc-text">30. 新手常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#30-1-%E5%8F%AA%E7%9C%8B%E6%8E%A5%E5%8F%A3%E8%BF%94%E5%9B%9E-success"><span class="toc-number">34.1.</span> <span class="toc-text">30.1 只看接口返回 success</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-2-%E4%B8%8D%E6%B5%8B%E6%9D%83%E9%99%90"><span class="toc-number">34.2.</span> <span class="toc-text">30.2 不测权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-3-%E4%B8%8D%E6%B5%8B%E9%87%8D%E5%A4%8D%E8%AF%B7%E6%B1%82"><span class="toc-number">34.3.</span> <span class="toc-text">30.3 不测重复请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-4-%E4%B8%8D%E4%BF%9D%E5%AD%98%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="toc-number">34.4.</span> <span class="toc-text">30.4 不保存测试数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-5-%E4%B8%8D%E7%9C%8B%E9%94%99%E8%AF%AF%E7%A0%81"><span class="toc-number">34.5.</span> <span class="toc-text">30.5 不看错误码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">35.</span> <span class="toc-text">31. 最后总结</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

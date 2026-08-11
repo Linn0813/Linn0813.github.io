@@ -1,0 +1,1561 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - 性能测试入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - 性能测试入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-15-overseas-forum-performance-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-performance-guide.png">
+<meta property="article:published_time" content="2026-05-15T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-15T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="性能测试">
+<meta property="article:tag" content="QPS">
+<meta property="article:tag" content="压测">
+<meta property="article:tag" content="海外社区">
+<meta property="article:tag" content="响应时间">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-performance-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - 性能测试入门",
+  "url": "https://linn0813.github.io/2026-05-15-overseas-forum-performance-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-performance-guide.png",
+  "datePublished": "2026-05-15T02:00:00.000Z",
+  "dateModified": "2026-05-15T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-15-overseas-forum-performance-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - 性能测试入门',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-performance-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - 性能测试入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - 性能测试入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-15T02:00:00.000Z" title="发表于 2026-05-15 10:00:00">2026-05-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-15T02:00:00.000Z" title="更新于 2026-05-15 10:00:00">2026-05-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">性能测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">7.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>23分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>学习记录</strong>：把海外社区论坛场景下的<strong>性能测试</strong>整理成一篇入门笔记，结合个人实践，并与 AI 一起补全结构，便于按场景与方法查阅。</p>
+<p>若你在测高互动、高并发下的社区产品，希望这篇能当检查清单用。</p>
+<blockquote>
+<p><strong>适合对象</strong>：准备系统了解社区类产品性能测试的同学；文中不默认你已熟悉压测工具链、监控指标与容量规划细节。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文按「基础概念 → 论坛性能实战 → 专项方法 → 用例、Bug、报告与总结」四块展开；配合页面 <strong>TOC</strong> 或下方折叠目录跳转。<strong>第 11～23 章</strong>对应 Feed、发帖、互动、搜索与多媒体等主链路，宜对照指标与监控逐项核对。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 39 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-perf-ch-01">为什么海外社区论坛要做性能测试</a></li>
+<li><a href="#forum-perf-ch-02">什么是性能测试</a></li>
+<li><a href="#forum-perf-ch-03">性能测试和功能测试有什么区别</a></li>
+<li><a href="#forum-perf-ch-04">性能测试常见类型有哪些</a></li>
+<li><a href="#forum-perf-ch-05">响应时间是什么</a></li>
+<li><a href="#forum-perf-ch-06">并发用户数是什么</a></li>
+<li><a href="#forum-perf-ch-07">QPS、TPS、吞吐量是什么</a></li>
+<li><a href="#forum-perf-ch-08">错误率是什么</a></li>
+<li><a href="#forum-perf-ch-09">P95、P99 是什么</a></li>
+<li><a href="#forum-perf-ch-10">性能测试前需要准备什么</a></li>
+<li><a href="#forum-perf-ch-11">社区论坛哪些场景最需要性能测试</a></li>
+<li><a href="#forum-perf-ch-12">首页 Feed 性能怎么测</a></li>
+<li><a href="#forum-perf-ch-13">帖子详情页性能怎么测</a></li>
+<li><a href="#forum-perf-ch-14">发帖性能怎么测</a></li>
+<li><a href="#forum-perf-ch-15">评论与回复性能怎么测</a></li>
+<li><a href="#forum-perf-ch-16">点赞、收藏、关注性能怎么测</a></li>
+<li><a href="#forum-perf-ch-17">搜索性能怎么测</a></li>
+<li><a href="#forum-perf-ch-18">通知与未读数性能怎么测</a></li>
+<li><a href="#forum-perf-ch-19">私信与实时消息性能怎么测</a></li>
+<li><a href="#forum-perf-ch-20">图片上传与 CDN 加载性能怎么测</a></li>
+<li><a href="#forum-perf-ch-21">视频上传、转码与播放性能怎么测</a></li>
+<li><a href="#forum-perf-ch-22">后台审核与运营后台性能怎么测</a></li>
+<li><a href="#forum-perf-ch-23">海外访问性能怎么测</a></li>
+<li><a href="#forum-perf-ch-24">性能测试指标怎么定</a></li>
+<li><a href="#forum-perf-ch-25">性能测试场景怎么设计</a></li>
+<li><a href="#forum-perf-ch-26">性能测试数据怎么准备</a></li>
+<li><a href="#forum-perf-ch-27">单接口压测怎么做</a></li>
+<li><a href="#forum-perf-ch-28">业务链路压测怎么做</a></li>
+<li><a href="#forum-perf-ch-29">混合场景压测怎么做</a></li>
+<li><a href="#forum-perf-ch-30">稳定性测试怎么做</a></li>
+<li><a href="#forum-perf-ch-31">峰值流量和突发流量怎么测</a></li>
+<li><a href="#forum-perf-ch-32">性能监控怎么看</a></li>
+<li><a href="#forum-perf-ch-33">性能瓶颈怎么初步分析</a></li>
+<li><a href="#forum-perf-ch-34">性能测试风险和注意事项</a></li>
+<li><a href="#forum-perf-ch-35">性能测试用例怎么写</a></li>
+<li><a href="#forum-perf-ch-36">性能问题 Bug 怎么提交</a></li>
+<li><a href="#forum-perf-ch-37">性能测试报告怎么写</a></li>
+<li><a href="#forum-perf-ch-38">新手常见误区</a></li>
+<li><a href="#forum-perf-ch-39">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<h2 id="第一部分：性能测试基础概念"><a href="#第一部分：性能测试基础概念" class="headerlink" title="第一部分：性能测试基础概念"></a>第一部分：性能测试基础概念</h2><blockquote>
+<p>如果你是性能测试新手，建议先完整学习这一部分。</p>
+<p>如果你已经理解响应时间、并发、QPS、错误率，可以直接跳到 <strong>第二部分：海外社区论坛性能测试实战</strong>。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perf-ch-01"></a></p>
+<h2 id="1-为什么海外社区论坛要做性能测试"><a href="#1-为什么海外社区论坛要做性能测试" class="headerlink" title="1. 为什么海外社区论坛要做性能测试"></a>1. 为什么海外社区论坛要做性能测试</h2><p>社区论坛是高互动、高内容量、高并发的产品。</p>
+<p>用户会不断进行：</p>
+<ul>
+<li>打开首页 Feed</li>
+<li>浏览帖子详情</li>
+<li>发帖</li>
+<li>评论</li>
+<li>点赞</li>
+<li>收藏</li>
+<li>关注</li>
+<li>搜索</li>
+<li>私信</li>
+<li>上传图片和视频</li>
+<li>接收通知</li>
+</ul>
+<p>这些操作看起来简单，但用户量一大，系统压力会非常高。</p>
+<hr>
+<h3 id="1-1-社区论坛常见性能问题"><a href="#1-1-社区论坛常见性能问题" class="headerlink" title="1.1 社区论坛常见性能问题"></a>1.1 社区论坛常见性能问题</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>首页加载慢</td>
+<td>打开 App 后 Feed 需要 5 秒才出来</td>
+</tr>
+<tr>
+<td>Feed 滚动卡顿</td>
+<td>上拉加载更多时白屏或重复加载</td>
+</tr>
+<tr>
+<td>热帖评论慢</td>
+<td>热门帖子评论区打开很慢</td>
+</tr>
+<tr>
+<td>点赞延迟</td>
+<td>点赞后按钮半天不变，或数量延迟很久</td>
+</tr>
+<tr>
+<td>评论失败</td>
+<td>高峰期评论接口超时</td>
+</tr>
+<tr>
+<td>搜索慢</td>
+<td>输入关键词后长时间无结果</td>
+</tr>
+<tr>
+<td>通知红点延迟</td>
+<td>评论后作者几分钟才收到通知</td>
+</tr>
+<tr>
+<td>私信延迟</td>
+<td>消息发送成功但对方很久才收到</td>
+</tr>
+<tr>
+<td>图片加载慢</td>
+<td>图片迟迟不展示或显示失败</td>
+</tr>
+<tr>
+<td>视频卡顿</td>
+<td>视频缓冲慢、播放中断</td>
+</tr>
+<tr>
+<td>后台审核慢</td>
+<td>审核列表加载很慢，影响运营处理</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="1-2-为什么海外项目更要关注性能"><a href="#1-2-为什么海外项目更要关注性能" class="headerlink" title="1.2 为什么海外项目更要关注性能"></a>1.2 为什么海外项目更要关注性能</h3><p>海外用户分布在不同国家和地区，访问链路更复杂。</p>
+<p>可能存在：</p>
+<ul>
+<li>用户距离服务器远</li>
+<li>跨境网络延迟高</li>
+<li>不同地区 CDN 效果不同</li>
+<li>不同国家运营商网络质量不同</li>
+<li>图片、视频资源加载受地区影响</li>
+<li>高峰时间不只集中在一个时区</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">新加坡用户访问很快</span><br><span class="line">美国用户访问正常</span><br><span class="line">欧洲用户打开图片很慢</span><br><span class="line">南美用户视频经常卡顿</span><br></pre></td></tr></table></figure>
+
+<p>这类问题功能测试可能发现不了，但会明显影响真实用户体验。</p>
+<hr>
+<p><a id="forum-perf-ch-02"></a></p>
+<h2 id="2-什么是性能测试"><a href="#2-什么是性能测试" class="headerlink" title="2. 什么是性能测试"></a>2. 什么是性能测试</h2><p>性能测试就是验证：</p>
+<blockquote>
+<p>系统在一定用户量、请求量、数据量和时间压力下，是否还能保持稳定、快速、正确。</p>
+</blockquote>
+<p>简单理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">功能测试看“能不能用”</span><br><span class="line">性能测试看“人多的时候还能不能好用”</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="2-1-性能测试主要看什么"><a href="#2-1-性能测试主要看什么" class="headerlink" title="2.1 性能测试主要看什么"></a>2.1 性能测试主要看什么</h3><p>性能测试通常关注：</p>
+<ul>
+<li>响应时间是否够快</li>
+<li>系统能承受多少并发</li>
+<li>每秒能处理多少请求</li>
+<li>错误率是否可接受</li>
+<li>CPU、内存、数据库是否有压力</li>
+<li>缓存是否命中</li>
+<li>队列是否堆积</li>
+<li>系统长时间运行是否稳定</li>
+<li>高峰期是否会崩溃</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-03"></a></p>
+<h2 id="3-性能测试和功能测试有什么区别"><a href="#3-性能测试和功能测试有什么区别" class="headerlink" title="3. 性能测试和功能测试有什么区别"></a>3. 性能测试和功能测试有什么区别</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>功能测试</th>
+<th>性能测试</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关注点</td>
+<td>功能是否正确</td>
+<td>系统是否快、稳、能扛压力</td>
+</tr>
+<tr>
+<td>用户规模</td>
+<td>通常一个或几个用户</td>
+<td>模拟大量用户或请求</td>
+</tr>
+<tr>
+<td>验证内容</td>
+<td>流程、提示、数据</td>
+<td>响应时间、吞吐量、错误率、资源使用</td>
+</tr>
+<tr>
+<td>常见工具</td>
+<td>App、浏览器、Postman</td>
+<td>JMeter、Locust、k6、监控平台</td>
+</tr>
+<tr>
+<td>常见问题</td>
+<td>功能不可用</td>
+<td>慢、超时、卡顿、错误率高、系统崩溃</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="3-1-举个例子：评论功能"><a href="#3-1-举个例子：评论功能" class="headerlink" title="3.1 举个例子：评论功能"></a>3.1 举个例子：评论功能</h3><p>功能测试会验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户能不能发表评论</span><br><span class="line">评论是否显示在列表中</span><br><span class="line">评论数是否 +1</span><br></pre></td></tr></table></figure>
+
+<p>性能测试会验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1000 个用户同时评论时，接口是否还能响应？</span><br><span class="line">平均响应时间是多少？</span><br><span class="line">错误率是多少？</span><br><span class="line">评论数是否仍然正确？</span><br><span class="line">数据库和缓存是否有压力？</span><br><span class="line">通知队列是否积压？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perf-ch-04"></a></p>
+<h2 id="4-性能测试常见类型有哪些"><a href="#4-性能测试常见类型有哪些" class="headerlink" title="4. 性能测试常见类型有哪些"></a>4. 性能测试常见类型有哪些</h2><p>常见性能测试类型如下。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基准测试</td>
+<td>在较小压力下测一个基础性能值</td>
+<td>100 QPS 下 Feed 响应时间</td>
+</tr>
+<tr>
+<td>负载测试</td>
+<td>验证系统在预期负载下表现</td>
+<td>日常峰值用户访问首页</td>
+</tr>
+<tr>
+<td>压力测试</td>
+<td>不断加压，找系统极限</td>
+<td>Feed 接口最多能扛多少 QPS</td>
+</tr>
+<tr>
+<td>稳定性测试</td>
+<td>长时间运行观察是否稳定</td>
+<td>连续压测 8 小时</td>
+</tr>
+<tr>
+<td>峰值测试</td>
+<td>模拟短时间流量冲高</td>
+<td>活动开始瞬间大量用户进入</td>
+</tr>
+<tr>
+<td>容量测试</td>
+<td>验证数据量很大时系统表现</td>
+<td>1000 万帖子下搜索是否变慢</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perf-ch-05"></a></p>
+<h2 id="5-响应时间是什么"><a href="#5-响应时间是什么" class="headerlink" title="5. 响应时间是什么"></a>5. 响应时间是什么</h2><p>响应时间就是：</p>
+<blockquote>
+<p>用户发起请求后，到收到结果之间经过的时间。</p>
+</blockquote>
+<p>例如用户打开首页 Feed：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">点击打开首页</span><br><span class="line">  ↓</span><br><span class="line">请求 Feed 接口</span><br><span class="line">  ↓</span><br><span class="line">后端处理</span><br><span class="line">  ↓</span><br><span class="line">返回数据</span><br><span class="line">  ↓</span><br><span class="line">页面展示</span><br></pre></td></tr></table></figure>
+
+<p>从请求开始到页面看到内容，这段时间就是用户感受到的响应时间。</p>
+<hr>
+<h3 id="5-1-响应时间怎么看"><a href="#5-1-响应时间怎么看" class="headerlink" title="5.1 响应时间怎么看"></a>5.1 响应时间怎么看</h3><p>常见指标：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>平均响应时间</td>
+<td>所有请求的平均耗时</td>
+</tr>
+<tr>
+<td>最大响应时间</td>
+<td>最慢一次请求耗时</td>
+</tr>
+<tr>
+<td>P95 响应时间</td>
+<td>95% 的请求都比这个时间快</td>
+</tr>
+<tr>
+<td>P99 响应时间</td>
+<td>99% 的请求都比这个时间快</td>
+</tr>
+</tbody></table>
+<p>新手要注意：</p>
+<blockquote>
+<p>平均响应时间好看，不代表大多数用户体验一定好。</p>
+</blockquote>
+<p>例如平均 300ms，但 P99 是 8 秒，说明少部分用户体验很差。</p>
+<hr>
+<p><a id="forum-perf-ch-06"></a></p>
+<h2 id="6-并发用户数是什么"><a href="#6-并发用户数是什么" class="headerlink" title="6. 并发用户数是什么"></a>6. 并发用户数是什么</h2><p>并发用户数可以理解为：</p>
+<blockquote>
+<p>同一时间正在使用系统的用户数量。</p>
+</blockquote>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">同时有 1000 个用户打开首页 Feed</span><br><span class="line">同时有 500 个用户浏览同一个热门帖子</span><br><span class="line">同时有 200 个用户发表评论</span><br></pre></td></tr></table></figure>
+
+<p>这些都是并发场景。</p>
+<hr>
+<h3 id="6-1-并发不等于总用户数"><a href="#6-1-并发不等于总用户数" class="headerlink" title="6.1 并发不等于总用户数"></a>6.1 并发不等于总用户数</h3><p>如果一个社区有 100 万注册用户，不代表并发用户就是 100 万。</p>
+<p>并发用户更关注某一时刻同时在线、同时操作的人数。</p>
+<p>性能测试要根据真实业务数据或预估数据来设计并发量。</p>
+<hr>
+<p><a id="forum-perf-ch-07"></a></p>
+<h2 id="7-QPS、TPS、吞吐量是什么"><a href="#7-QPS、TPS、吞吐量是什么" class="headerlink" title="7. QPS、TPS、吞吐量是什么"></a>7. QPS、TPS、吞吐量是什么</h2><hr>
+<h3 id="7-1-QPS"><a href="#7-1-QPS" class="headerlink" title="7.1 QPS"></a>7.1 QPS</h3><p>QPS 是 Queries Per Second，意思是每秒请求数。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Feed 接口 QPS = 1000</span><br></pre></td></tr></table></figure>
+
+<p>表示每秒有 1000 次 Feed 请求。</p>
+<hr>
+<h3 id="7-2-TPS"><a href="#7-2-TPS" class="headerlink" title="7.2 TPS"></a>7.2 TPS</h3><p>TPS 是 Transactions Per Second，意思是每秒事务数。</p>
+<p>事务通常代表一个完整业务操作。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">每秒成功发布 50 条评论</span><br></pre></td></tr></table></figure>
+
+<p>可以理解为评论业务 TPS &#x3D; 50。</p>
+<hr>
+<h3 id="7-3-吞吐量"><a href="#7-3-吞吐量" class="headerlink" title="7.3 吞吐量"></a>7.3 吞吐量</h3><p>吞吐量表示系统单位时间内处理了多少工作。</p>
+<p>可以是：</p>
+<ul>
+<li>每秒请求数</li>
+<li>每秒业务操作数</li>
+<li>每秒传输数据量</li>
+<li>每分钟处理消息数</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-08"></a></p>
+<h2 id="8-错误率是什么"><a href="#8-错误率是什么" class="headerlink" title="8. 错误率是什么"></a>8. 错误率是什么</h2><p>错误率表示失败请求占总请求的比例。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">10000 次请求中有 50 次失败</span><br><span class="line">错误率 = 0.5%</span><br></pre></td></tr></table></figure>
+
+<p>性能测试中，错误率很重要。</p>
+<p>如果响应时间很快，但大量请求失败，也是不合格的。</p>
+<hr>
+<h3 id="8-1-常见错误"><a href="#8-1-常见错误" class="headerlink" title="8.1 常见错误"></a>8.1 常见错误</h3><ul>
+<li>HTTP 500</li>
+<li>HTTP 502 &#x2F; 503 &#x2F; 504</li>
+<li>接口超时</li>
+<li>连接失败</li>
+<li>数据库连接失败</li>
+<li>业务返回系统繁忙</li>
+<li>上传失败</li>
+<li>WebSocket 断开</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-09"></a></p>
+<h2 id="9-P95、P99-是什么"><a href="#9-P95、P99-是什么" class="headerlink" title="9. P95、P99 是什么"></a>9. P95、P99 是什么</h2><p>P95、P99 是性能测试里常用的百分位指标。</p>
+<p>简单理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">P95 = 95% 的请求都不超过这个时间</span><br><span class="line">P99 = 99% 的请求都不超过这个时间</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Feed 接口 P95 = 800ms</span><br><span class="line">Feed 接口 P99 = 2000ms</span><br></pre></td></tr></table></figure>
+
+<p>表示：</p>
+<ul>
+<li>95% 的 Feed 请求在 800ms 内完成</li>
+<li>99% 的 Feed 请求在 2000ms 内完成</li>
+</ul>
+<p>P95 和 P99 能帮助你发现“少部分用户特别慢”的问题。</p>
+<hr>
+<p><a id="forum-perf-ch-10"></a></p>
+<h2 id="10-性能测试前需要准备什么"><a href="#10-性能测试前需要准备什么" class="headerlink" title="10. 性能测试前需要准备什么"></a>10. 性能测试前需要准备什么</h2><hr>
+<h3 id="10-1-准备需求和指标"><a href="#10-1-准备需求和指标" class="headerlink" title="10.1 准备需求和指标"></a>10.1 准备需求和指标</h3><p>先确认：</p>
+<ul>
+<li>哪些场景需要性能测试</li>
+<li>目标并发是多少</li>
+<li>目标 QPS 是多少</li>
+<li>响应时间要求是多少</li>
+<li>错误率要求是多少</li>
+<li>测试环境和生产环境差异</li>
+<li>是否允许压测测试环境</li>
+<li>是否需要通知开发、运维、DBA</li>
+</ul>
+<hr>
+<h3 id="10-2-准备测试数据"><a href="#10-2-准备测试数据" class="headerlink" title="10.2 准备测试数据"></a>10.2 准备测试数据</h3><p>性能测试需要足够数据量。</p>
+<p>例如：</p>
+<ul>
+<li>大量用户账号</li>
+<li>大量帖子</li>
+<li>大量评论</li>
+<li>大量点赞记录</li>
+<li>大量关注关系</li>
+<li>大量通知</li>
+<li>大量私信会话</li>
+<li>大量图片和视频资源</li>
+</ul>
+<p>如果数据量太小，测出来的性能结果可能不真实。</p>
+<hr>
+<h3 id="10-3-准备测试工具"><a href="#10-3-准备测试工具" class="headerlink" title="10.3 准备测试工具"></a>10.3 准备测试工具</h3><p>常见性能测试工具：</p>
+<ul>
+<li>JMeter</li>
+<li>Locust</li>
+<li>k6</li>
+<li>Gatling</li>
+<li>Postman Runner，适合简单批量，不适合正式压测</li>
+</ul>
+<p>新手可以先了解 JMeter 或 k6。</p>
+<hr>
+<h3 id="10-4-准备监控"><a href="#10-4-准备监控" class="headerlink" title="10.4 准备监控"></a>10.4 准备监控</h3><p>性能测试不能只看压测工具结果，还要看系统监控。</p>
+<p>需要关注：</p>
+<ul>
+<li>CPU</li>
+<li>内存</li>
+<li>磁盘 IO</li>
+<li>网络 IO</li>
+<li>数据库连接数</li>
+<li>数据库慢查询</li>
+<li>Redis 命中率</li>
+<li>MQ 队列积压</li>
+<li>接口错误日志</li>
+<li>服务实例健康状态</li>
+</ul>
+<hr>
+<h2 id="第二部分：海外社区论坛性能测试实战"><a href="#第二部分：海外社区论坛性能测试实战" class="headerlink" title="第二部分：海外社区论坛性能测试实战"></a>第二部分：海外社区论坛性能测试实战</h2><blockquote>
+<p>这一部分开始进入项目实战。</p>
+<p>社区论坛性能测试要优先关注高频入口、高互动场景、大数据量场景和海外访问体验。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perf-ch-11"></a></p>
+<h2 id="11-社区论坛哪些场景最需要性能测试"><a href="#11-社区论坛哪些场景最需要性能测试" class="headerlink" title="11. 社区论坛哪些场景最需要性能测试"></a>11. 社区论坛哪些场景最需要性能测试</h2><p>优先级最高的场景：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>首页 Feed</td>
+<td>用户打开 App 首屏核心体验</td>
+</tr>
+<tr>
+<td>帖子详情</td>
+<td>用户阅读内容主场景</td>
+</tr>
+<tr>
+<td>评论列表</td>
+<td>热门帖子高并发访问</td>
+</tr>
+<tr>
+<td>发布评论</td>
+<td>高互动场景，容易出并发问题</td>
+</tr>
+<tr>
+<td>点赞</td>
+<td>高频操作，容易出现计数压力</td>
+</tr>
+<tr>
+<td>搜索</td>
+<td>数据量大后容易慢</td>
+</tr>
+<tr>
+<td>图片加载</td>
+<td>影响内容展示体验</td>
+</tr>
+<tr>
+<td>视频播放</td>
+<td>带宽和转码压力大</td>
+</tr>
+<tr>
+<td>私信</td>
+<td>实时性要求高</td>
+</tr>
+<tr>
+<td>通知未读数</td>
+<td>高频查询，容易造成压力</td>
+</tr>
+<tr>
+<td>审核后台</td>
+<td>运营处理效率依赖后台性能</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perf-ch-12"></a></p>
+<h2 id="12-首页-Feed-性能怎么测"><a href="#12-首页-Feed-性能怎么测" class="headerlink" title="12. 首页 Feed 性能怎么测"></a>12. 首页 Feed 性能怎么测</h2><p>首页 Feed 是社区产品最核心的性能场景。</p>
+<hr>
+<h3 id="12-1-测试目标"><a href="#12-1-测试目标" class="headerlink" title="12.1 测试目标"></a>12.1 测试目标</h3><p>验证：</p>
+<ul>
+<li>首页是否能快速加载</li>
+<li>Feed 接口是否能承受高 QPS</li>
+<li>分页加载是否稳定</li>
+<li>推荐流是否不超时</li>
+<li>图片资源是否加载正常</li>
+<li>高峰期是否会白屏或失败</li>
+</ul>
+<hr>
+<h3 id="12-2-测试场景"><a href="#12-2-测试场景" class="headerlink" title="12.2 测试场景"></a>12.2 测试场景</h3><ul>
+<li>用户首次打开首页</li>
+<li>下拉刷新</li>
+<li>上拉加载更多</li>
+<li>推荐流请求</li>
+<li>最新流请求</li>
+<li>关注流请求</li>
+<li>带图片帖子列表</li>
+<li>带视频帖子列表</li>
+</ul>
+<hr>
+<h3 id="12-3-重点指标"><a href="#12-3-重点指标" class="headerlink" title="12.3 重点指标"></a>12.3 重点指标</h3><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Feed 接口平均响应时间</td>
+<td>平均请求耗时</td>
+</tr>
+<tr>
+<td>P95&#x2F;P99</td>
+<td>大部分用户体验是否稳定</td>
+</tr>
+<tr>
+<td>QPS</td>
+<td>每秒能处理多少 Feed 请求</td>
+</tr>
+<tr>
+<td>错误率</td>
+<td>是否有超时或 5xx</td>
+</tr>
+<tr>
+<td>首屏加载时间</td>
+<td>用户看到内容的时间</td>
+</tr>
+<tr>
+<td>CDN 图片加载时间</td>
+<td>图片是否拖慢首屏</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perf-ch-13"></a></p>
+<h2 id="13-帖子详情页性能怎么测"><a href="#13-帖子详情页性能怎么测" class="headerlink" title="13. 帖子详情页性能怎么测"></a>13. 帖子详情页性能怎么测</h2><p>帖子详情页通常包含正文、图片、视频、评论、点赞状态等数据。</p>
+<hr>
+<h3 id="13-1-测试场景"><a href="#13-1-测试场景" class="headerlink" title="13.1 测试场景"></a>13.1 测试场景</h3><ul>
+<li>打开普通帖子详情</li>
+<li>打开多图帖子详情</li>
+<li>打开视频帖子详情</li>
+<li>打开热门帖子详情</li>
+<li>打开评论很多的帖子</li>
+<li>打开已删除或审核中帖子，按权限判断</li>
+</ul>
+<hr>
+<h3 id="13-2-热门帖子重点"><a href="#13-2-热门帖子重点" class="headerlink" title="13.2 热门帖子重点"></a>13.2 热门帖子重点</h3><p>热门帖子可能有：</p>
+<ul>
+<li>很多评论</li>
+<li>很多点赞</li>
+<li>很多收藏</li>
+<li>大量用户同时访问</li>
+</ul>
+<p>重点验证：</p>
+<ul>
+<li>详情接口不超时</li>
+<li>评论列表分页加载正常</li>
+<li>点赞状态返回正确</li>
+<li>计数字段不拖慢接口</li>
+<li>图片和视频不影响主内容展示</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-14"></a></p>
+<h2 id="14-发帖性能怎么测"><a href="#14-发帖性能怎么测" class="headerlink" title="14. 发帖性能怎么测"></a>14. 发帖性能怎么测</h2><p>发帖是写入类操作，比只读接口风险更高。</p>
+<hr>
+<h3 id="14-1-测试场景"><a href="#14-1-测试场景" class="headerlink" title="14.1 测试场景"></a>14.1 测试场景</h3><ul>
+<li>发布纯文本帖子</li>
+<li>发布图文帖子</li>
+<li>发布视频帖子，按需求判断</li>
+<li>多用户同时发帖</li>
+<li>新用户高频发帖触发风控</li>
+<li>发帖后进入审核流程</li>
+</ul>
+<hr>
+<h3 id="14-2-重点指标"><a href="#14-2-重点指标" class="headerlink" title="14.2 重点指标"></a>14.2 重点指标</h3><ul>
+<li>发帖接口响应时间</li>
+<li>成功率</li>
+<li>错误率</li>
+<li>重复发帖率</li>
+<li>数据写入是否正确</li>
+<li>审核任务是否积压</li>
+<li>Feed 是否最终更新</li>
+</ul>
+<hr>
+<h3 id="14-3-注意点"><a href="#14-3-注意点" class="headerlink" title="14.3 注意点"></a>14.3 注意点</h3><p>发帖压测不能只看接口成功。</p>
+<p>还要看：</p>
+<ul>
+<li>是否生成重复帖子</li>
+<li>是否产生大量脏数据</li>
+<li>审核队列是否积压</li>
+<li>图片上传是否成为瓶颈</li>
+<li>数据库写入是否变慢</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-15"></a></p>
+<h2 id="15-评论与回复性能怎么测"><a href="#15-评论与回复性能怎么测" class="headerlink" title="15. 评论与回复性能怎么测"></a>15. 评论与回复性能怎么测</h2><p>评论是社区高并发重点，尤其是热门帖子。</p>
+<hr>
+<h3 id="15-1-测试场景"><a href="#15-1-测试场景" class="headerlink" title="15.1 测试场景"></a>15.1 测试场景</h3><ul>
+<li>多用户同时评论同一帖子</li>
+<li>多用户同时回复同一评论</li>
+<li>热门帖子评论列表加载</li>
+<li>评论分页加载</li>
+<li>高频评论触发限流</li>
+<li>评论后通知生成</li>
+</ul>
+<hr>
+<h3 id="15-2-重点指标"><a href="#15-2-重点指标" class="headerlink" title="15.2 重点指标"></a>15.2 重点指标</h3><ul>
+<li>评论接口响应时间</li>
+<li>评论成功率</li>
+<li>错误率</li>
+<li>评论数是否正确</li>
+<li>通知队列是否积压</li>
+<li>评论列表加载时间</li>
+<li>数据库写入压力</li>
+</ul>
+<hr>
+<h3 id="15-3-常见问题"><a href="#15-3-常见问题" class="headerlink" title="15.3 常见问题"></a>15.3 常见问题</h3><ul>
+<li>评论接口超时</li>
+<li>评论成功但列表延迟很久</li>
+<li>评论数不准确</li>
+<li>重复评论</li>
+<li>通知延迟</li>
+<li>热帖评论区打开很慢</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-16"></a></p>
+<h2 id="16-点赞、收藏、关注性能怎么测"><a href="#16-点赞、收藏、关注性能怎么测" class="headerlink" title="16. 点赞、收藏、关注性能怎么测"></a>16. 点赞、收藏、关注性能怎么测</h2><p>点赞、收藏、关注都是高频轻操作。</p>
+<hr>
+<h3 id="16-1-点赞性能"><a href="#16-1-点赞性能" class="headerlink" title="16.1 点赞性能"></a>16.1 点赞性能</h3><p>测试场景：</p>
+<ul>
+<li>多用户同时点赞同一帖子</li>
+<li>用户快速点赞&#x2F;取消点赞</li>
+<li>热门帖子点赞数高频变化</li>
+<li>Feed 和详情同时展示点赞数</li>
+</ul>
+<p>重点指标：</p>
+<ul>
+<li>点赞接口响应时间</li>
+<li>成功率</li>
+<li>错误率</li>
+<li>点赞数最终是否正确</li>
+<li>Redis 或计数服务压力</li>
+</ul>
+<hr>
+<h3 id="16-2-收藏和关注性能"><a href="#16-2-收藏和关注性能" class="headerlink" title="16.2 收藏和关注性能"></a>16.2 收藏和关注性能</h3><p>测试场景：</p>
+<ul>
+<li>多用户收藏同一帖子</li>
+<li>多用户关注同一用户</li>
+<li>大 V 用户粉丝数大量增加</li>
+<li>关注流更新</li>
+</ul>
+<p>重点指标：</p>
+<ul>
+<li>关注接口响应时间</li>
+<li>粉丝数是否准确</li>
+<li>关注关系是否重复</li>
+<li>关注流是否更新</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-17"></a></p>
+<h2 id="17-搜索性能怎么测"><a href="#17-搜索性能怎么测" class="headerlink" title="17. 搜索性能怎么测"></a>17. 搜索性能怎么测</h2><p>搜索性能和数据量关系很大。</p>
+<hr>
+<h3 id="17-1-测试场景"><a href="#17-1-测试场景" class="headerlink" title="17.1 测试场景"></a>17.1 测试场景</h3><ul>
+<li>搜索帖子标题</li>
+<li>搜索正文关键词</li>
+<li>搜索用户昵称</li>
+<li>搜索话题</li>
+<li>多语言搜索</li>
+<li>热门关键词搜索</li>
+<li>无结果搜索</li>
+<li>搜索结果分页</li>
+</ul>
+<hr>
+<h3 id="17-2-重点指标"><a href="#17-2-重点指标" class="headerlink" title="17.2 重点指标"></a>17.2 重点指标</h3><ul>
+<li>搜索接口响应时间</li>
+<li>P95&#x2F;P99</li>
+<li>搜索结果返回数量</li>
+<li>搜索服务 CPU&#x2F;内存</li>
+<li>ES&#x2F;OpenSearch 查询耗时，按系统使用情况</li>
+<li>慢查询数量</li>
+</ul>
+<hr>
+<h3 id="17-3-常见问题"><a href="#17-3-常见问题" class="headerlink" title="17.3 常见问题"></a>17.3 常见问题</h3><ul>
+<li>数据量大后搜索变慢</li>
+<li>模糊搜索非常慢</li>
+<li>多语言搜索慢</li>
+<li>搜索结果分页越往后越慢</li>
+<li>热门关键词高并发导致搜索服务压力高</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-18"></a></p>
+<h2 id="18-通知与未读数性能怎么测"><a href="#18-通知与未读数性能怎么测" class="headerlink" title="18. 通知与未读数性能怎么测"></a>18. 通知与未读数性能怎么测</h2><p>通知和未读数通常调用频率很高。</p>
+<hr>
+<h3 id="18-1-测试场景"><a href="#18-1-测试场景" class="headerlink" title="18.1 测试场景"></a>18.1 测试场景</h3><ul>
+<li>用户打开 App 查询未读数</li>
+<li>用户收到大量评论通知</li>
+<li>多用户同时触发点赞&#x2F;评论通知</li>
+<li>标记全部已读</li>
+<li>通知列表分页加载</li>
+</ul>
+<hr>
+<h3 id="18-2-重点指标"><a href="#18-2-重点指标" class="headerlink" title="18.2 重点指标"></a>18.2 重点指标</h3><ul>
+<li>未读数接口响应时间</li>
+<li>通知列表响应时间</li>
+<li>通知生成延迟</li>
+<li>MQ 队列是否积压</li>
+<li>未读数是否准确</li>
+<li>多端同步延迟</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-19"></a></p>
+<h2 id="19-私信与实时消息性能怎么测"><a href="#19-私信与实时消息性能怎么测" class="headerlink" title="19. 私信与实时消息性能怎么测"></a>19. 私信与实时消息性能怎么测</h2><p>私信对实时性要求比较高。</p>
+<hr>
+<h3 id="19-1-测试场景"><a href="#19-1-测试场景" class="headerlink" title="19.1 测试场景"></a>19.1 测试场景</h3><ul>
+<li>单聊发送消息</li>
+<li>多用户同时发送私信</li>
+<li>高频消息发送</li>
+<li>WebSocket 长连接维持</li>
+<li>断线重连</li>
+<li>消息列表分页</li>
+<li>未读数同步</li>
+</ul>
+<hr>
+<h3 id="19-2-重点指标"><a href="#19-2-重点指标" class="headerlink" title="19.2 重点指标"></a>19.2 重点指标</h3><ul>
+<li>消息发送响应时间</li>
+<li>消息到达延迟</li>
+<li>WebSocket 连接数</li>
+<li>断线重连成功率</li>
+<li>消息丢失率</li>
+<li>消息重复率</li>
+<li>未读数同步时间</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-20"></a></p>
+<h2 id="20-图片上传与-CDN-加载性能怎么测"><a href="#20-图片上传与-CDN-加载性能怎么测" class="headerlink" title="20. 图片上传与 CDN 加载性能怎么测"></a>20. 图片上传与 CDN 加载性能怎么测</h2><p>社区图片非常多，图片性能影响首屏体验。</p>
+<hr>
+<h3 id="20-1-上传性能"><a href="#20-1-上传性能" class="headerlink" title="20.1 上传性能"></a>20.1 上传性能</h3><p>测试场景：</p>
+<ul>
+<li>单图上传</li>
+<li>多图上传</li>
+<li>大图上传</li>
+<li>弱网上传</li>
+<li>多用户同时上传</li>
+</ul>
+<p>重点指标：</p>
+<ul>
+<li>上传耗时</li>
+<li>上传成功率</li>
+<li>上传失败率</li>
+<li>重试成功率</li>
+<li>图片处理耗时</li>
+<li>图片审核耗时，按需求判断</li>
+</ul>
+<hr>
+<h3 id="20-2-加载性能"><a href="#20-2-加载性能" class="headerlink" title="20.2 加载性能"></a>20.2 加载性能</h3><p>测试场景：</p>
+<ul>
+<li>Feed 图片加载</li>
+<li>详情页图片加载</li>
+<li>图片预览加载</li>
+<li>不同地区访问图片</li>
+</ul>
+<p>重点指标：</p>
+<ul>
+<li>图片首屏加载时间</li>
+<li>CDN 命中率</li>
+<li>图片加载失败率</li>
+<li>不同地区访问耗时</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-21"></a></p>
+<h2 id="21-视频上传、转码与播放性能怎么测"><a href="#21-视频上传、转码与播放性能怎么测" class="headerlink" title="21. 视频上传、转码与播放性能怎么测"></a>21. 视频上传、转码与播放性能怎么测</h2><p>视频性能涉及上传、转码、审核、播放多个环节。</p>
+<hr>
+<h3 id="21-1-上传和转码"><a href="#21-1-上传和转码" class="headerlink" title="21.1 上传和转码"></a>21.1 上传和转码</h3><p>测试点：</p>
+<ul>
+<li>视频上传耗时</li>
+<li>视频上传成功率</li>
+<li>转码耗时</li>
+<li>转码失败率</li>
+<li>审核耗时</li>
+<li>视频发布到可播放的总耗时</li>
+</ul>
+<hr>
+<h3 id="21-2-播放性能"><a href="#21-2-播放性能" class="headerlink" title="21.2 播放性能"></a>21.2 播放性能</h3><p>测试点：</p>
+<ul>
+<li>首帧时间</li>
+<li>卡顿率</li>
+<li>缓冲次数</li>
+<li>播放失败率</li>
+<li>不同地区播放速度</li>
+<li>移动网络播放体验</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-22"></a></p>
+<h2 id="22-后台审核与运营后台性能怎么测"><a href="#22-后台审核与运营后台性能怎么测" class="headerlink" title="22. 后台审核与运营后台性能怎么测"></a>22. 后台审核与运营后台性能怎么测</h2><p>后台性能会影响运营效率。</p>
+<hr>
+<h3 id="22-1-测试场景"><a href="#22-1-测试场景" class="headerlink" title="22.1 测试场景"></a>22.1 测试场景</h3><ul>
+<li>待审核列表加载</li>
+<li>举报列表加载</li>
+<li>按状态筛选</li>
+<li>按用户搜索</li>
+<li>按内容 ID 搜索</li>
+<li>批量审核</li>
+<li>图片视频预览</li>
+<li>操作日志查询</li>
+</ul>
+<hr>
+<h3 id="22-2-重点指标"><a href="#22-2-重点指标" class="headerlink" title="22.2 重点指标"></a>22.2 重点指标</h3><ul>
+<li>列表加载时间</li>
+<li>筛选响应时间</li>
+<li>审核操作响应时间</li>
+<li>批量操作成功率</li>
+<li>后台页面是否卡顿</li>
+<li>大数据量下分页是否变慢</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-23"></a></p>
+<h2 id="23-海外访问性能怎么测"><a href="#23-海外访问性能怎么测" class="headerlink" title="23. 海外访问性能怎么测"></a>23. 海外访问性能怎么测</h2><p>海外项目需要关注不同地区访问体验。</p>
+<hr>
+<h3 id="23-1-测试地区"><a href="#23-1-测试地区" class="headerlink" title="23.1 测试地区"></a>23.1 测试地区</h3><p>按目标市场选择：</p>
+<ul>
+<li>北美</li>
+<li>欧洲</li>
+<li>东南亚</li>
+<li>日本</li>
+<li>韩国</li>
+<li>中东</li>
+<li>南美，按业务需要</li>
+</ul>
+<hr>
+<h3 id="23-2-测试内容"><a href="#23-2-测试内容" class="headerlink" title="23.2 测试内容"></a>23.2 测试内容</h3><ul>
+<li>首页打开速度</li>
+<li>Feed 接口耗时</li>
+<li>图片加载速度</li>
+<li>视频播放体验</li>
+<li>登录授权速度</li>
+<li>搜索接口耗时</li>
+<li>CDN 命中情况</li>
+</ul>
+<hr>
+<h2 id="第三部分：性能测试专项方法"><a href="#第三部分：性能测试专项方法" class="headerlink" title="第三部分：性能测试专项方法"></a>第三部分：性能测试专项方法</h2><blockquote>
+<p>这一部分不是某个具体模块，而是一套可以复用的方法。</p>
+<p>当你需要设计压测、分析性能指标、观察系统瓶颈时，可以回到这一部分找思路。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perf-ch-24"></a></p>
+<h2 id="24-性能测试指标怎么定"><a href="#24-性能测试指标怎么定" class="headerlink" title="24. 性能测试指标怎么定"></a>24. 性能测试指标怎么定</h2><p>性能指标不能随便写，要结合业务目标和用户体验。</p>
+<hr>
+<h3 id="24-1-常见指标"><a href="#24-1-常见指标" class="headerlink" title="24.1 常见指标"></a>24.1 常见指标</h3><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>响应时间</td>
+<td>Feed 接口 P95 &lt; 1s</td>
+</tr>
+<tr>
+<td>QPS</td>
+<td>Feed 接口支持 1000 QPS</td>
+</tr>
+<tr>
+<td>错误率</td>
+<td>错误率 &lt; 0.1%</td>
+</tr>
+<tr>
+<td>成功率</td>
+<td>发帖成功率 &gt; 99.9%</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>服务 CPU 使用率不长期超过 80%</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>内存稳定，无持续上涨</td>
+</tr>
+<tr>
+<td>队列积压</td>
+<td>通知队列积压在可接受范围内</td>
+</tr>
+<tr>
+<td>数据正确性</td>
+<td>点赞数、评论数最终正确</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="24-2-新手怎么定指标"><a href="#24-2-新手怎么定指标" class="headerlink" title="24.2 新手怎么定指标"></a>24.2 新手怎么定指标</h3><p>如果没有明确要求，可以先问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">日常峰值 QPS 是多少？</span><br><span class="line">活动峰值预计是多少？</span><br><span class="line">用户能接受页面多久加载出来？</span><br><span class="line">哪些接口是核心接口？</span><br><span class="line">错误率最多允许多少？</span><br><span class="line">是否有历史线上数据？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perf-ch-25"></a></p>
+<h2 id="25-性能测试场景怎么设计"><a href="#25-性能测试场景怎么设计" class="headerlink" title="25. 性能测试场景怎么设计"></a>25. 性能测试场景怎么设计</h2><hr>
+<h3 id="25-1-单场景"><a href="#25-1-单场景" class="headerlink" title="25.1 单场景"></a>25.1 单场景</h3><p>只测一个接口或一个功能。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Feed 接口 500 QPS 压测</span><br></pre></td></tr></table></figure>
+
+<p>适合定位单个接口能力。</p>
+<hr>
+<h3 id="25-2-链路场景"><a href="#25-2-链路场景" class="headerlink" title="25.2 链路场景"></a>25.2 链路场景</h3><p>模拟完整用户行为。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录 → 打开 Feed → 进入帖子 → 点赞 → 评论 → 返回 Feed</span><br></pre></td></tr></table></figure>
+
+<p>更接近真实用户行为。</p>
+<hr>
+<h3 id="25-3-混合场景"><a href="#25-3-混合场景" class="headerlink" title="25.3 混合场景"></a>25.3 混合场景</h3><p>模拟多个用户同时做不同操作。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">70% 用户浏览 Feed</span><br><span class="line">15% 用户看详情</span><br><span class="line">10% 用户点赞</span><br><span class="line">3% 用户评论</span><br><span class="line">2% 用户发帖</span><br></pre></td></tr></table></figure>
+
+<p>混合场景最接近真实线上流量。</p>
+<hr>
+<p><a id="forum-perf-ch-26"></a></p>
+<h2 id="26-性能测试数据怎么准备"><a href="#26-性能测试数据怎么准备" class="headerlink" title="26. 性能测试数据怎么准备"></a>26. 性能测试数据怎么准备</h2><p>性能测试数据要接近真实数据量。</p>
+<hr>
+<h3 id="26-1-用户数据"><a href="#26-1-用户数据" class="headerlink" title="26.1 用户数据"></a>26.1 用户数据</h3><p>准备：</p>
+<ul>
+<li>大量普通用户</li>
+<li>部分活跃用户</li>
+<li>大 V 用户</li>
+<li>有粉丝关系的用户</li>
+<li>有历史通知的用户</li>
+</ul>
+<hr>
+<h3 id="26-2-内容数据"><a href="#26-2-内容数据" class="headerlink" title="26.2 内容数据"></a>26.2 内容数据</h3><p>准备：</p>
+<ul>
+<li>大量帖子</li>
+<li>不同板块帖子</li>
+<li>多评论帖子</li>
+<li>多点赞帖子</li>
+<li>图片帖子</li>
+<li>视频帖子</li>
+<li>审核中帖子</li>
+<li>已删除帖子</li>
+</ul>
+<hr>
+<h3 id="26-3-注意事项"><a href="#26-3-注意事项" class="headerlink" title="26.3 注意事项"></a>26.3 注意事项</h3><p>不要在生产环境随便造压测数据。</p>
+<p>测试环境造数据前要确认：</p>
+<ul>
+<li>是否影响其他测试</li>
+<li>是否需要清理</li>
+<li>是否影响搜索索引</li>
+<li>是否影响审核后台</li>
+<li>是否影响统计报表</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-27"></a></p>
+<h2 id="27-单接口压测怎么做"><a href="#27-单接口压测怎么做" class="headerlink" title="27. 单接口压测怎么做"></a>27. 单接口压测怎么做</h2><p>单接口压测适合新手入门。</p>
+<hr>
+<h3 id="27-1-示例：Feed-接口压测"><a href="#27-1-示例：Feed-接口压测" class="headerlink" title="27.1 示例：Feed 接口压测"></a>27.1 示例：Feed 接口压测</h3><p>步骤：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 准备 Feed 接口请求</span><br><span class="line">2. 准备多个用户 Token，按需求判断是否需要</span><br><span class="line">3. 设置并发线程或虚拟用户</span><br><span class="line">4. 设置持续时间</span><br><span class="line">5. 开始压测</span><br><span class="line">6. 观察响应时间、QPS、错误率</span><br><span class="line">7. 同时观察服务监控</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="27-2-注意事项"><a href="#27-2-注意事项" class="headerlink" title="27.2 注意事项"></a>27.2 注意事项</h3><ul>
+<li>不要一开始就上很大压力</li>
+<li>逐步加压</li>
+<li>每次记录结果</li>
+<li>发现错误率升高要及时停止</li>
+<li>压测前通知相关同学</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-28"></a></p>
+<h2 id="28-业务链路压测怎么做"><a href="#28-业务链路压测怎么做" class="headerlink" title="28. 业务链路压测怎么做"></a>28. 业务链路压测怎么做</h2><p>链路压测更接近真实用户行为。</p>
+<hr>
+<h3 id="28-1-示例：浏览互动链路"><a href="#28-1-示例：浏览互动链路" class="headerlink" title="28.1 示例：浏览互动链路"></a>28.1 示例：浏览互动链路</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录</span><br><span class="line">  ↓</span><br><span class="line">获取 Feed</span><br><span class="line">  ↓</span><br><span class="line">打开帖子详情</span><br><span class="line">  ↓</span><br><span class="line">获取评论列表</span><br><span class="line">  ↓</span><br><span class="line">点赞帖子</span><br><span class="line">  ↓</span><br><span class="line">发表评论</span><br></pre></td></tr></table></figure>
+
+<p>重点观察：</p>
+<ul>
+<li>每个接口响应时间</li>
+<li>整条链路耗时</li>
+<li>哪一步最慢</li>
+<li>评论和点赞数据是否正确</li>
+<li>通知是否积压</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-29"></a></p>
+<h2 id="29-混合场景压测怎么做"><a href="#29-混合场景压测怎么做" class="headerlink" title="29. 混合场景压测怎么做"></a>29. 混合场景压测怎么做</h2><p>混合场景最接近真实线上。</p>
+<hr>
+<h3 id="29-1-示例流量比例"><a href="#29-1-示例流量比例" class="headerlink" title="29.1 示例流量比例"></a>29.1 示例流量比例</h3><table>
+<thead>
+<tr>
+<th>用户行为</th>
+<th>占比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>浏览 Feed</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>查看帖子详情</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>点赞</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>评论</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>搜索</td>
+<td>3%</td>
+</tr>
+<tr>
+<td>发帖</td>
+<td>2%</td>
+</tr>
+</tbody></table>
+<p>这个比例不是固定的，要根据真实业务调整。</p>
+<hr>
+<p><a id="forum-perf-ch-30"></a></p>
+<h2 id="30-稳定性测试怎么做"><a href="#30-稳定性测试怎么做" class="headerlink" title="30. 稳定性测试怎么做"></a>30. 稳定性测试怎么做</h2><p>稳定性测试关注系统长时间运行是否稳定。</p>
+<hr>
+<h3 id="30-1-测试方法"><a href="#30-1-测试方法" class="headerlink" title="30.1 测试方法"></a>30.1 测试方法</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 使用接近日常峰值的压力</span><br><span class="line">2. 持续运行 4 小时、8 小时或更久</span><br><span class="line">3. 观察响应时间是否越来越慢</span><br><span class="line">4. 观察内存是否持续上涨</span><br><span class="line">5. 观察错误率是否增加</span><br><span class="line">6. 观察队列是否积压</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="30-2-常见问题"><a href="#30-2-常见问题" class="headerlink" title="30.2 常见问题"></a>30.2 常见问题</h3><ul>
+<li>内存泄漏</li>
+<li>连接数耗尽</li>
+<li>日志写满磁盘</li>
+<li>队列越积越多</li>
+<li>缓存命中率下降</li>
+<li>响应时间逐渐变慢</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-31"></a></p>
+<h2 id="31-峰值流量和突发流量怎么测"><a href="#31-峰值流量和突发流量怎么测" class="headerlink" title="31. 峰值流量和突发流量怎么测"></a>31. 峰值流量和突发流量怎么测</h2><p>社区可能因为活动、热门帖子、Push 推送突然流量暴涨。</p>
+<hr>
+<h3 id="31-1-场景示例"><a href="#31-1-场景示例" class="headerlink" title="31.1 场景示例"></a>31.1 场景示例</h3><ul>
+<li>活动上线瞬间大量用户进入</li>
+<li>官方发布重要公告</li>
+<li>Push 推送后用户集中打开 App</li>
+<li>热门帖子被大量评论</li>
+<li>新版本发布后用户集中登录</li>
+</ul>
+<hr>
+<h3 id="31-2-测试重点"><a href="#31-2-测试重点" class="headerlink" title="31.2 测试重点"></a>31.2 测试重点</h3><ul>
+<li>系统是否能承受瞬时流量</li>
+<li>是否有排队或限流机制</li>
+<li>是否优雅降级</li>
+<li>是否出现大量 500&#x2F;超时</li>
+<li>核心功能是否优先保障</li>
+</ul>
+<hr>
+<p><a id="forum-perf-ch-32"></a></p>
+<h2 id="32-性能监控怎么看"><a href="#32-性能监控怎么看" class="headerlink" title="32. 性能监控怎么看"></a>32. 性能监控怎么看</h2><p>性能测试必须结合监控。</p>
+<hr>
+<h3 id="32-1-常见监控指标"><a href="#32-1-常见监控指标" class="headerlink" title="32.1 常见监控指标"></a>32.1 常见监控指标</h3><table>
+<thead>
+<tr>
+<th>层面</th>
+<th>指标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用服务</td>
+<td>QPS、响应时间、错误率</td>
+</tr>
+<tr>
+<td>服务器</td>
+<td>CPU、内存、磁盘、网络</td>
+</tr>
+<tr>
+<td>数据库</td>
+<td>连接数、慢查询、锁等待、CPU</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>QPS、命中率、内存、连接数</td>
+</tr>
+<tr>
+<td>MQ</td>
+<td>消息堆积、消费延迟</td>
+</tr>
+<tr>
+<td>搜索服务</td>
+<td>查询耗时、CPU、内存</td>
+</tr>
+<tr>
+<td>CDN</td>
+<td>命中率、资源加载耗时</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perf-ch-33"></a></p>
+<h2 id="33-性能瓶颈怎么初步分析"><a href="#33-性能瓶颈怎么初步分析" class="headerlink" title="33. 性能瓶颈怎么初步分析"></a>33. 性能瓶颈怎么初步分析</h2><p>测试同学不一定要完全定位根因，但可以帮助缩小范围。</p>
+<hr>
+<h3 id="33-1-常见现象和可能原因"><a href="#33-1-常见现象和可能原因" class="headerlink" title="33.1 常见现象和可能原因"></a>33.1 常见现象和可能原因</h3><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>可能原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>接口响应慢，CPU 高</td>
+<td>应用服务计算压力大</td>
+</tr>
+<tr>
+<td>接口响应慢，数据库慢查询多</td>
+<td>SQL 或索引问题</td>
+</tr>
+<tr>
+<td>Feed 快，图片慢</td>
+<td>CDN 或图片资源问题</td>
+</tr>
+<tr>
+<td>评论成功但通知延迟</td>
+<td>MQ 队列积压</td>
+</tr>
+<tr>
+<td>搜索接口慢</td>
+<td>搜索服务查询压力大</td>
+</tr>
+<tr>
+<td>错误率升高</td>
+<td>服务超载或连接数不足</td>
+</tr>
+<tr>
+<td>响应时间越来越慢</td>
+<td>内存泄漏或资源未释放</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perf-ch-34"></a></p>
+<h2 id="34-性能测试风险和注意事项"><a href="#34-性能测试风险和注意事项" class="headerlink" title="34. 性能测试风险和注意事项"></a>34. 性能测试风险和注意事项</h2><p>性能测试有风险，不能随便压。</p>
+<hr>
+<h3 id="34-1-注意事项"><a href="#34-1-注意事项" class="headerlink" title="34.1 注意事项"></a>34.1 注意事项</h3><ul>
+<li>不要未经允许压测生产环境</li>
+<li>压测前通知开发、运维、DBA</li>
+<li>明确压测时间窗口</li>
+<li>明确停止条件</li>
+<li>准备回滚和应急方案</li>
+<li>压测数据要能清理</li>
+<li>不要影响其他测试同学</li>
+<li>压测第三方服务前确认是否允许</li>
+</ul>
+<hr>
+<h3 id="34-2-什么时候要停止压测"><a href="#34-2-什么时候要停止压测" class="headerlink" title="34.2 什么时候要停止压测"></a>34.2 什么时候要停止压测</h3><p>如果出现：</p>
+<ul>
+<li>错误率快速升高</li>
+<li>服务大量 500</li>
+<li>数据库 CPU 持续过高</li>
+<li>队列严重积压</li>
+<li>测试环境不可用</li>
+<li>影响其他团队测试</li>
+</ul>
+<p>应及时停止并同步相关同学。</p>
+<hr>
+<h2 id="第四部分：用例、报告、Bug-与总结"><a href="#第四部分：用例、报告、Bug-与总结" class="headerlink" title="第四部分：用例、报告、Bug 与总结"></a>第四部分：用例、报告、Bug 与总结</h2><blockquote>
+<p>性能测试不能只说“有点慢”，要用数据说明：什么场景、多少压力、响应时间多少、错误率多少、资源使用如何。</p>
+</blockquote>
+<hr>
+<p><a id="forum-perf-ch-35"></a></p>
+<h2 id="35-性能测试用例怎么写"><a href="#35-性能测试用例怎么写" class="headerlink" title="35. 性能测试用例怎么写"></a>35. 性能测试用例怎么写</h2><p>性能测试用例建议包含：</p>
+<ul>
+<li>用例编号</li>
+<li>测试场景</li>
+<li>测试接口或链路</li>
+<li>并发用户数</li>
+<li>QPS 或 TPS 目标</li>
+<li>持续时间</li>
+<li>测试数据</li>
+<li>性能指标</li>
+<li>监控项</li>
+<li>预期结果</li>
+</ul>
+<hr>
+<h3 id="35-1-用例模板"><a href="#35-1-用例模板" class="headerlink" title="35.1 用例模板"></a>35.1 用例模板</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>PERF_FEED_001</td>
+</tr>
+<tr>
+<td>测试场景</td>
+<td>首页 Feed 压测</td>
+</tr>
+<tr>
+<td>接口&#x2F;链路</td>
+<td>GET &#x2F;api&#x2F;feed</td>
+</tr>
+<tr>
+<td>并发用户数</td>
+<td>500</td>
+</tr>
+<tr>
+<td>目标 QPS</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>持续时间</td>
+<td>30 分钟</td>
+</tr>
+<tr>
+<td>测试数据</td>
+<td>100 万帖子，10 万用户</td>
+</tr>
+<tr>
+<td>性能指标</td>
+<td>P95 &lt; 1s，错误率 &lt; 0.1%</td>
+</tr>
+<tr>
+<td>监控项</td>
+<td>CPU、内存、DB、Redis、接口日志</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>系统稳定，无明显错误，指标达标</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-perf-ch-36"></a></p>
+<h2 id="36-性能问题-Bug-怎么提交"><a href="#36-性能问题-Bug-怎么提交" class="headerlink" title="36. 性能问题 Bug 怎么提交"></a>36. 性能问题 Bug 怎么提交</h2><p>性能 Bug 要写清楚数据和环境。</p>
+<hr>
+<h3 id="36-1-Bug-应包含"><a href="#36-1-Bug-应包含" class="headerlink" title="36.1 Bug 应包含"></a>36.1 Bug 应包含</h3><ul>
+<li>Bug 标题</li>
+<li>测试环境</li>
+<li>测试场景</li>
+<li>压测工具</li>
+<li>并发用户数</li>
+<li>QPS&#x2F;TPS</li>
+<li>持续时间</li>
+<li>接口或链路</li>
+<li>实际响应时间</li>
+<li>实际错误率</li>
+<li>预期指标</li>
+<li>监控截图</li>
+<li>日志或错误示例</li>
+<li>是否可复现</li>
+</ul>
+<hr>
+<h3 id="36-2-示例-Bug"><a href="#36-2-示例-Bug" class="headerlink" title="36.2 示例 Bug"></a>36.2 示例 Bug</h3><h4 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[性能] Feed 接口在 800 QPS 下 P95 响应时间超过 3 秒</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Test 环境</span><br><span class="line">压测工具：JMeter</span><br><span class="line">场景：GET /api/feed 推荐流</span><br><span class="line">并发用户数：400</span><br><span class="line">目标 QPS：800</span><br><span class="line">持续时间：20 分钟</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果"><a href="#实际结果" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">P95 响应时间：3.2s</span><br><span class="line">P99 响应时间：6.8s</span><br><span class="line">错误率：0.3%</span><br><span class="line">测试期间数据库慢查询明显增加</span><br></pre></td></tr></table></figure>
+
+<h4 id="预期结果"><a href="#预期结果" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Feed 接口在 800 QPS 下 P95 应小于 1s，错误率应小于 0.1%。</span><br></pre></td></tr></table></figure>
+
+<h4 id="严重程度"><a href="#严重程度" class="headerlink" title="严重程度"></a>严重程度</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Major</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perf-ch-37"></a></p>
+<h2 id="37-性能测试报告怎么写"><a href="#37-性能测试报告怎么写" class="headerlink" title="37. 性能测试报告怎么写"></a>37. 性能测试报告怎么写</h2><p>性能测试报告建议包含：</p>
+<ul>
+<li>测试背景</li>
+<li>测试目标</li>
+<li>测试环境</li>
+<li>测试工具</li>
+<li>测试数据</li>
+<li>测试场景</li>
+<li>性能指标</li>
+<li>测试结果</li>
+<li>问题列表</li>
+<li>风险说明</li>
+<li>优化建议</li>
+<li>是否通过结论</li>
+</ul>
+<hr>
+<h3 id="37-1-简单报告结构"><a href="#37-1-简单报告结构" class="headerlink" title="37.1 简单报告结构"></a>37.1 简单报告结构</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 测试背景</span><br><span class="line">2. 测试范围</span><br><span class="line">3. 测试环境</span><br><span class="line">4. 测试数据</span><br><span class="line">5. 测试场景</span><br><span class="line">6. 测试结果汇总</span><br><span class="line">7. 监控结果</span><br><span class="line">8. 发现问题</span><br><span class="line">9. 风险和建议</span><br><span class="line">10. 测试结论</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perf-ch-38"></a></p>
+<h2 id="38-新手常见误区"><a href="#38-新手常见误区" class="headerlink" title="38. 新手常见误区"></a>38. 新手常见误区</h2><h3 id="38-1-只看平均响应时间"><a href="#38-1-只看平均响应时间" class="headerlink" title="38.1 只看平均响应时间"></a>38.1 只看平均响应时间</h3><p>平均响应时间容易掩盖慢请求。</p>
+<p>要同时看：</p>
+<ul>
+<li>P95</li>
+<li>P99</li>
+<li>最大响应时间</li>
+<li>错误率</li>
+</ul>
+<hr>
+<h3 id="38-2-不看监控"><a href="#38-2-不看监控" class="headerlink" title="38.2 不看监控"></a>38.2 不看监控</h3><p>压测工具显示慢，只是结果。</p>
+<p>要结合监控看原因：</p>
+<ul>
+<li>CPU 是否高</li>
+<li>数据库是否慢</li>
+<li>Redis 是否命中率低</li>
+<li>MQ 是否积压</li>
+</ul>
+<hr>
+<h3 id="38-3-用太少数据压测"><a href="#38-3-用太少数据压测" class="headerlink" title="38.3 用太少数据压测"></a>38.3 用太少数据压测</h3><p>测试环境只有 100 条帖子，Feed 很快，不代表真实数据量下也快。</p>
+<p>性能测试数据要尽量接近真实规模。</p>
+<hr>
+<h3 id="38-4-未经允许压测生产"><a href="#38-4-未经允许压测生产" class="headerlink" title="38.4 未经允许压测生产"></a>38.4 未经允许压测生产</h3><p>这是非常严重的错误。</p>
+<p>压测必须经过确认，尤其不能随便压生产环境和第三方服务。</p>
+<hr>
+<h3 id="38-5-只测单接口，不测链路"><a href="#38-5-只测单接口，不测链路" class="headerlink" title="38.5 只测单接口，不测链路"></a>38.5 只测单接口，不测链路</h3><p>单接口性能好，不代表完整链路体验好。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Feed 接口很快，但图片 CDN 很慢，用户仍然觉得首页慢。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-perf-ch-39"></a></p>
+<h2 id="39-最后总结"><a href="#39-最后总结" class="headerlink" title="39. 最后总结"></a>39. 最后总结</h2><p>性能测试的核心不是“用工具跑一下”，而是要理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">哪些场景是高频场景？</span><br><span class="line">哪些场景是高风险场景？</span><br><span class="line">目标压力是多少？</span><br><span class="line">响应时间要求是多少？</span><br><span class="line">错误率要求是多少？</span><br><span class="line">系统资源是否稳定？</span><br><span class="line">数据是否仍然正确？</span><br><span class="line">长时间运行是否可靠？</span><br><span class="line">海外不同地区访问是否快？</span><br></pre></td></tr></table></figure>
+
+<p>对于海外社区论坛项目，最需要重点关注的性能方向是：</p>
+<ul>
+<li>首页 Feed</li>
+<li>帖子详情</li>
+<li>热门评论区</li>
+<li>发帖</li>
+<li>评论</li>
+<li>点赞</li>
+<li>搜索</li>
+<li>通知未读数</li>
+<li>私信实时消息</li>
+<li>图片加载</li>
+<li>视频播放</li>
+<li>审核后台</li>
+<li>海外地区访问速度</li>
+<li>高峰流量和突发流量</li>
+</ul>
+<p>你可以记住一个万能性能测试公式：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">业务场景 + 用户规模 + 请求量 + 数据量 + 持续时间 + 性能指标 = 性能测试场景</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">首页 Feed + 500 并发用户 + 1000 QPS + 100 万帖子 + 30 分钟 + P95 &lt; 1s</span><br><span class="line">热门帖子评论 + 200 并发用户 + 每秒 100 条评论 + 10 万评论数据 + 20 分钟 + 错误率 &lt; 0.1%</span><br><span class="line">私信发送 + 1000 在线连接 + 每秒 200 条消息 + 2 小时 + 消息到达延迟 &lt; 1s</span><br></pre></td></tr></table></figure>
+
+<p>只要你每次设计性能测试时都把这些维度想清楚，性能测试思路就会越来越成熟。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-15-overseas-forum-performance-guide/">https://linn0813.github.io/2026-05-15-overseas-forum-performance-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">性能测试</a><a class="post-meta__tags" href="/tags/QPS/">QPS</a><a class="post-meta__tags" href="/tags/%E5%8E%8B%E6%B5%8B/">压测</a><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a><a class="post-meta__tags" href="/tags/%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4/">响应时间</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-performance-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-16-overseas-forum-security-guide/" title="学习笔记：海外社区论坛 - 安全测试入门"><img class="cover" src="/img/overseas-forum-security-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 安全测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛安全测试入门：风险边界与各模块实战、常见漏洞测试思路，以及用例与安全类 Bug 提交要点。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-08-06-qps-vs-rps/" title="别再用 QPS 计算并发数了！我曾经也犯了这个错误"><img class="cover" src="/img/qps-rps.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-08-06</div><div class="info-item-2">别再用 QPS 计算并发数了！我曾经也犯了这个错误</div></div><div class="info-2"><div class="info-item-1">深入解析 QPS、RPS、TPS 概念区别，分享压测中因混淆 QPS 和 RPS 导致的误区，提供正确压测方法与实践建议，助你准确评估系统性能！</div></div></div></a><a class="pagination-related" href="/2025-06-30-streaming-api-performance-test/" title="🚀 一次流式接口压测实践：我们如何压出了真实压力，又避开了坑"><img class="cover" src="/img/streaming-api-performance-test.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-30</div><div class="info-item-2">🚀 一次流式接口压测实践：我们如何压出了真实压力，又避开了坑</div></div><div class="info-2"><div class="info-item-1">分享流式接口压测的实践经验，介绍使用 JMeter + Groovy 脚本应对流式接口压测挑战的方案，包含踩坑经历与解决方案！</div></div></div></a><a class="pagination-related" href="/2026-01-06-server-performance-troubleshooting-guide/" title="运维说 OOM、CPU 打满，压测怎么配合排查？"><img class="cover" src="/img/server-performance-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-06</div><div class="info-item-2">运维说 OOM、CPU 打满，压测怎么配合排查？</div></div><div class="info-2"><div class="info-item-1">运维反馈 OOM、CPU 高时，测试如何配合？怎么拆解问题、提供什么证据、如何与开发协作。本文讲清测试视角下的性能排查思路。</div></div></div></a><a class="pagination-related" href="/2026-01-07-performance-monitoring-dashboard-guide/" title="📊 压测性能监控面板完全指南：如何从面板得出结论"><img class="cover" src="/img/performance-monitoring-dashboard-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-07</div><div class="info-item-2">📊 压测性能监控面板完全指南：如何从面板得出结论</div></div><div class="info-2"><div class="info-item-1">系统解析压测过程中如何通过 CES、CPU、Memory 等性能监控面板进行判断与决策，附压测前基线建立、读面板流程与结论输出方法。</div></div></div></a><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-10</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-09-overseas-forum-api-testing-guide/" title="学习笔记：海外社区论坛 - 接口测试入门"><img class="cover" src="/img/overseas-forum-api-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-09</div><div class="info-item-2">学习笔记：海外社区论坛 - 接口测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-12</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-07-overseas-forum-functional-testing-guide/" title="学习笔记：海外社区论坛 - 功能测试入门"><img class="cover" src="/img/overseas-forum-functional-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-07</div><div class="info-item-2">学习笔记：海外社区论坛 - 功能测试入门</div></div><div class="info-2"><div class="info-item-1">结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">第一部分：性能测试基础概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E8%A6%81%E5%81%9A%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么海外社区论坛要做性能测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%B8%B8%E8%A7%81%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 社区论坛常见性能问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B5%B7%E5%A4%96%E9%A1%B9%E7%9B%AE%E6%9B%B4%E8%A6%81%E5%85%B3%E6%B3%A8%E6%80%A7%E8%83%BD"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 为什么海外项目更要关注性能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text">2. 什么是性能测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E4%B8%BB%E8%A6%81%E7%9C%8B%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 性能测试主要看什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%92%8C%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">3. 性能测试和功能测试有什么区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%9A%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 举个例子：评论功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B8%B8%E8%A7%81%E7%B1%BB%E5%9E%8B%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">5.</span> <span class="toc-text">4. 性能测试常见类型有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">6.</span> <span class="toc-text">5. 响应时间是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4%E6%80%8E%E4%B9%88%E7%9C%8B"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 响应时间怎么看</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%B9%B6%E5%8F%91%E7%94%A8%E6%88%B7%E6%95%B0%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">6. 并发用户数是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%B9%B6%E5%8F%91%E4%B8%8D%E7%AD%89%E4%BA%8E%E6%80%BB%E7%94%A8%E6%88%B7%E6%95%B0"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 并发不等于总用户数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-QPS%E3%80%81TPS%E3%80%81%E5%90%9E%E5%90%90%E9%87%8F%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">8.</span> <span class="toc-text">7. QPS、TPS、吞吐量是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-QPS"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 QPS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-TPS"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 TPS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E5%90%9E%E5%90%90%E9%87%8F"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 吞吐量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E9%94%99%E8%AF%AF%E7%8E%87%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">9.</span> <span class="toc-text">8. 错误率是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="toc-number">9.1.</span> <span class="toc-text">8.1 常见错误</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-P95%E3%80%81P99-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">10.</span> <span class="toc-text">9. P95、P99 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%89%8D%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">11.</span> <span class="toc-text">10. 性能测试前需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E5%87%86%E5%A4%87%E9%9C%80%E6%B1%82%E5%92%8C%E6%8C%87%E6%A0%87"><span class="toc-number">11.1.</span> <span class="toc-text">10.1 准备需求和指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="toc-number">11.2.</span> <span class="toc-text">10.2 准备测试数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7"><span class="toc-number">11.3.</span> <span class="toc-text">10.3 准备测试工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-%E5%87%86%E5%A4%87%E7%9B%91%E6%8E%A7"><span class="toc-number">11.4.</span> <span class="toc-text">10.4 准备监控</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%AE%9E%E6%88%98"><span class="toc-number">12.</span> <span class="toc-text">第二部分：海外社区论坛性能测试实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF%E6%9C%80%E9%9C%80%E8%A6%81%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">13.</span> <span class="toc-text">11. 社区论坛哪些场景最需要性能测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E9%A6%96%E9%A1%B5-Feed-%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">14.</span> <span class="toc-text">12. 首页 Feed 性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E6%B5%8B%E8%AF%95%E7%9B%AE%E6%A0%87"><span class="toc-number">14.1.</span> <span class="toc-text">12.1 测试目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">14.2.</span> <span class="toc-text">12.2 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E9%87%8D%E7%82%B9%E6%8C%87%E6%A0%87"><span class="toc-number">14.3.</span> <span class="toc-text">12.3 重点指标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E5%B8%96%E5%AD%90%E8%AF%A6%E6%83%85%E9%A1%B5%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">15.</span> <span class="toc-text">13. 帖子详情页性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">15.1.</span> <span class="toc-text">13.1 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E7%83%AD%E9%97%A8%E5%B8%96%E5%AD%90%E9%87%8D%E7%82%B9"><span class="toc-number">15.2.</span> <span class="toc-text">13.2 热门帖子重点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%8F%91%E5%B8%96%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">16.</span> <span class="toc-text">14. 发帖性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">16.1.</span> <span class="toc-text">14.1 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E9%87%8D%E7%82%B9%E6%8C%87%E6%A0%87"><span class="toc-number">16.2.</span> <span class="toc-text">14.2 重点指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-3-%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">16.3.</span> <span class="toc-text">14.3 注意点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E8%AF%84%E8%AE%BA%E4%B8%8E%E5%9B%9E%E5%A4%8D%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">17.</span> <span class="toc-text">15. 评论与回复性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">17.1.</span> <span class="toc-text">15.1 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E9%87%8D%E7%82%B9%E6%8C%87%E6%A0%87"><span class="toc-number">17.2.</span> <span class="toc-text">15.2 重点指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-3-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">17.3.</span> <span class="toc-text">15.3 常见问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E7%82%B9%E8%B5%9E%E3%80%81%E6%94%B6%E8%97%8F%E3%80%81%E5%85%B3%E6%B3%A8%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">18.</span> <span class="toc-text">16. 点赞、收藏、关注性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E7%82%B9%E8%B5%9E%E6%80%A7%E8%83%BD"><span class="toc-number">18.1.</span> <span class="toc-text">16.1 点赞性能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-%E6%94%B6%E8%97%8F%E5%92%8C%E5%85%B3%E6%B3%A8%E6%80%A7%E8%83%BD"><span class="toc-number">18.2.</span> <span class="toc-text">16.2 收藏和关注性能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E6%90%9C%E7%B4%A2%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">19.</span> <span class="toc-text">17. 搜索性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">19.1.</span> <span class="toc-text">17.1 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-%E9%87%8D%E7%82%B9%E6%8C%87%E6%A0%87"><span class="toc-number">19.2.</span> <span class="toc-text">17.2 重点指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-3-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">19.3.</span> <span class="toc-text">17.3 常见问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E9%80%9A%E7%9F%A5%E4%B8%8E%E6%9C%AA%E8%AF%BB%E6%95%B0%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">20.</span> <span class="toc-text">18. 通知与未读数性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#18-1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">20.1.</span> <span class="toc-text">18.1 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-2-%E9%87%8D%E7%82%B9%E6%8C%87%E6%A0%87"><span class="toc-number">20.2.</span> <span class="toc-text">18.2 重点指标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E7%A7%81%E4%BF%A1%E4%B8%8E%E5%AE%9E%E6%97%B6%E6%B6%88%E6%81%AF%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">21.</span> <span class="toc-text">19. 私信与实时消息性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">21.1.</span> <span class="toc-text">19.1 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E9%87%8D%E7%82%B9%E6%8C%87%E6%A0%87"><span class="toc-number">21.2.</span> <span class="toc-text">19.2 重点指标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E4%B8%8E-CDN-%E5%8A%A0%E8%BD%BD%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">22.</span> <span class="toc-text">20. 图片上传与 CDN 加载性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#20-1-%E4%B8%8A%E4%BC%A0%E6%80%A7%E8%83%BD"><span class="toc-number">22.1.</span> <span class="toc-text">20.1 上传性能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-2-%E5%8A%A0%E8%BD%BD%E6%80%A7%E8%83%BD"><span class="toc-number">22.2.</span> <span class="toc-text">20.2 加载性能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E8%A7%86%E9%A2%91%E4%B8%8A%E4%BC%A0%E3%80%81%E8%BD%AC%E7%A0%81%E4%B8%8E%E6%92%AD%E6%94%BE%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">23.</span> <span class="toc-text">21. 视频上传、转码与播放性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-%E4%B8%8A%E4%BC%A0%E5%92%8C%E8%BD%AC%E7%A0%81"><span class="toc-number">23.1.</span> <span class="toc-text">21.1 上传和转码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-%E6%92%AD%E6%94%BE%E6%80%A7%E8%83%BD"><span class="toc-number">23.2.</span> <span class="toc-text">21.2 播放性能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E5%90%8E%E5%8F%B0%E5%AE%A1%E6%A0%B8%E4%B8%8E%E8%BF%90%E8%90%A5%E5%90%8E%E5%8F%B0%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">24.</span> <span class="toc-text">22. 后台审核与运营后台性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">24.1.</span> <span class="toc-text">22.1 测试场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E9%87%8D%E7%82%B9%E6%8C%87%E6%A0%87"><span class="toc-number">24.2.</span> <span class="toc-text">22.2 重点指标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E6%B5%B7%E5%A4%96%E8%AE%BF%E9%97%AE%E6%80%A7%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">25.</span> <span class="toc-text">23. 海外访问性能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#23-1-%E6%B5%8B%E8%AF%95%E5%9C%B0%E5%8C%BA"><span class="toc-number">25.1.</span> <span class="toc-text">23.1 测试地区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-2-%E6%B5%8B%E8%AF%95%E5%86%85%E5%AE%B9"><span class="toc-number">25.2.</span> <span class="toc-text">23.2 测试内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E4%B8%93%E9%A1%B9%E6%96%B9%E6%B3%95"><span class="toc-number">26.</span> <span class="toc-text">第三部分：性能测试专项方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E6%8C%87%E6%A0%87%E6%80%8E%E4%B9%88%E5%AE%9A"><span class="toc-number">27.</span> <span class="toc-text">24. 性能测试指标怎么定</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#24-1-%E5%B8%B8%E8%A7%81%E6%8C%87%E6%A0%87"><span class="toc-number">27.1.</span> <span class="toc-text">24.1 常见指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-2-%E6%96%B0%E6%89%8B%E6%80%8E%E4%B9%88%E5%AE%9A%E6%8C%87%E6%A0%87"><span class="toc-number">27.2.</span> <span class="toc-text">24.2 新手怎么定指标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF%E6%80%8E%E4%B9%88%E8%AE%BE%E8%AE%A1"><span class="toc-number">28.</span> <span class="toc-text">25. 性能测试场景怎么设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#25-1-%E5%8D%95%E5%9C%BA%E6%99%AF"><span class="toc-number">28.1.</span> <span class="toc-text">25.1 单场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-2-%E9%93%BE%E8%B7%AF%E5%9C%BA%E6%99%AF"><span class="toc-number">28.2.</span> <span class="toc-text">25.2 链路场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-3-%E6%B7%B7%E5%90%88%E5%9C%BA%E6%99%AF"><span class="toc-number">28.3.</span> <span class="toc-text">25.3 混合场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E6%80%8E%E4%B9%88%E5%87%86%E5%A4%87"><span class="toc-number">29.</span> <span class="toc-text">26. 性能测试数据怎么准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#26-1-%E7%94%A8%E6%88%B7%E6%95%B0%E6%8D%AE"><span class="toc-number">29.1.</span> <span class="toc-text">26.1 用户数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-2-%E5%86%85%E5%AE%B9%E6%95%B0%E6%8D%AE"><span class="toc-number">29.2.</span> <span class="toc-text">26.2 内容数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-3-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">29.3.</span> <span class="toc-text">26.3 注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E5%8D%95%E6%8E%A5%E5%8F%A3%E5%8E%8B%E6%B5%8B%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">30.</span> <span class="toc-text">27. 单接口压测怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#27-1-%E7%A4%BA%E4%BE%8B%EF%BC%9AFeed-%E6%8E%A5%E5%8F%A3%E5%8E%8B%E6%B5%8B"><span class="toc-number">30.1.</span> <span class="toc-text">27.1 示例：Feed 接口压测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-2-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">30.2.</span> <span class="toc-text">27.2 注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E4%B8%9A%E5%8A%A1%E9%93%BE%E8%B7%AF%E5%8E%8B%E6%B5%8B%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">31.</span> <span class="toc-text">28. 业务链路压测怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#28-1-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%B5%8F%E8%A7%88%E4%BA%92%E5%8A%A8%E9%93%BE%E8%B7%AF"><span class="toc-number">31.1.</span> <span class="toc-text">28.1 示例：浏览互动链路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E6%B7%B7%E5%90%88%E5%9C%BA%E6%99%AF%E5%8E%8B%E6%B5%8B%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">32.</span> <span class="toc-text">29. 混合场景压测怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#29-1-%E7%A4%BA%E4%BE%8B%E6%B5%81%E9%87%8F%E6%AF%94%E4%BE%8B"><span class="toc-number">32.1.</span> <span class="toc-text">29.1 示例流量比例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E7%A8%B3%E5%AE%9A%E6%80%A7%E6%B5%8B%E8%AF%95%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">33.</span> <span class="toc-text">30. 稳定性测试怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#30-1-%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">33.1.</span> <span class="toc-text">30.1 测试方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-2-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">33.2.</span> <span class="toc-text">30.2 常见问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E5%B3%B0%E5%80%BC%E6%B5%81%E9%87%8F%E5%92%8C%E7%AA%81%E5%8F%91%E6%B5%81%E9%87%8F%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">34.</span> <span class="toc-text">31. 峰值流量和突发流量怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-1-%E5%9C%BA%E6%99%AF%E7%A4%BA%E4%BE%8B"><span class="toc-number">34.1.</span> <span class="toc-text">31.1 场景示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-2-%E6%B5%8B%E8%AF%95%E9%87%8D%E7%82%B9"><span class="toc-number">34.2.</span> <span class="toc-text">31.2 测试重点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%E6%80%8E%E4%B9%88%E7%9C%8B"><span class="toc-number">35.</span> <span class="toc-text">32. 性能监控怎么看</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32-1-%E5%B8%B8%E8%A7%81%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87"><span class="toc-number">35.1.</span> <span class="toc-text">32.1 常见监控指标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-%E6%80%A7%E8%83%BD%E7%93%B6%E9%A2%88%E6%80%8E%E4%B9%88%E5%88%9D%E6%AD%A5%E5%88%86%E6%9E%90"><span class="toc-number">36.</span> <span class="toc-text">33. 性能瓶颈怎么初步分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#33-1-%E5%B8%B8%E8%A7%81%E7%8E%B0%E8%B1%A1%E5%92%8C%E5%8F%AF%E8%83%BD%E5%8E%9F%E5%9B%A0"><span class="toc-number">36.1.</span> <span class="toc-text">33.1 常见现象和可能原因</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E9%A3%8E%E9%99%A9%E5%92%8C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">37.</span> <span class="toc-text">34. 性能测试风险和注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#34-1-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">37.1.</span> <span class="toc-text">34.1 注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-2-%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%A6%81%E5%81%9C%E6%AD%A2%E5%8E%8B%E6%B5%8B"><span class="toc-number">37.2.</span> <span class="toc-text">34.2 什么时候要停止压测</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E7%94%A8%E4%BE%8B%E3%80%81%E6%8A%A5%E5%91%8A%E3%80%81Bug-%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">38.</span> <span class="toc-text">第四部分：用例、报告、Bug 与总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">39.</span> <span class="toc-text">35. 性能测试用例怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#35-1-%E7%94%A8%E4%BE%8B%E6%A8%A1%E6%9D%BF"><span class="toc-number">39.1.</span> <span class="toc-text">35.1 用例模板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98-Bug-%E6%80%8E%E4%B9%88%E6%8F%90%E4%BA%A4"><span class="toc-number">40.</span> <span class="toc-text">36. 性能问题 Bug 怎么提交</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#36-1-Bug-%E5%BA%94%E5%8C%85%E5%90%AB"><span class="toc-number">40.1.</span> <span class="toc-text">36.1 Bug 应包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-2-%E7%A4%BA%E4%BE%8B-Bug"><span class="toc-number">40.2.</span> <span class="toc-text">36.2 示例 Bug</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98"><span class="toc-number">40.2.1.</span> <span class="toc-text">标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">40.2.2.</span> <span class="toc-text">测试环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C"><span class="toc-number">40.2.3.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C"><span class="toc-number">40.2.4.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6"><span class="toc-number">40.2.5.</span> <span class="toc-text">严重程度</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E6%8A%A5%E5%91%8A%E6%80%8E%E4%B9%88%E5%86%99"><span class="toc-number">41.</span> <span class="toc-text">37. 性能测试报告怎么写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#37-1-%E7%AE%80%E5%8D%95%E6%8A%A5%E5%91%8A%E7%BB%93%E6%9E%84"><span class="toc-number">41.1.</span> <span class="toc-text">37.1 简单报告结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#38-%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">42.</span> <span class="toc-text">38. 新手常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#38-1-%E5%8F%AA%E7%9C%8B%E5%B9%B3%E5%9D%87%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4"><span class="toc-number">42.1.</span> <span class="toc-text">38.1 只看平均响应时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-2-%E4%B8%8D%E7%9C%8B%E7%9B%91%E6%8E%A7"><span class="toc-number">42.2.</span> <span class="toc-text">38.2 不看监控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-3-%E7%94%A8%E5%A4%AA%E5%B0%91%E6%95%B0%E6%8D%AE%E5%8E%8B%E6%B5%8B"><span class="toc-number">42.3.</span> <span class="toc-text">38.3 用太少数据压测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-4-%E6%9C%AA%E7%BB%8F%E5%85%81%E8%AE%B8%E5%8E%8B%E6%B5%8B%E7%94%9F%E4%BA%A7"><span class="toc-number">42.4.</span> <span class="toc-text">38.4 未经允许压测生产</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-5-%E5%8F%AA%E6%B5%8B%E5%8D%95%E6%8E%A5%E5%8F%A3%EF%BC%8C%E4%B8%8D%E6%B5%8B%E9%93%BE%E8%B7%AF"><span class="toc-number">42.5.</span> <span class="toc-text">38.5 只测单接口，不测链路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#39-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">43.</span> <span class="toc-text">39. 最后总结</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

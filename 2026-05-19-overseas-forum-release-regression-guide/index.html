@@ -1,0 +1,1369 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - 上线验收与回归测试入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="海外社区论坛上线验收与回归入门：冒烟与灰度、各模块验收要点、Bug&#x2F;链路&#x2F;自动化回归及 Checklist 与记录模板。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - 上线验收与回归测试入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-19-overseas-forum-release-regression-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="海外社区论坛上线验收与回归入门：冒烟与灰度、各模块验收要点、Bug&#x2F;链路&#x2F;自动化回归及 Checklist 与记录模板。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-release-regression-guide.png">
+<meta property="article:published_time" content="2026-05-19T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-19T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="海外社区">
+<meta property="article:tag" content="上线验收">
+<meta property="article:tag" content="回归测试">
+<meta property="article:tag" content="灰度发布">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-release-regression-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - 上线验收与回归测试入门",
+  "url": "https://linn0813.github.io/2026-05-19-overseas-forum-release-regression-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-release-regression-guide.png",
+  "datePublished": "2026-05-19T02:00:00.000Z",
+  "dateModified": "2026-05-19T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-19-overseas-forum-release-regression-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - 上线验收与回归测试入门',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-release-regression-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - 上线验收与回归测试入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - 上线验收与回归测试入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-19T02:00:00.000Z" title="发表于 2026-05-19 10:00:00">2026-05-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-19T02:00:00.000Z" title="更新于 2026-05-19 10:00:00">2026-05-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E4%B8%8E%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95/">上线验收与回归测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">7.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>21分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>学习记录</strong>：把海外社区论坛场景下的<strong>上线验收与回归测试</strong>整理成一篇入门笔记，结合个人实践，并与 AI 一起补全结构，便于发布前后按清单执行。</p>
+<p>若你在参与版本发布前的收尾验证或修复后的回归，希望这篇能直接当 Checklist 与记录口径用。</p>
+<blockquote>
+<p><strong>适合对象</strong>：准备系统掌握发布前验收、灰度与线上确认、以及回归策略的同学；文中不默认你已做过完整线上发布流程。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文按「基础概念 → 上线验收实战 → 回归方法 → Checklist 与模板」四块展开；配合页面 <strong>TOC</strong> 或下方折叠目录跳转。<strong>第 11～22 章</strong>按模块做上线前验收，<strong>第 23～32 章</strong>覆盖 Bug&#x2F;版本&#x2F;自动化与灰度线上验证。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 38 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-release-ch-01">为什么要学习上线验收与回归测试</a></li>
+<li><a href="#forum-release-ch-02">什么是回归测试</a></li>
+<li><a href="#forum-release-ch-03">什么是冒烟测试</a></li>
+<li><a href="#forum-release-ch-04">什么是上线验收</a></li>
+<li><a href="#forum-release-ch-05">什么是灰度验证</a></li>
+<li><a href="#forum-release-ch-06">什么是线上回归</a></li>
+<li><a href="#forum-release-ch-07">回归测试和功能测试有什么区别</a></li>
+<li><a href="#forum-release-ch-08">上线前需要确认哪些内容</a></li>
+<li><a href="#forum-release-ch-09">上线后需要确认哪些内容</a></li>
+<li><a href="#forum-release-ch-10">上线验收前需要准备什么</a></li>
+<li><a href="#forum-release-ch-11">海外社区论坛上线验收重点有哪些</a></li>
+<li><a href="#forum-release-ch-12">注册登录上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-13">用户资料上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-14">发帖上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-15">评论与回复上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-16">点赞、收藏、关注上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-17">Feed 信息流上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-18">搜索上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-19">通知与私信上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-20">举报与审核后台上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-21">国际化、兼容性、安全上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-22">性能与监控上线验收怎么做</a></li>
+<li><a href="#forum-release-ch-23">Bug 回归怎么做</a></li>
+<li><a href="#forum-release-ch-24">版本回归怎么做</a></li>
+<li><a href="#forum-release-ch-25">核心链路回归怎么做</a></li>
+<li><a href="#forum-release-ch-26">影响范围回归怎么做</a></li>
+<li><a href="#forum-release-ch-27">自动化回归怎么做</a></li>
+<li><a href="#forum-release-ch-28">灰度发布回归怎么做</a></li>
+<li><a href="#forum-release-ch-29">线上发布后验证怎么做</a></li>
+<li><a href="#forum-release-ch-30">回滚后验证怎么做</a></li>
+<li><a href="#forum-release-ch-31">上线风险如何评估</a></li>
+<li><a href="#forum-release-ch-32">回归测试问题如何记录和同步</a></li>
+<li><a href="#forum-release-ch-33">上线验收 Checklist</a></li>
+<li><a href="#forum-release-ch-34">回归测试记录模板</a></li>
+<li><a href="#forum-release-ch-35">Bug 回归记录模板</a></li>
+<li><a href="#forum-release-ch-36">上线风险说明模板</a></li>
+<li><a href="#forum-release-ch-37">新手常见误区</a></li>
+<li><a href="#forum-release-ch-38">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<h2 id="第一部分：上线验收与回归测试基础概念"><a href="#第一部分：上线验收与回归测试基础概念" class="headerlink" title="第一部分：上线验收与回归测试基础概念"></a>第一部分：上线验收与回归测试基础概念</h2><blockquote>
+<p>如果你是上线验收和回归测试新手，建议先完整学习这一部分。</p>
+<p>如果你已经理解冒烟、回归、灰度、线上验证，可以直接跳到 <strong>第二部分：海外社区论坛上线验收实战</strong>。</p>
+</blockquote>
+<hr>
+<p><a id="forum-release-ch-01"></a></p>
+<h2 id="1-为什么要学习上线验收与回归测试"><a href="#1-为什么要学习上线验收与回归测试" class="headerlink" title="1. 为什么要学习上线验收与回归测试"></a>1. 为什么要学习上线验收与回归测试</h2><p>前面你已经学习了很多“怎么测试”的能力。</p>
+<p>但一个项目最终都会走到上线阶段。</p>
+<p>上线前，测试同学需要回答这些问题：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">核心功能都测完了吗？</span><br><span class="line">高优先级 Bug 都修复了吗？</span><br><span class="line">修复 Bug 后有没有影响其他功能？</span><br><span class="line">自动化冒烟有没有通过？</span><br><span class="line">主要设备和浏览器有没有验证？</span><br><span class="line">权限、安全、风控这些高风险点有没有确认？</span><br><span class="line">上线后要验证哪些线上功能？</span><br><span class="line">如果线上出现问题，是否有回滚方案？</span><br></pre></td></tr></table></figure>
+
+<p>这些就是上线验收与回归测试要解决的问题。</p>
+<hr>
+<h3 id="1-1-为什么不能只做第一轮测试"><a href="#1-1-为什么不能只做第一轮测试" class="headerlink" title="1.1 为什么不能只做第一轮测试"></a>1.1 为什么不能只做第一轮测试</h3><p>第一轮测试发现问题后，开发会修 Bug。</p>
+<p>但修 Bug 可能带来新问题。</p>
+<p>例如：</p>
+<table>
+<thead>
+<tr>
+<th>修复内容</th>
+<th>可能引入的新问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>修复评论数不更新</td>
+<td>点赞数统计被影响</td>
+</tr>
+<tr>
+<td>修复禁言用户可评论</td>
+<td>正常用户也无法评论</td>
+</tr>
+<tr>
+<td>修复 Feed 不展示审核失败内容</td>
+<td>已发布内容也被过滤掉</td>
+</tr>
+<tr>
+<td>修复搜索结果旧数据</td>
+<td>新帖子搜索延迟变长</td>
+</tr>
+<tr>
+<td>修复第三方登录回跳</td>
+<td>邮箱登录状态异常</td>
+</tr>
+</tbody></table>
+<p>所以 Bug 修复后必须回归。</p>
+<p>上线前还必须做整体核心链路验收，确认版本处于可发布状态。</p>
+<hr>
+<h3 id="1-2-上线验收的价值"><a href="#1-2-上线验收的价值" class="headerlink" title="1.2 上线验收的价值"></a>1.2 上线验收的价值</h3><p>上线验收可以帮助团队：</p>
+<ul>
+<li>确认核心功能可用</li>
+<li>确认高风险 Bug 已修复</li>
+<li>确认修复没有引入明显新问题</li>
+<li>确认发布包、配置、环境正确</li>
+<li>确认灰度和线上验证范围</li>
+<li>降低线上事故概率</li>
+</ul>
+<p>一句话理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">上线验收 = 发布前最后一道质量闸门</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-release-ch-02"></a></p>
+<h2 id="2-什么是回归测试"><a href="#2-什么是回归测试" class="headerlink" title="2. 什么是回归测试"></a>2. 什么是回归测试</h2><p>回归测试就是：</p>
+<blockquote>
+<p>当代码修改、Bug 修复、需求变更后，重新验证相关功能是否仍然正常。</p>
+</blockquote>
+<p>简单理解：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">改过的地方要复测</span><br><span class="line">可能被影响的地方也要复测</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="2-1-回归测试分几类"><a href="#2-1-回归测试分几类" class="headerlink" title="2.1 回归测试分几类"></a>2.1 回归测试分几类</h3><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bug 回归</td>
+<td>验证某个 Bug 是否修复</td>
+<td>被禁言用户发帖 Bug 修复后重新验证</td>
+</tr>
+<tr>
+<td>影响范围回归</td>
+<td>验证修复是否影响相关功能</td>
+<td>修复评论接口后回归评论列表、评论数、通知</td>
+</tr>
+<tr>
+<td>版本回归</td>
+<td>版本上线前整体回归核心功能</td>
+<td>登录、发帖、评论、Feed、私信全链路</td>
+</tr>
+<tr>
+<td>自动化回归</td>
+<td>使用脚本快速执行稳定用例</td>
+<td>接口冒烟、权限接口、核心链路</td>
+</tr>
+<tr>
+<td>线上回归</td>
+<td>发布后在生产环境做小范围验证</td>
+<td>线上登录、Feed、发帖灰度验证</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-release-ch-03"></a></p>
+<h2 id="3-什么是冒烟测试"><a href="#3-什么是冒烟测试" class="headerlink" title="3. 什么是冒烟测试"></a>3. 什么是冒烟测试</h2><p>冒烟测试也叫 Smoke Test。</p>
+<p>它的目标是快速确认：</p>
+<blockquote>
+<p>当前版本是否具备继续测试或上线验证的基本条件。</p>
+</blockquote>
+<p>冒烟测试不追求覆盖所有细节，只验证最核心流程。</p>
+<hr>
+<h3 id="3-1-社区论坛冒烟测试示例"><a href="#3-1-社区论坛冒烟测试示例" class="headerlink" title="3.1 社区论坛冒烟测试示例"></a>3.1 社区论坛冒烟测试示例</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户能登录</span><br><span class="line">2. 首页 Feed 能打开</span><br><span class="line">3. 帖子详情能打开</span><br><span class="line">4. 用户能发帖</span><br><span class="line">5. 用户能评论</span><br><span class="line">6. 用户能点赞</span><br><span class="line">7. 用户能收到通知</span><br><span class="line">8. 管理员后台能登录</span><br><span class="line">9. 后台审核列表能打开</span><br></pre></td></tr></table></figure>
+
+<p>如果这些都失败，就没必要继续做细节测试。</p>
+<hr>
+<h3 id="3-2-冒烟测试什么时候做"><a href="#3-2-冒烟测试什么时候做" class="headerlink" title="3.2 冒烟测试什么时候做"></a>3.2 冒烟测试什么时候做</h3><p>常见时机：</p>
+<ul>
+<li>开发提测后</li>
+<li>测试环境重新部署后</li>
+<li>修复大量 Bug 后</li>
+<li>预发布环境部署后</li>
+<li>上线前发布包确认后</li>
+<li>线上发布后基础验证</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-04"></a></p>
+<h2 id="4-什么是上线验收"><a href="#4-什么是上线验收" class="headerlink" title="4. 什么是上线验收"></a>4. 什么是上线验收</h2><p>上线验收就是：</p>
+<blockquote>
+<p>在版本正式发布前，按照上线标准确认当前版本是否达到发布条件。</p>
+</blockquote>
+<p>上线验收通常关注：</p>
+<ul>
+<li>功能是否通过</li>
+<li>Bug 是否收敛</li>
+<li>风险是否可接受</li>
+<li>兼容性是否覆盖</li>
+<li>配置是否正确</li>
+<li>数据是否正常</li>
+<li>监控是否准备</li>
+<li>回滚方案是否明确</li>
+</ul>
+<hr>
+<h3 id="4-1-上线验收不是测试一个新功能"><a href="#4-1-上线验收不是测试一个新功能" class="headerlink" title="4.1 上线验收不是测试一个新功能"></a>4.1 上线验收不是测试一个新功能</h3><p>上线验收不是重新从头测所有功能。</p>
+<p>它更像是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">确认核心链路</span><br><span class="line">确认高风险点</span><br><span class="line">确认修复项</span><br><span class="line">确认上线配置</span><br><span class="line">确认线上验证计划</span><br><span class="line">确认遗留风险</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-release-ch-05"></a></p>
+<h2 id="5-什么是灰度验证"><a href="#5-什么是灰度验证" class="headerlink" title="5. 什么是灰度验证"></a>5. 什么是灰度验证</h2><p>灰度发布是指：</p>
+<blockquote>
+<p>新版本先只开放给一部分用户或一部分地区，确认稳定后再逐步放量。</p>
+</blockquote>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">先开放 5% 用户</span><br><span class="line">确认无明显问题</span><br><span class="line">再开放 20%</span><br><span class="line">再开放 50%</span><br><span class="line">最后全量</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-1-灰度验证要看什么"><a href="#5-1-灰度验证要看什么" class="headerlink" title="5.1 灰度验证要看什么"></a>5.1 灰度验证要看什么</h3><ul>
+<li>灰度用户是否命中新版本</li>
+<li>非灰度用户是否仍然使用旧版本</li>
+<li>核心功能是否正常</li>
+<li>错误率是否升高</li>
+<li>崩溃率是否升高</li>
+<li>用户反馈是否异常</li>
+<li>后台监控是否正常</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-06"></a></p>
+<h2 id="6-什么是线上回归"><a href="#6-什么是线上回归" class="headerlink" title="6. 什么是线上回归"></a>6. 什么是线上回归</h2><p>线上回归就是版本发布到生产环境后，测试同学在真实环境做小范围验证。</p>
+<p>线上回归要非常谨慎。</p>
+<p>通常只做：</p>
+<ul>
+<li>只读验证</li>
+<li>小范围测试账号验证</li>
+<li>不影响真实用户的数据操作</li>
+<li>可清理的轻量操作</li>
+</ul>
+<hr>
+<h3 id="6-1-线上回归和测试环境回归的区别"><a href="#6-1-线上回归和测试环境回归的区别" class="headerlink" title="6.1 线上回归和测试环境回归的区别"></a>6.1 线上回归和测试环境回归的区别</h3><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>测试环境回归</th>
+<th>线上回归</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>环境</td>
+<td>测试或预发布</td>
+<td>生产环境</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>测试数据</td>
+<td>真实用户环境</td>
+</tr>
+<tr>
+<td>操作风险</td>
+<td>较低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>覆盖范围</td>
+<td>可以较多</td>
+<td>要谨慎、轻量</td>
+</tr>
+<tr>
+<td>目的</td>
+<td>验证功能质量</td>
+<td>确认发布成功和核心功能可用</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-release-ch-07"></a></p>
+<h2 id="7-回归测试和功能测试有什么区别"><a href="#7-回归测试和功能测试有什么区别" class="headerlink" title="7. 回归测试和功能测试有什么区别"></a>7. 回归测试和功能测试有什么区别</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>功能测试</th>
+<th>回归测试</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>目的</td>
+<td>验证新功能是否正确</td>
+<td>验证修改后是否仍然正确</td>
+</tr>
+<tr>
+<td>触发时机</td>
+<td>新需求开发完成</td>
+<td>Bug 修复、代码变更、上线前</td>
+</tr>
+<tr>
+<td>测试范围</td>
+<td>按需求范围设计</td>
+<td>按修改点和影响范围设计</td>
+</tr>
+<tr>
+<td>重点</td>
+<td>功能逻辑、流程、异常</td>
+<td>原 Bug、相关功能、核心链路</td>
+</tr>
+<tr>
+<td>常见问题</td>
+<td>新功能不符合需求</td>
+<td>修复引入新问题、旧功能被破坏</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-release-ch-08"></a></p>
+<h2 id="8-上线前需要确认哪些内容"><a href="#8-上线前需要确认哪些内容" class="headerlink" title="8. 上线前需要确认哪些内容"></a>8. 上线前需要确认哪些内容</h2><p>上线前至少要确认这些：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">版本是否正确</span><br><span class="line">配置是否正确</span><br><span class="line">环境是否正确</span><br><span class="line">核心用例是否通过</span><br><span class="line">自动化冒烟是否通过</span><br><span class="line">高优先级 Bug 是否关闭</span><br><span class="line">遗留 Bug 是否有结论</span><br><span class="line">兼容性是否覆盖</span><br><span class="line">安全/权限高风险是否无阻塞</span><br><span class="line">性能风险是否可接受</span><br><span class="line">监控和告警是否准备</span><br><span class="line">上线后验证人员是否明确</span><br><span class="line">回滚方案是否明确</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-release-ch-09"></a></p>
+<h2 id="9-上线后需要确认哪些内容"><a href="#9-上线后需要确认哪些内容" class="headerlink" title="9. 上线后需要确认哪些内容"></a>9. 上线后需要确认哪些内容</h2><p>上线后重点确认：</p>
+<ul>
+<li>页面是否能正常打开</li>
+<li>登录是否正常</li>
+<li>核心接口是否正常</li>
+<li>Feed 是否正常加载</li>
+<li>发帖&#x2F;评论&#x2F;点赞是否正常，谨慎使用测试账号</li>
+<li>后台是否正常</li>
+<li>监控是否正常</li>
+<li>错误率是否异常</li>
+<li>崩溃率是否异常</li>
+<li>用户反馈是否异常</li>
+<li>灰度策略是否符合预期</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-10"></a></p>
+<h2 id="10-上线验收前需要准备什么"><a href="#10-上线验收前需要准备什么" class="headerlink" title="10. 上线验收前需要准备什么"></a>10. 上线验收前需要准备什么</h2><hr>
+<h3 id="10-1-准备验收清单"><a href="#10-1-准备验收清单" class="headerlink" title="10.1 准备验收清单"></a>10.1 准备验收清单</h3><p>上线前不要靠记忆。</p>
+<p>要提前准备 Checklist：</p>
+<ul>
+<li>核心链路 Checklist</li>
+<li>Bug 回归 Checklist</li>
+<li>配置检查 Checklist</li>
+<li>兼容性 Checklist</li>
+<li>线上验证 Checklist</li>
+</ul>
+<hr>
+<h3 id="10-2-准备测试账号"><a href="#10-2-准备测试账号" class="headerlink" title="10.2 准备测试账号"></a>10.2 准备测试账号</h3><p>需要准备：</p>
+<ul>
+<li>普通用户账号</li>
+<li>新用户账号</li>
+<li>被禁言用户账号</li>
+<li>管理员账号</li>
+<li>版主账号</li>
+<li>第三方登录账号</li>
+<li>线上测试账号，如果允许</li>
+</ul>
+<hr>
+<h3 id="10-3-准备上线信息"><a href="#10-3-准备上线信息" class="headerlink" title="10.3 准备上线信息"></a>10.3 准备上线信息</h3><p>需要确认：</p>
+<ul>
+<li>上线版本号</li>
+<li>上线时间</li>
+<li>上线范围</li>
+<li>灰度比例</li>
+<li>影响端：iOS、Android、Web、后台</li>
+<li>是否需要配置开关</li>
+<li>是否涉及数据变更</li>
+<li>是否涉及第三方服务</li>
+<li>是否有回滚方案</li>
+</ul>
+<hr>
+<h2 id="第二部分：海外社区论坛上线验收实战"><a href="#第二部分：海外社区论坛上线验收实战" class="headerlink" title="第二部分：海外社区论坛上线验收实战"></a>第二部分：海外社区论坛上线验收实战</h2><blockquote>
+<p>这一部分开始进入项目实战。</p>
+<p>上线验收要优先覆盖核心链路和高风险模块，不要平均用力。</p>
+</blockquote>
+<hr>
+<p><a id="forum-release-ch-11"></a></p>
+<h2 id="11-海外社区论坛上线验收重点有哪些"><a href="#11-海外社区论坛上线验收重点有哪些" class="headerlink" title="11. 海外社区论坛上线验收重点有哪些"></a>11. 海外社区论坛上线验收重点有哪些</h2><p>海外社区论坛上线验收重点通常包括：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>验收重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>注册登录</td>
+<td>用户能进来，第三方登录正常</td>
+</tr>
+<tr>
+<td>Feed</td>
+<td>首页能正常加载，列表不白屏</td>
+</tr>
+<tr>
+<td>发帖</td>
+<td>用户能发布内容，审核状态正确</td>
+</tr>
+<tr>
+<td>评论点赞</td>
+<td>核心互动正常，数量状态正确</td>
+</tr>
+<tr>
+<td>搜索</td>
+<td>内容发现入口正常</td>
+</tr>
+<tr>
+<td>通知私信</td>
+<td>消息链路正常，未读数正确</td>
+</tr>
+<tr>
+<td>举报审核</td>
+<td>社区治理功能正常</td>
+</tr>
+<tr>
+<td>权限安全</td>
+<td>普通用户不能越权</td>
+</tr>
+<tr>
+<td>国际化</td>
+<td>主要语言和时区正常</td>
+</tr>
+<tr>
+<td>兼容性</td>
+<td>主流设备和浏览器正常</td>
+</tr>
+<tr>
+<td>后台</td>
+<td>运营和审核后台可用</td>
+</tr>
+<tr>
+<td>监控</td>
+<td>错误率、崩溃率、接口指标正常</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-release-ch-12"></a></p>
+<h2 id="12-注册登录上线验收怎么做"><a href="#12-注册登录上线验收怎么做" class="headerlink" title="12. 注册登录上线验收怎么做"></a>12. 注册登录上线验收怎么做</h2><p>注册登录是 P0 验收项。</p>
+<hr>
+<h3 id="12-1-邮箱登录验收"><a href="#12-1-邮箱登录验收" class="headerlink" title="12.1 邮箱登录验收"></a>12.1 邮箱登录验收</h3><p>检查：</p>
+<ul>
+<li>正确邮箱密码登录成功</li>
+<li>错误密码登录失败</li>
+<li>登录后能进入首页</li>
+<li>Token 或登录态正常</li>
+<li>退出登录后不能访问个人中心</li>
+</ul>
+<hr>
+<h3 id="12-2-第三方登录验收"><a href="#12-2-第三方登录验收" class="headerlink" title="12.2 第三方登录验收"></a>12.2 第三方登录验收</h3><p>检查：</p>
+<ul>
+<li>Google 登录正常，按支持范围</li>
+<li>Apple 登录正常，按支持范围</li>
+<li>授权成功后能回跳</li>
+<li>授权取消后有合理提示</li>
+<li>已有账号二次登录不重复创建账号</li>
+</ul>
+<hr>
+<h3 id="12-3-上线前特别注意"><a href="#12-3-上线前特别注意" class="headerlink" title="12.3 上线前特别注意"></a>12.3 上线前特别注意</h3><p>第三方登录经常依赖配置。</p>
+<p>上线前要确认：</p>
+<ul>
+<li>回调地址配置正确</li>
+<li>生产环境 clientId 正确</li>
+<li>App 包名或 Bundle ID 配置正确</li>
+<li>Web 域名白名单正确</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-13"></a></p>
+<h2 id="13-用户资料上线验收怎么做"><a href="#13-用户资料上线验收怎么做" class="headerlink" title="13. 用户资料上线验收怎么做"></a>13. 用户资料上线验收怎么做</h2><p>用户资料影响社区身份展示。</p>
+<p>检查：</p>
+<ul>
+<li>获取个人资料正常</li>
+<li>修改昵称正常</li>
+<li>修改头像正常</li>
+<li>修改简介正常</li>
+<li>帖子作者信息展示正确</li>
+<li>评论作者信息展示正确</li>
+<li>多语言昵称和 Emoji 展示正常</li>
+<li>他人不能修改自己的资料</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-14"></a></p>
+<h2 id="14-发帖上线验收怎么做"><a href="#14-发帖上线验收怎么做" class="headerlink" title="14. 发帖上线验收怎么做"></a>14. 发帖上线验收怎么做</h2><p>发帖是社区核心链路。</p>
+<hr>
+<h3 id="14-1-发帖主流程"><a href="#14-1-发帖主流程" class="headerlink" title="14.1 发帖主流程"></a>14.1 发帖主流程</h3><p>检查：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录用户</span><br><span class="line">  ↓</span><br><span class="line">进入发帖页</span><br><span class="line">  ↓</span><br><span class="line">输入标题和正文</span><br><span class="line">  ↓</span><br><span class="line">上传图片，按需求</span><br><span class="line">  ↓</span><br><span class="line">点击发布</span><br><span class="line">  ↓</span><br><span class="line">查看发布结果</span><br><span class="line">  ↓</span><br><span class="line">查看详情页、Feed、用户主页</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="14-2-审核相关验收"><a href="#14-2-审核相关验收" class="headerlink" title="14.2 审核相关验收"></a>14.2 审核相关验收</h3><p>如果发帖涉及审核，检查：</p>
+<ul>
+<li>正常内容发布后状态正确</li>
+<li>风险内容进入审核或被拦截，按测试样本</li>
+<li>审核中内容普通用户不可见</li>
+<li>管理员后台能看到待审核内容</li>
+<li>审核通过后前台展示</li>
+<li>审核拒绝后前台不展示</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-15"></a></p>
+<h2 id="15-评论与回复上线验收怎么做"><a href="#15-评论与回复上线验收怎么做" class="headerlink" title="15. 评论与回复上线验收怎么做"></a>15. 评论与回复上线验收怎么做</h2><p>检查：</p>
+<ul>
+<li>正常评论成功</li>
+<li>正常回复成功</li>
+<li>评论列表展示正确</li>
+<li>评论数更新正确</li>
+<li>评论后作者收到通知，按需求</li>
+<li>被禁言用户不能评论</li>
+<li>已删除帖子不能评论</li>
+<li>删除评论后列表和数量正确</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-16"></a></p>
+<h2 id="16-点赞、收藏、关注上线验收怎么做"><a href="#16-点赞、收藏、关注上线验收怎么做" class="headerlink" title="16. 点赞、收藏、关注上线验收怎么做"></a>16. 点赞、收藏、关注上线验收怎么做</h2><p>检查：</p>
+<ul>
+<li>点赞成功</li>
+<li>取消点赞成功</li>
+<li>重复点击不会计数异常</li>
+<li>收藏成功</li>
+<li>取消收藏成功</li>
+<li>收藏列表展示正确</li>
+<li>关注用户成功</li>
+<li>取消关注成功</li>
+<li>粉丝数和关注数正确</li>
+<li>不能关注自己</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-17"></a></p>
+<h2 id="17-Feed-信息流上线验收怎么做"><a href="#17-Feed-信息流上线验收怎么做" class="headerlink" title="17. Feed 信息流上线验收怎么做"></a>17. Feed 信息流上线验收怎么做</h2><p>Feed 是首页核心。</p>
+<p>检查：</p>
+<ul>
+<li>首页 Feed 能正常加载</li>
+<li>下拉刷新正常</li>
+<li>上拉加载更多正常</li>
+<li>列表无明显重复数据</li>
+<li>删除或审核失败内容不展示</li>
+<li>详情页返回 Feed 后状态正常</li>
+<li>图片和视频卡片展示正常</li>
+<li>弱网下有合理加载提示</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-18"></a></p>
+<h2 id="18-搜索上线验收怎么做"><a href="#18-搜索上线验收怎么做" class="headerlink" title="18. 搜索上线验收怎么做"></a>18. 搜索上线验收怎么做</h2><p>检查：</p>
+<ul>
+<li>搜索帖子正常</li>
+<li>搜索用户正常</li>
+<li>搜索无结果展示正常</li>
+<li>搜索多语言关键词正常，按支持语言</li>
+<li>删除内容不应出现在搜索中，允许延迟按需求判断</li>
+<li>搜索结果点击跳转正确</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-19"></a></p>
+<h2 id="19-通知与私信上线验收怎么做"><a href="#19-通知与私信上线验收怎么做" class="headerlink" title="19. 通知与私信上线验收怎么做"></a>19. 通知与私信上线验收怎么做</h2><hr>
+<h3 id="19-1-通知验收"><a href="#19-1-通知验收" class="headerlink" title="19.1 通知验收"></a>19.1 通知验收</h3><p>检查：</p>
+<ul>
+<li>评论后生成通知</li>
+<li>点赞后生成通知，按需求</li>
+<li>关注后生成通知</li>
+<li>未读数增加</li>
+<li>标记已读后未读数减少</li>
+<li>点击通知跳转正确</li>
+<li>已删除内容通知点击有合理提示</li>
+</ul>
+<hr>
+<h3 id="19-2-私信验收"><a href="#19-2-私信验收" class="headerlink" title="19.2 私信验收"></a>19.2 私信验收</h3><p>检查：</p>
+<ul>
+<li>发送文本消息成功</li>
+<li>对方能收到消息</li>
+<li>会话列表更新</li>
+<li>未读数更新</li>
+<li>打开会话后已读状态更新</li>
+<li>用户不能查看别人的私信</li>
+<li>被拉黑后不能继续发送，按需求</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-20"></a></p>
+<h2 id="20-举报与审核后台上线验收怎么做"><a href="#20-举报与审核后台上线验收怎么做" class="headerlink" title="20. 举报与审核后台上线验收怎么做"></a>20. 举报与审核后台上线验收怎么做</h2><p>检查：</p>
+<ul>
+<li>用户可以举报帖子</li>
+<li>用户可以举报评论</li>
+<li>举报后后台有记录</li>
+<li>后台列表加载正常</li>
+<li>管理员可以审核通过</li>
+<li>管理员可以审核拒绝</li>
+<li>管理员可以隐藏或删除内容，按需求</li>
+<li>审核操作有日志</li>
+<li>普通用户不能访问后台接口</li>
+<li>版主权限边界正确，按需求</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-21"></a></p>
+<h2 id="21-国际化、兼容性、安全上线验收怎么做"><a href="#21-国际化、兼容性、安全上线验收怎么做" class="headerlink" title="21. 国际化、兼容性、安全上线验收怎么做"></a>21. 国际化、兼容性、安全上线验收怎么做</h2><hr>
+<h3 id="21-1-国际化验收"><a href="#21-1-国际化验收" class="headerlink" title="21.1 国际化验收"></a>21.1 国际化验收</h3><p>检查：</p>
+<ul>
+<li>主要语言页面无明显未翻译 key</li>
+<li>多语言内容展示不乱码</li>
+<li>时间显示不明显错误</li>
+<li>主要错误提示语言正确</li>
+<li>合规入口链接可打开</li>
+</ul>
+<hr>
+<h3 id="21-2-兼容性验收"><a href="#21-2-兼容性验收" class="headerlink" title="21.2 兼容性验收"></a>21.2 兼容性验收</h3><p>至少覆盖：</p>
+<ul>
+<li>iOS 主流设备</li>
+<li>Android 主流设备</li>
+<li>Web Chrome</li>
+<li>Web Safari</li>
+<li>主要小屏或低端设备，按项目情况</li>
+</ul>
+<p>重点看：</p>
+<ul>
+<li>登录</li>
+<li>Feed</li>
+<li>发帖</li>
+<li>图片上传</li>
+<li>评论</li>
+<li>Push 或通知</li>
+</ul>
+<hr>
+<h3 id="21-3-安全验收"><a href="#21-3-安全验收" class="headerlink" title="21.3 安全验收"></a>21.3 安全验收</h3><p>上线前至少确认：</p>
+<ul>
+<li>未登录不能访问登录态接口</li>
+<li>普通用户不能访问管理员接口</li>
+<li>用户不能操作别人私信或通知</li>
+<li>被禁言用户不能发帖评论</li>
+<li>接口不返回明显敏感字段</li>
+<li>文件上传限制仍然有效</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-22"></a></p>
+<h2 id="22-性能与监控上线验收怎么做"><a href="#22-性能与监控上线验收怎么做" class="headerlink" title="22. 性能与监控上线验收怎么做"></a>22. 性能与监控上线验收怎么做</h2><p>上线前后要关注监控。</p>
+<hr>
+<h3 id="22-1-上线前确认"><a href="#22-1-上线前确认" class="headerlink" title="22.1 上线前确认"></a>22.1 上线前确认</h3><ul>
+<li>核心接口响应时间无明显异常</li>
+<li>自动化冒烟通过</li>
+<li>压测或性能验证结论已确认，按项目需要</li>
+<li>监控面板可用</li>
+<li>告警规则可用</li>
+<li>日志可查询</li>
+</ul>
+<hr>
+<h3 id="22-2-上线后观察"><a href="#22-2-上线后观察" class="headerlink" title="22.2 上线后观察"></a>22.2 上线后观察</h3><ul>
+<li>登录接口错误率</li>
+<li>Feed 接口错误率和响应时间</li>
+<li>发帖&#x2F;评论接口错误率</li>
+<li>搜索接口耗时</li>
+<li>通知队列积压</li>
+<li>私信连接异常</li>
+<li>App 崩溃率</li>
+<li>Web 前端错误</li>
+</ul>
+<hr>
+<h2 id="第三部分：回归测试专项方法"><a href="#第三部分：回归测试专项方法" class="headerlink" title="第三部分：回归测试专项方法"></a>第三部分：回归测试专项方法</h2><blockquote>
+<p>这一部分不是某个具体模块，而是一套可以复用的方法。</p>
+<p>当你面对 Bug 修复、版本上线、灰度发布时，都可以用这些方法来规划回归。</p>
+</blockquote>
+<hr>
+<p><a id="forum-release-ch-23"></a></p>
+<h2 id="23-Bug-回归怎么做"><a href="#23-Bug-回归怎么做" class="headerlink" title="23. Bug 回归怎么做"></a>23. Bug 回归怎么做</h2><p>Bug 回归不能只看“开发说修了”。</p>
+<hr>
+<h3 id="23-1-Bug-回归步骤"><a href="#23-1-Bug-回归步骤" class="headerlink" title="23.1 Bug 回归步骤"></a>23.1 Bug 回归步骤</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 阅读 Bug 描述</span><br><span class="line">2. 确认修复版本已部署</span><br><span class="line">3. 按原复现步骤重新操作</span><br><span class="line">4. 验证实际结果是否符合预期</span><br><span class="line">5. 验证相关影响范围</span><br><span class="line">6. 更新 Bug 状态</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="23-2-Bug-回归要看什么"><a href="#23-2-Bug-回归要看什么" class="headerlink" title="23.2 Bug 回归要看什么"></a>23.2 Bug 回归要看什么</h3><ul>
+<li>原问题是否消失</li>
+<li>数据是否正确</li>
+<li>提示是否正确</li>
+<li>相关功能是否受影响</li>
+<li>是否在多个端都修复，按影响范围</li>
+<li>是否需要补充自动化用例</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-24"></a></p>
+<h2 id="24-版本回归怎么做"><a href="#24-版本回归怎么做" class="headerlink" title="24. 版本回归怎么做"></a>24. 版本回归怎么做</h2><p>版本回归是上线前整体确认。</p>
+<hr>
+<h3 id="24-1-回归范围来源"><a href="#24-1-回归范围来源" class="headerlink" title="24.1 回归范围来源"></a>24.1 回归范围来源</h3><p>版本回归范围一般来自：</p>
+<ul>
+<li>本期需求范围</li>
+<li>Bug 修复范围</li>
+<li>影响范围分析</li>
+<li>核心链路清单</li>
+<li>历史高风险模块</li>
+<li>自动化冒烟结果</li>
+</ul>
+<hr>
+<h3 id="24-2-回归优先级"><a href="#24-2-回归优先级" class="headerlink" title="24.2 回归优先级"></a>24.2 回归优先级</h3><p>如果时间有限，优先回归：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录</span><br><span class="line">Feed</span><br><span class="line">发帖</span><br><span class="line">评论</span><br><span class="line">点赞</span><br><span class="line">通知</span><br><span class="line">私信</span><br><span class="line">举报审核</span><br><span class="line">权限高风险</span><br><span class="line">线上配置相关功能</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-release-ch-25"></a></p>
+<h2 id="25-核心链路回归怎么做"><a href="#25-核心链路回归怎么做" class="headerlink" title="25. 核心链路回归怎么做"></a>25. 核心链路回归怎么做</h2><p>核心链路是用户最常用、出问题影响最大的流程。</p>
+<hr>
+<h3 id="25-1-社区论坛核心链路示例"><a href="#25-1-社区论坛核心链路示例" class="headerlink" title="25.1 社区论坛核心链路示例"></a>25.1 社区论坛核心链路示例</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录 → 浏览 Feed → 打开帖子详情 → 点赞 → 评论 → 收到通知</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">登录 → 发帖 → Feed 展示 → 搜索帖子 → 删除帖子</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户举报帖子 → 后台审核处理 → 前台状态更新</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="25-2-核心链路回归重点"><a href="#25-2-核心链路回归重点" class="headerlink" title="25.2 核心链路回归重点"></a>25.2 核心链路回归重点</h3><ul>
+<li>流程是否完整</li>
+<li>数据是否一致</li>
+<li>权限是否正确</li>
+<li>通知是否生成</li>
+<li>前后台状态是否同步</li>
+<li>异常提示是否合理</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-26"></a></p>
+<h2 id="26-影响范围回归怎么做"><a href="#26-影响范围回归怎么做" class="headerlink" title="26. 影响范围回归怎么做"></a>26. 影响范围回归怎么做</h2><p>影响范围回归是回归测试的重点。</p>
+<hr>
+<h3 id="26-1-如何判断影响范围"><a href="#26-1-如何判断影响范围" class="headerlink" title="26.1 如何判断影响范围"></a>26.1 如何判断影响范围</h3><p>可以问开发：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">这次改了哪些接口？</span><br><span class="line">改了哪些表或字段？</span><br><span class="line">是否影响缓存？</span><br><span class="line">是否影响前端组件？</span><br><span class="line">是否影响后台配置？</span><br><span class="line">是否影响其他端？</span><br><span class="line">是否影响老版本 App？</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="26-2-示例：修复评论数问题"><a href="#26-2-示例：修复评论数问题" class="headerlink" title="26.2 示例：修复评论数问题"></a>26.2 示例：修复评论数问题</h3><p>如果开发修复了评论数不更新，影响范围可能包括：</p>
+<ul>
+<li>评论发布</li>
+<li>评论删除</li>
+<li>评论数统计</li>
+<li>Feed 评论数</li>
+<li>详情评论数</li>
+<li>通知生成</li>
+<li>热门排序，按规则</li>
+<li>数据库和缓存计数</li>
+</ul>
+<p>不能只回归“评论数变了没有”。</p>
+<hr>
+<p><a id="forum-release-ch-27"></a></p>
+<h2 id="27-自动化回归怎么做"><a href="#27-自动化回归怎么做" class="headerlink" title="27. 自动化回归怎么做"></a>27. 自动化回归怎么做</h2><p>自动化适合做快速冒烟和核心接口回归。</p>
+<hr>
+<h3 id="27-1-自动化回归适合覆盖"><a href="#27-1-自动化回归适合覆盖" class="headerlink" title="27.1 自动化回归适合覆盖"></a>27.1 自动化回归适合覆盖</h3><ul>
+<li>登录接口</li>
+<li>用户信息接口</li>
+<li>发帖接口</li>
+<li>评论接口</li>
+<li>点赞接口</li>
+<li>Feed 接口</li>
+<li>权限接口</li>
+<li>搜索基础接口</li>
+<li>通知未读数接口</li>
+</ul>
+<hr>
+<h3 id="27-2-自动化回归结果怎么看"><a href="#27-2-自动化回归结果怎么看" class="headerlink" title="27.2 自动化回归结果怎么看"></a>27.2 自动化回归结果怎么看</h3><p>如果自动化失败，要先判断：</p>
+<ul>
+<li>是产品问题</li>
+<li>是脚本问题</li>
+<li>是数据问题</li>
+<li>是环境问题</li>
+<li>是网络问题</li>
+</ul>
+<p>确认是产品问题后再提交 Bug。</p>
+<hr>
+<p><a id="forum-release-ch-28"></a></p>
+<h2 id="28-灰度发布回归怎么做"><a href="#28-灰度发布回归怎么做" class="headerlink" title="28. 灰度发布回归怎么做"></a>28. 灰度发布回归怎么做</h2><p>灰度阶段要关注“范围是否正确”和“指标是否稳定”。</p>
+<hr>
+<h3 id="28-1-灰度验证内容"><a href="#28-1-灰度验证内容" class="headerlink" title="28.1 灰度验证内容"></a>28.1 灰度验证内容</h3><ul>
+<li>灰度用户是否看到新功能</li>
+<li>非灰度用户是否不受影响</li>
+<li>灰度配置是否正确</li>
+<li>核心链路是否正常</li>
+<li>监控指标是否异常</li>
+<li>用户反馈是否异常</li>
+</ul>
+<hr>
+<h3 id="28-2-灰度放量前确认"><a href="#28-2-灰度放量前确认" class="headerlink" title="28.2 灰度放量前确认"></a>28.2 灰度放量前确认</h3><p>每次放量前确认：</p>
+<ul>
+<li>当前灰度无阻塞问题</li>
+<li>错误率无明显升高</li>
+<li>崩溃率无明显升高</li>
+<li>核心功能正常</li>
+<li>客服&#x2F;用户反馈无集中异常</li>
+<li>遗留风险可接受</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-29"></a></p>
+<h2 id="29-线上发布后验证怎么做"><a href="#29-线上发布后验证怎么做" class="headerlink" title="29. 线上发布后验证怎么做"></a>29. 线上发布后验证怎么做</h2><p>线上验证要轻量、谨慎、可控。</p>
+<hr>
+<h3 id="29-1-线上验证原则"><a href="#29-1-线上验证原则" class="headerlink" title="29.1 线上验证原则"></a>29.1 线上验证原则</h3><ul>
+<li>使用测试账号</li>
+<li>不影响真实用户</li>
+<li>不制造大量测试数据</li>
+<li>可以清理的数据才操作</li>
+<li>不做高风险破坏性测试</li>
+<li>不在线上压测</li>
+</ul>
+<hr>
+<h3 id="29-2-线上验证内容"><a href="#29-2-线上验证内容" class="headerlink" title="29.2 线上验证内容"></a>29.2 线上验证内容</h3><ul>
+<li>页面是否可访问</li>
+<li>登录是否正常</li>
+<li>Feed 是否正常加载</li>
+<li>详情页是否正常</li>
+<li>发帖或评论是否正常，按允许范围</li>
+<li>后台是否可访问</li>
+<li>监控是否正常</li>
+<li>关键配置是否生效</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-30"></a></p>
+<h2 id="30-回滚后验证怎么做"><a href="#30-回滚后验证怎么做" class="headerlink" title="30. 回滚后验证怎么做"></a>30. 回滚后验证怎么做</h2><p>如果上线后出现严重问题，可能需要回滚。</p>
+<p>回滚后也要验证。</p>
+<hr>
+<h3 id="30-1-回滚验证内容"><a href="#30-1-回滚验证内容" class="headerlink" title="30.1 回滚验证内容"></a>30.1 回滚验证内容</h3><ul>
+<li>旧版本是否恢复</li>
+<li>核心功能是否恢复正常</li>
+<li>新版本产生的数据是否兼容旧版本</li>
+<li>配置是否回滚</li>
+<li>前端资源是否回滚</li>
+<li>App 灰度配置是否恢复</li>
+<li>后台功能是否恢复</li>
+<li>监控指标是否恢复</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-31"></a></p>
+<h2 id="31-上线风险如何评估"><a href="#31-上线风险如何评估" class="headerlink" title="31. 上线风险如何评估"></a>31. 上线风险如何评估</h2><p>上线前如果还有遗留 Bug，需要评估风险。</p>
+<hr>
+<h3 id="31-1-风险评估维度"><a href="#31-1-风险评估维度" class="headerlink" title="31.1 风险评估维度"></a>31.1 风险评估维度</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>影响范围</td>
+<td>影响多少用户、哪些端</td>
+</tr>
+<tr>
+<td>严重程度</td>
+<td>是否影响核心链路</td>
+</tr>
+<tr>
+<td>发生概率</td>
+<td>是否容易触发</td>
+</tr>
+<tr>
+<td>是否有规避方案</td>
+<td>用户是否能绕开</td>
+</tr>
+<tr>
+<td>是否有监控</td>
+<td>上线后能否及时发现</td>
+</tr>
+<tr>
+<td>是否可回滚</td>
+<td>出问题后能否快速恢复</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="31-2-不建议上线的风险"><a href="#31-2-不建议上线的风险" class="headerlink" title="31.2 不建议上线的风险"></a>31.2 不建议上线的风险</h3><ul>
+<li>登录失败</li>
+<li>首页 Feed 大面积不可用</li>
+<li>发帖评论核心链路失败</li>
+<li>严重越权</li>
+<li>私信隐私泄露</li>
+<li>审核后台无法处理违规内容</li>
+<li>高错误率或严重性能问题</li>
+<li>数据丢失或数据错乱</li>
+</ul>
+<hr>
+<p><a id="forum-release-ch-32"></a></p>
+<h2 id="32-回归测试问题如何记录和同步"><a href="#32-回归测试问题如何记录和同步" class="headerlink" title="32. 回归测试问题如何记录和同步"></a>32. 回归测试问题如何记录和同步</h2><p>回归测试要及时同步结果。</p>
+<hr>
+<h3 id="32-1-回归记录应包含"><a href="#32-1-回归记录应包含" class="headerlink" title="32.1 回归记录应包含"></a>32.1 回归记录应包含</h3><ul>
+<li>回归时间</li>
+<li>回归版本</li>
+<li>回归环境</li>
+<li>回归范围</li>
+<li>通过项</li>
+<li>失败项</li>
+<li>新发现问题</li>
+<li>阻塞问题</li>
+<li>遗留风险</li>
+<li>是否建议上线</li>
+</ul>
+<hr>
+<h3 id="32-2-回归同步示例"><a href="#32-2-回归同步示例" class="headerlink" title="32.2 回归同步示例"></a>32.2 回归同步示例</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">回归环境：Pre-release</span><br><span class="line">回归版本：v2.3.0-rc3</span><br><span class="line">回归范围：登录、Feed、发帖、评论、点赞、通知、审核后台</span><br><span class="line">回归结果：核心链路通过</span><br><span class="line">失败项：Safari Web Google 登录偶现回跳失败，已记录为 P1</span><br><span class="line">风险评估：影响 Safari Web 第三方登录，邮箱登录可用；建议产品和研发确认是否阻塞上线</span><br><span class="line">结论：除上述风险外，其余核心流程通过</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第四部分：Checklist、模板与总结"><a href="#第四部分：Checklist、模板与总结" class="headerlink" title="第四部分：Checklist、模板与总结"></a>第四部分：Checklist、模板与总结</h2><blockquote>
+<p>上线验收和回归测试最重要的是有清单、有记录、有结论，不能只凭印象说“我测过了”。</p>
+</blockquote>
+<hr>
+<p><a id="forum-release-ch-33"></a></p>
+<h2 id="33-上线验收-Checklist"><a href="#33-上线验收-Checklist" class="headerlink" title="33. 上线验收 Checklist"></a>33. 上线验收 Checklist</h2><h3 id="33-1-核心功能-Checklist"><a href="#33-1-核心功能-Checklist" class="headerlink" title="33.1 核心功能 Checklist"></a>33.1 核心功能 Checklist</h3><table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>是否通过</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>邮箱登录正常</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>第三方登录正常</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>首页 Feed 正常加载</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>帖子详情正常打开</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>发帖成功</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>评论成功</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>点赞&#x2F;取消点赞成功</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>搜索正常</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>通知未读数正常</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>私信发送正常</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>举报成功</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>审核后台可用</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="33-2-高风险-Checklist"><a href="#33-2-高风险-Checklist" class="headerlink" title="33.2 高风险 Checklist"></a>33.2 高风险 Checklist</h3><table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>是否通过</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>未登录不能发帖评论</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>普通用户不能删除别人帖子</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>用户不能查看别人私信</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>被禁言用户不能发帖评论</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>审核失败内容前台不可见</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>已删除内容搜索不可见或最终不可见</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>接口不返回明显敏感字段</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>后台接口普通用户不可访问</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="33-3-发布配置-Checklist"><a href="#33-3-发布配置-Checklist" class="headerlink" title="33.3 发布配置 Checklist"></a>33.3 发布配置 Checklist</h3><table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>是否通过</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>前端版本正确</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>后端版本正确</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>App 版本号正确</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>API 域名正确</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>第三方登录回调配置正确</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>多语言资源已发布</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>审核规则配置正确</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>灰度开关配置正确</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>监控告警已配置</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>回滚方案已确认</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-release-ch-34"></a></p>
+<h2 id="34-回归测试记录模板"><a href="#34-回归测试记录模板" class="headerlink" title="34. 回归测试记录模板"></a>34. 回归测试记录模板</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line"># 回归测试记录</span><br><span class="line"></span><br><span class="line">项目名称：</span><br><span class="line">回归版本：</span><br><span class="line">回归环境：</span><br><span class="line">回归时间：</span><br><span class="line">回归人员：</span><br><span class="line"></span><br><span class="line">## 1. 回归范围</span><br><span class="line">- 登录</span><br><span class="line">- Feed</span><br><span class="line">- 发帖</span><br><span class="line">- 评论</span><br><span class="line">- 点赞</span><br><span class="line">- 通知</span><br><span class="line">- 审核后台</span><br><span class="line"></span><br><span class="line">## 2. 回归结果</span><br><span class="line">计划回归用例数：</span><br><span class="line">已执行用例数：</span><br><span class="line">通过数：</span><br><span class="line">失败数：</span><br><span class="line">阻塞数：</span><br><span class="line"></span><br><span class="line">## 3. 失败问题</span><br><span class="line">| 问题 | 严重程度 | 状态 | 负责人 |</span><br><span class="line">|---|---|---|---|</span><br><span class="line"></span><br><span class="line">## 4. 遗留风险</span><br><span class="line"></span><br><span class="line">## 5. 测试结论</span><br><span class="line">是否建议上线：是 / 否 / 有条件上线</span><br><span class="line">原因：</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-release-ch-35"></a></p>
+<h2 id="35-Bug-回归记录模板"><a href="#35-Bug-回归记录模板" class="headerlink" title="35. Bug 回归记录模板"></a>35. Bug 回归记录模板</h2><table>
+<thead>
+<tr>
+<th>Bug ID</th>
+<th>Bug 标题</th>
+<th>修复版本</th>
+<th>回归环境</th>
+<th>回归结果</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BUG-001</td>
+<td>被禁言用户可发帖</td>
+<td>v2.3.0-rc2</td>
+<td>Test</td>
+<td>通过</td>
+<td>接口和页面均验证</td>
+</tr>
+<tr>
+<td>BUG-002</td>
+<td>Feed 评论数不更新</td>
+<td>v2.3.0-rc2</td>
+<td>Test</td>
+<td>不通过</td>
+<td>详情已更新，Feed 仍异常</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-release-ch-36"></a></p>
+<h2 id="36-上线风险说明模板"><a href="#36-上线风险说明模板" class="headerlink" title="36. 上线风险说明模板"></a>36. 上线风险说明模板</h2><p>如果上线前有遗留风险，可以这样写：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line"># 上线风险说明</span><br><span class="line"></span><br><span class="line">风险项：Safari Web Google 登录偶现回跳失败</span><br><span class="line">影响范围：Web Safari 用户使用 Google 登录时可能失败</span><br><span class="line">严重程度：P1</span><br><span class="line">发生概率：偶现，约 2/10 次</span><br><span class="line">规避方案：用户可使用邮箱登录；Chrome 浏览器正常</span><br><span class="line">当前处理结论：开发已定位，修复需额外时间；本期是否上线需产品/研发确认</span><br><span class="line">监控方式：上线后关注登录失败率和用户反馈</span><br><span class="line">测试建议：如 Safari Web 用户占比较高，建议修复后上线；如占比较低，可评估灰度上线</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-release-ch-37"></a></p>
+<h2 id="37-新手常见误区"><a href="#37-新手常见误区" class="headerlink" title="37. 新手常见误区"></a>37. 新手常见误区</h2><h3 id="37-1-只回归原-Bug，不测影响范围"><a href="#37-1-只回归原-Bug，不测影响范围" class="headerlink" title="37.1 只回归原 Bug，不测影响范围"></a>37.1 只回归原 Bug，不测影响范围</h3><p>修一个 Bug 可能影响相关功能。</p>
+<p>例如修评论数，要回归：</p>
+<ul>
+<li>评论发布</li>
+<li>评论删除</li>
+<li>Feed 评论数</li>
+<li>详情评论数</li>
+<li>通知</li>
+</ul>
+<hr>
+<h3 id="37-2-上线验收只靠记忆"><a href="#37-2-上线验收只靠记忆" class="headerlink" title="37.2 上线验收只靠记忆"></a>37.2 上线验收只靠记忆</h3><p>上线前一定要有 Checklist。</p>
+<p>不要凭感觉说“核心功能都测过了”。</p>
+<hr>
+<h3 id="37-3-不记录遗留风险"><a href="#37-3-不记录遗留风险" class="headerlink" title="37.3 不记录遗留风险"></a>37.3 不记录遗留风险</h3><p>如果还有未修问题，必须记录影响和处理结论。</p>
+<p>不能只口头说“这个问题不大”。</p>
+<hr>
+<h3 id="37-4-线上验证操作太重"><a href="#37-4-线上验证操作太重" class="headerlink" title="37.4 线上验证操作太重"></a>37.4 线上验证操作太重</h3><p>线上环境是真实用户环境。</p>
+<p>不要在线上做大量测试数据、压测、破坏性安全测试。</p>
+<hr>
+<h3 id="37-5-自动化失败不分析"><a href="#37-5-自动化失败不分析" class="headerlink" title="37.5 自动化失败不分析"></a>37.5 自动化失败不分析</h3><p>自动化回归失败后，要判断是产品问题、脚本问题还是环境问题。</p>
+<p>不能直接忽略，也不能直接全部当 Bug。</p>
+<hr>
+<p><a id="forum-release-ch-38"></a></p>
+<h2 id="38-最后总结"><a href="#38-最后总结" class="headerlink" title="38. 最后总结"></a>38. 最后总结</h2><p>上线验收与回归测试的核心不是“最后随便点一遍”，而是要回答清楚：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Bug 是否真的修复？</span><br><span class="line">修复是否影响其他功能？</span><br><span class="line">核心链路是否通过？</span><br><span class="line">高风险场景是否确认？</span><br><span class="line">自动化冒烟是否通过？</span><br><span class="line">上线配置是否正确？</span><br><span class="line">灰度和线上验证是否有计划？</span><br><span class="line">遗留风险是否可接受？</span><br><span class="line">是否建议上线？</span><br></pre></td></tr></table></figure>
+
+<p>对于海外社区论坛项目，上线前最需要重点确认：</p>
+<ul>
+<li>注册登录</li>
+<li>第三方登录</li>
+<li>Feed 首页</li>
+<li>发帖评论</li>
+<li>点赞收藏关注</li>
+<li>搜索</li>
+<li>通知私信</li>
+<li>举报审核后台</li>
+<li>权限和隐私</li>
+<li>风控审核状态</li>
+<li>国际化和时区</li>
+<li>主流设备和浏览器</li>
+<li>核心接口错误率</li>
+<li>上线配置和灰度开关</li>
+<li>回滚方案</li>
+</ul>
+<p>你可以记住一个万能上线验收公式：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Bug 回归 + 影响范围回归 + 核心链路回归 + 高风险 Checklist + 上线配置确认 + 线上验证计划 = 可控的上线验收</span><br></pre></td></tr></table></figure>
+
+<p>只要你每次上线前都按这个公式执行，测试结论就会更有依据，也能更好地帮助团队降低上线风险。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-19-overseas-forum-release-regression-guide/">https://linn0813.github.io/2026-05-19-overseas-forum-release-regression-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a><a class="post-meta__tags" href="/tags/%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6/">上线验收</a><a class="post-meta__tags" href="/tags/%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95/">回归测试</a><a class="post-meta__tags" href="/tags/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/">灰度发布</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-release-regression-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-05-18-overseas-forum-test-plan-guide/" title="学习笔记：海外社区论坛 - 测试计划与测试方案入门"><img class="cover" src="/img/overseas-forum-test-plan-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 测试计划与测试方案入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛测试计划与测试方案入门：计划与方案区分、需求到范围的拆解、排期与准入准出，附模板与范围风险示例。</div></div></div></a><a class="pagination-related" href="/2026-05-20-overseas-forum-ai-testing-guide/" title="学习笔记：海外社区论坛 - AI 辅助测试与提效入门"><img class="cover" src="/img/overseas-forum-ai-testing-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - AI 辅助测试与提效入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛测试中 AI 的定位与边界、按场景的提效用法、可复用提示词模板，以及保密、校验与常见误区。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-10</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-09-overseas-forum-api-testing-guide/" title="学习笔记：海外社区论坛 - 接口测试入门"><img class="cover" src="/img/overseas-forum-api-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-09</div><div class="info-item-2">学习笔记：海外社区论坛 - 接口测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-12</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-07-overseas-forum-functional-testing-guide/" title="学习笔记：海外社区论坛 - 功能测试入门"><img class="cover" src="/img/overseas-forum-functional-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-07</div><div class="info-item-2">学习笔记：海外社区论坛 - 功能测试入门</div></div><div class="info-2"><div class="info-item-1">结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。</div></div></div></a><a class="pagination-related" href="/2026-05-11-overseas-forum-permission-testing-guide/" title="学习笔记：海外社区论坛 - 权限测试专项入门"><img class="cover" src="/img/overseas-forum-permission-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-11</div><div class="info-item-2">学习笔记：海外社区论坛 - 权限测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛权限测试专项入门：角色与状态、前后端权限、越权与权限矩阵、按模块实战及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-13-overseas-forum-i18n-l10n-guide/" title="学习笔记：海外社区论坛 - 国际化与本地化专项入门"><img class="cover" src="/img/overseas-forum-i18n-l10n-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-13</div><div class="info-item-2">学习笔记：海外社区论坛 - 国际化与本地化专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛国际化与本地化专项入门：I18N/L10N 基础、各模块实战、文案布局与时区等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-14</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-15-overseas-forum-performance-guide/" title="学习笔记：海外社区论坛 - 性能测试入门"><img class="cover" src="/img/overseas-forum-performance-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-15</div><div class="info-item-2">学习笔记：海外社区论坛 - 性能测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E4%B8%8E%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">第一部分：上线验收与回归测试基础概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%AD%A6%E4%B9%A0%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E4%B8%8E%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">1. 为什么要学习上线验收与回归测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E5%8F%AA%E5%81%9A%E7%AC%AC%E4%B8%80%E8%BD%AE%E6%B5%8B%E8%AF%95"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 为什么不能只做第一轮测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E7%9A%84%E4%BB%B7%E5%80%BC"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 上线验收的价值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text">2. 什么是回归测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95%E5%88%86%E5%87%A0%E7%B1%BB"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 回归测试分几类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%92%E7%83%9F%E6%B5%8B%E8%AF%95"><span class="toc-number">4.</span> <span class="toc-text">3. 什么是冒烟测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E5%86%92%E7%83%9F%E6%B5%8B%E8%AF%95%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 社区论坛冒烟测试示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%86%92%E7%83%9F%E6%B5%8B%E8%AF%95%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%81%9A"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 冒烟测试什么时候做</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6"><span class="toc-number">5.</span> <span class="toc-text">4. 什么是上线验收</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E4%B8%8D%E6%98%AF%E6%B5%8B%E8%AF%95%E4%B8%80%E4%B8%AA%E6%96%B0%E5%8A%9F%E8%83%BD"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 上线验收不是测试一个新功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BB%80%E4%B9%88%E6%98%AF%E7%81%B0%E5%BA%A6%E9%AA%8C%E8%AF%81"><span class="toc-number">6.</span> <span class="toc-text">5. 什么是灰度验证</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E7%81%B0%E5%BA%A6%E9%AA%8C%E8%AF%81%E8%A6%81%E7%9C%8B%E4%BB%80%E4%B9%88"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 灰度验证要看什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%80%E4%B9%88%E6%98%AF%E7%BA%BF%E4%B8%8A%E5%9B%9E%E5%BD%92"><span class="toc-number">7.</span> <span class="toc-text">6. 什么是线上回归</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E7%BA%BF%E4%B8%8A%E5%9B%9E%E5%BD%92%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E5%9B%9E%E5%BD%92%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 线上回归和测试环境回归的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95%E5%92%8C%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">8.</span> <span class="toc-text">7. 回归测试和功能测试有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E4%B8%8A%E7%BA%BF%E5%89%8D%E9%9C%80%E8%A6%81%E7%A1%AE%E8%AE%A4%E5%93%AA%E4%BA%9B%E5%86%85%E5%AE%B9"><span class="toc-number">9.</span> <span class="toc-text">8. 上线前需要确认哪些内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E4%B8%8A%E7%BA%BF%E5%90%8E%E9%9C%80%E8%A6%81%E7%A1%AE%E8%AE%A4%E5%93%AA%E4%BA%9B%E5%86%85%E5%AE%B9"><span class="toc-number">10.</span> <span class="toc-text">9. 上线后需要确认哪些内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E5%89%8D%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">11.</span> <span class="toc-text">10. 上线验收前需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E5%87%86%E5%A4%87%E9%AA%8C%E6%94%B6%E6%B8%85%E5%8D%95"><span class="toc-number">11.1.</span> <span class="toc-text">10.1 准备验收清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E8%B4%A6%E5%8F%B7"><span class="toc-number">11.2.</span> <span class="toc-text">10.2 准备测试账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E5%87%86%E5%A4%87%E4%B8%8A%E7%BA%BF%E4%BF%A1%E6%81%AF"><span class="toc-number">11.3.</span> <span class="toc-text">10.3 准备上线信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E5%AE%9E%E6%88%98"><span class="toc-number">12.</span> <span class="toc-text">第二部分：海外社区论坛上线验收实战</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E9%87%8D%E7%82%B9%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">13.</span> <span class="toc-text">11. 海外社区论坛上线验收重点有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E6%B3%A8%E5%86%8C%E7%99%BB%E5%BD%95%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">14.</span> <span class="toc-text">12. 注册登录上线验收怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E9%82%AE%E7%AE%B1%E7%99%BB%E5%BD%95%E9%AA%8C%E6%94%B6"><span class="toc-number">14.1.</span> <span class="toc-text">12.1 邮箱登录验收</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E9%AA%8C%E6%94%B6"><span class="toc-number">14.2.</span> <span class="toc-text">12.2 第三方登录验收</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E4%B8%8A%E7%BA%BF%E5%89%8D%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F"><span class="toc-number">14.3.</span> <span class="toc-text">12.3 上线前特别注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E7%94%A8%E6%88%B7%E8%B5%84%E6%96%99%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">15.</span> <span class="toc-text">13. 用户资料上线验收怎么做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%8F%91%E5%B8%96%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">16.</span> <span class="toc-text">14. 发帖上线验收怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E5%8F%91%E5%B8%96%E4%B8%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">16.1.</span> <span class="toc-text">14.1 发帖主流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E5%AE%A1%E6%A0%B8%E7%9B%B8%E5%85%B3%E9%AA%8C%E6%94%B6"><span class="toc-number">16.2.</span> <span class="toc-text">14.2 审核相关验收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E8%AF%84%E8%AE%BA%E4%B8%8E%E5%9B%9E%E5%A4%8D%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">17.</span> <span class="toc-text">15. 评论与回复上线验收怎么做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E7%82%B9%E8%B5%9E%E3%80%81%E6%94%B6%E8%97%8F%E3%80%81%E5%85%B3%E6%B3%A8%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">18.</span> <span class="toc-text">16. 点赞、收藏、关注上线验收怎么做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-Feed-%E4%BF%A1%E6%81%AF%E6%B5%81%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">19.</span> <span class="toc-text">17. Feed 信息流上线验收怎么做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E6%90%9C%E7%B4%A2%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">20.</span> <span class="toc-text">18. 搜索上线验收怎么做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E9%80%9A%E7%9F%A5%E4%B8%8E%E7%A7%81%E4%BF%A1%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">21.</span> <span class="toc-text">19. 通知与私信上线验收怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E9%80%9A%E7%9F%A5%E9%AA%8C%E6%94%B6"><span class="toc-number">21.1.</span> <span class="toc-text">19.1 通知验收</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E7%A7%81%E4%BF%A1%E9%AA%8C%E6%94%B6"><span class="toc-number">21.2.</span> <span class="toc-text">19.2 私信验收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E4%B8%BE%E6%8A%A5%E4%B8%8E%E5%AE%A1%E6%A0%B8%E5%90%8E%E5%8F%B0%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">22.</span> <span class="toc-text">20. 举报与审核后台上线验收怎么做</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E5%9B%BD%E9%99%85%E5%8C%96%E3%80%81%E5%85%BC%E5%AE%B9%E6%80%A7%E3%80%81%E5%AE%89%E5%85%A8%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">23.</span> <span class="toc-text">21. 国际化、兼容性、安全上线验收怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-%E5%9B%BD%E9%99%85%E5%8C%96%E9%AA%8C%E6%94%B6"><span class="toc-number">23.1.</span> <span class="toc-text">21.1 国际化验收</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-%E5%85%BC%E5%AE%B9%E6%80%A7%E9%AA%8C%E6%94%B6"><span class="toc-number">23.2.</span> <span class="toc-text">21.2 兼容性验收</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-3-%E5%AE%89%E5%85%A8%E9%AA%8C%E6%94%B6"><span class="toc-number">23.3.</span> <span class="toc-text">21.3 安全验收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E6%80%A7%E8%83%BD%E4%B8%8E%E7%9B%91%E6%8E%A7%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">24.</span> <span class="toc-text">22. 性能与监控上线验收怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E4%B8%8A%E7%BA%BF%E5%89%8D%E7%A1%AE%E8%AE%A4"><span class="toc-number">24.1.</span> <span class="toc-text">22.1 上线前确认</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E4%B8%8A%E7%BA%BF%E5%90%8E%E8%A7%82%E5%AF%9F"><span class="toc-number">24.2.</span> <span class="toc-text">22.2 上线后观察</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95%E4%B8%93%E9%A1%B9%E6%96%B9%E6%B3%95"><span class="toc-number">25.</span> <span class="toc-text">第三部分：回归测试专项方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-Bug-%E5%9B%9E%E5%BD%92%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">26.</span> <span class="toc-text">23. Bug 回归怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#23-1-Bug-%E5%9B%9E%E5%BD%92%E6%AD%A5%E9%AA%A4"><span class="toc-number">26.1.</span> <span class="toc-text">23.1 Bug 回归步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-2-Bug-%E5%9B%9E%E5%BD%92%E8%A6%81%E7%9C%8B%E4%BB%80%E4%B9%88"><span class="toc-number">26.2.</span> <span class="toc-text">23.2 Bug 回归要看什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E7%89%88%E6%9C%AC%E5%9B%9E%E5%BD%92%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">27.</span> <span class="toc-text">24. 版本回归怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#24-1-%E5%9B%9E%E5%BD%92%E8%8C%83%E5%9B%B4%E6%9D%A5%E6%BA%90"><span class="toc-number">27.1.</span> <span class="toc-text">24.1 回归范围来源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-2-%E5%9B%9E%E5%BD%92%E4%BC%98%E5%85%88%E7%BA%A7"><span class="toc-number">27.2.</span> <span class="toc-text">24.2 回归优先级</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-%E6%A0%B8%E5%BF%83%E9%93%BE%E8%B7%AF%E5%9B%9E%E5%BD%92%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">28.</span> <span class="toc-text">25. 核心链路回归怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#25-1-%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%A0%B8%E5%BF%83%E9%93%BE%E8%B7%AF%E7%A4%BA%E4%BE%8B"><span class="toc-number">28.1.</span> <span class="toc-text">25.1 社区论坛核心链路示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-2-%E6%A0%B8%E5%BF%83%E9%93%BE%E8%B7%AF%E5%9B%9E%E5%BD%92%E9%87%8D%E7%82%B9"><span class="toc-number">28.2.</span> <span class="toc-text">25.2 核心链路回归重点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4%E5%9B%9E%E5%BD%92%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">29.</span> <span class="toc-text">26. 影响范围回归怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#26-1-%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">29.1.</span> <span class="toc-text">26.1 如何判断影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-2-%E7%A4%BA%E4%BE%8B%EF%BC%9A%E4%BF%AE%E5%A4%8D%E8%AF%84%E8%AE%BA%E6%95%B0%E9%97%AE%E9%A2%98"><span class="toc-number">29.2.</span> <span class="toc-text">26.2 示例：修复评论数问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9B%9E%E5%BD%92%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">30.</span> <span class="toc-text">27. 自动化回归怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#27-1-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9B%9E%E5%BD%92%E9%80%82%E5%90%88%E8%A6%86%E7%9B%96"><span class="toc-number">30.1.</span> <span class="toc-text">27.1 自动化回归适合覆盖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-2-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9B%9E%E5%BD%92%E7%BB%93%E6%9E%9C%E6%80%8E%E4%B9%88%E7%9C%8B"><span class="toc-number">30.2.</span> <span class="toc-text">27.2 自动化回归结果怎么看</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%9B%9E%E5%BD%92%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">31.</span> <span class="toc-text">28. 灰度发布回归怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#28-1-%E7%81%B0%E5%BA%A6%E9%AA%8C%E8%AF%81%E5%86%85%E5%AE%B9"><span class="toc-number">31.1.</span> <span class="toc-text">28.1 灰度验证内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-2-%E7%81%B0%E5%BA%A6%E6%94%BE%E9%87%8F%E5%89%8D%E7%A1%AE%E8%AE%A4"><span class="toc-number">31.2.</span> <span class="toc-text">28.2 灰度放量前确认</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-%E7%BA%BF%E4%B8%8A%E5%8F%91%E5%B8%83%E5%90%8E%E9%AA%8C%E8%AF%81%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">32.</span> <span class="toc-text">29. 线上发布后验证怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#29-1-%E7%BA%BF%E4%B8%8A%E9%AA%8C%E8%AF%81%E5%8E%9F%E5%88%99"><span class="toc-number">32.1.</span> <span class="toc-text">29.1 线上验证原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-2-%E7%BA%BF%E4%B8%8A%E9%AA%8C%E8%AF%81%E5%86%85%E5%AE%B9"><span class="toc-number">32.2.</span> <span class="toc-text">29.2 线上验证内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-%E5%9B%9E%E6%BB%9A%E5%90%8E%E9%AA%8C%E8%AF%81%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">33.</span> <span class="toc-text">30. 回滚后验证怎么做</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#30-1-%E5%9B%9E%E6%BB%9A%E9%AA%8C%E8%AF%81%E5%86%85%E5%AE%B9"><span class="toc-number">33.1.</span> <span class="toc-text">30.1 回滚验证内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-%E4%B8%8A%E7%BA%BF%E9%A3%8E%E9%99%A9%E5%A6%82%E4%BD%95%E8%AF%84%E4%BC%B0"><span class="toc-number">34.</span> <span class="toc-text">31. 上线风险如何评估</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-1-%E9%A3%8E%E9%99%A9%E8%AF%84%E4%BC%B0%E7%BB%B4%E5%BA%A6"><span class="toc-number">34.1.</span> <span class="toc-text">31.1 风险评估维度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-2-%E4%B8%8D%E5%BB%BA%E8%AE%AE%E4%B8%8A%E7%BA%BF%E7%9A%84%E9%A3%8E%E9%99%A9"><span class="toc-number">34.2.</span> <span class="toc-text">31.2 不建议上线的风险</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E8%AE%B0%E5%BD%95%E5%92%8C%E5%90%8C%E6%AD%A5"><span class="toc-number">35.</span> <span class="toc-text">32. 回归测试问题如何记录和同步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32-1-%E5%9B%9E%E5%BD%92%E8%AE%B0%E5%BD%95%E5%BA%94%E5%8C%85%E5%90%AB"><span class="toc-number">35.1.</span> <span class="toc-text">32.1 回归记录应包含</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-2-%E5%9B%9E%E5%BD%92%E5%90%8C%E6%AD%A5%E7%A4%BA%E4%BE%8B"><span class="toc-number">35.2.</span> <span class="toc-text">32.2 回归同步示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9AChecklist%E3%80%81%E6%A8%A1%E6%9D%BF%E4%B8%8E%E6%80%BB%E7%BB%93"><span class="toc-number">36.</span> <span class="toc-text">第四部分：Checklist、模板与总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6-Checklist"><span class="toc-number">37.</span> <span class="toc-text">33. 上线验收 Checklist</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#33-1-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD-Checklist"><span class="toc-number">37.1.</span> <span class="toc-text">33.1 核心功能 Checklist</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-2-%E9%AB%98%E9%A3%8E%E9%99%A9-Checklist"><span class="toc-number">37.2.</span> <span class="toc-text">33.2 高风险 Checklist</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-3-%E5%8F%91%E5%B8%83%E9%85%8D%E7%BD%AE-Checklist"><span class="toc-number">37.3.</span> <span class="toc-text">33.3 发布配置 Checklist</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95%E6%A8%A1%E6%9D%BF"><span class="toc-number">38.</span> <span class="toc-text">34. 回归测试记录模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-Bug-%E5%9B%9E%E5%BD%92%E8%AE%B0%E5%BD%95%E6%A8%A1%E6%9D%BF"><span class="toc-number">39.</span> <span class="toc-text">35. Bug 回归记录模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-%E4%B8%8A%E7%BA%BF%E9%A3%8E%E9%99%A9%E8%AF%B4%E6%98%8E%E6%A8%A1%E6%9D%BF"><span class="toc-number">40.</span> <span class="toc-text">36. 上线风险说明模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">41.</span> <span class="toc-text">37. 新手常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#37-1-%E5%8F%AA%E5%9B%9E%E5%BD%92%E5%8E%9F-Bug%EF%BC%8C%E4%B8%8D%E6%B5%8B%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">41.1.</span> <span class="toc-text">37.1 只回归原 Bug，不测影响范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-2-%E4%B8%8A%E7%BA%BF%E9%AA%8C%E6%94%B6%E5%8F%AA%E9%9D%A0%E8%AE%B0%E5%BF%86"><span class="toc-number">41.2.</span> <span class="toc-text">37.2 上线验收只靠记忆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-3-%E4%B8%8D%E8%AE%B0%E5%BD%95%E9%81%97%E7%95%99%E9%A3%8E%E9%99%A9"><span class="toc-number">41.3.</span> <span class="toc-text">37.3 不记录遗留风险</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-4-%E7%BA%BF%E4%B8%8A%E9%AA%8C%E8%AF%81%E6%93%8D%E4%BD%9C%E5%A4%AA%E9%87%8D"><span class="toc-number">41.4.</span> <span class="toc-text">37.4 线上验证操作太重</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-5-%E8%87%AA%E5%8A%A8%E5%8C%96%E5%A4%B1%E8%B4%A5%E4%B8%8D%E5%88%86%E6%9E%90"><span class="toc-number">41.5.</span> <span class="toc-text">37.5 自动化失败不分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#38-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">42.</span> <span class="toc-text">38. 最后总结</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

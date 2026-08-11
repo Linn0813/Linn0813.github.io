@@ -1,0 +1,3131 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习笔记：海外社区论坛 - 功能测试入门 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记：海外社区论坛 - 功能测试入门">
+<meta property="og:url" content="https://linn0813.github.io/2026-05-07-overseas-forum-functional-testing-guide/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="结合个人实践与 AI 协作整理的海外社区论坛功能测试入门文档，覆盖用户体系、登录注册、内容、互动、海外化与用例编写。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/overseas-forum-functional-testing-guide.png">
+<meta property="article:published_time" content="2026-05-07T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-07T02:00:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="社区论坛">
+<meta property="article:tag" content="海外社区">
+<meta property="article:tag" content="功能测试">
+<meta property="article:tag" content="登录注册">
+<meta property="article:tag" content="测试入门">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/overseas-forum-functional-testing-guide.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习笔记：海外社区论坛 - 功能测试入门",
+  "url": "https://linn0813.github.io/2026-05-07-overseas-forum-functional-testing-guide/",
+  "image": "https://linn0813.github.io/img/overseas-forum-functional-testing-guide.png",
+  "datePublished": "2026-05-07T02:00:00.000Z",
+  "dateModified": "2026-05-07T02:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-05-07-overseas-forum-functional-testing-guide/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习笔记：海外社区论坛 - 功能测试入门',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/overseas-forum-functional-testing-guide.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">学习笔记：海外社区论坛 - 功能测试入门</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习笔记：海外社区论坛 - 功能测试入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-07T02:00:00.000Z" title="发表于 2026-05-07 10:00:00">2026-05-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-07T02:00:00.000Z" title="更新于 2026-05-07 10:00:00">2026-05-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/">🌍 海外社区论坛测试：方案与实战</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8C%8D-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E6%B5%8B%E8%AF%95%EF%BC%9A%E6%96%B9%E6%A1%88%E4%B8%8E%E5%AE%9E%E6%88%98/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/">功能测试</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">19.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>58分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><strong>今天的学习记录</strong>：我在跟进「海外版社区论坛测试方案」时，专门把<strong>功能测试</strong>这块拆出来系统过了一遍。下面是根据自己的经验，和 AI 一起整理、补全后的入门文档，方便以后查阅和继续扩展。</p>
+<p>若你也在做类似产品，希望对你有参考价值。</p>
+<blockquote>
+<p><strong>适合对象</strong>：刚接触社区论坛项目、刚开始做功能测试，或者需要系统梳理测试思路的测试同学。</p>
+<p>本文重点只讲<strong>功能测试</strong>，暂不深入性能测试、安全测试、自动化测试、压测、兼容性专项等内容。后续可以在这个文档基础上继续扩展。</p>
+</blockquote>
+<hr>
+<div class="note primary flat"><p><strong>阅读提示</strong>：全文篇幅较长，建议配合页面 <strong>目录（TOC）</strong> 按章跳转。第 <strong>7</strong> 章「登录注册」、第 <strong>19</strong> 章「海外项目注意点」内容最集中，可拆成多次阅读；文中大量「测试步骤 &#x2F; 预期结果」块适合当清单随手查阅。</p>
+</div>
+
+<details>
+<summary><strong>章节目录（共 24 章，点击展开，条目可点击跳转）</strong></summary>
+
+<ol>
+<li><a href="#forum-ch-01">先认识什么是海外社区论坛项目</a></li>
+<li><a href="#forum-ch-02">测试小白应该如何理解「功能测试」</a></li>
+<li><a href="#forum-ch-03">海外社区论坛的核心业务流程</a></li>
+<li><a href="#forum-ch-04">功能测试前需要准备什么</a></li>
+<li><a href="#forum-ch-05">如何拆分社区论坛的功能模块</a></li>
+<li><a href="#forum-ch-06">用户体系模块怎么测</a></li>
+<li><a href="#forum-ch-07">登录注册模块怎么测</a></li>
+<li><a href="#forum-ch-08">内容发布模块怎么测</a></li>
+<li><a href="#forum-ch-09">帖子详情页怎么测</a></li>
+<li><a href="#forum-ch-10">评论与回复模块怎么测</a></li>
+<li><a href="#forum-ch-11">点赞、收藏、分享模块怎么测</a></li>
+<li><a href="#forum-ch-12">关注、粉丝、用户主页怎么测</a></li>
+<li><a href="#forum-ch-13">Feed 信息流怎么测</a></li>
+<li><a href="#forum-ch-14">搜索功能怎么测</a></li>
+<li><a href="#forum-ch-15">通知消息怎么测</a></li>
+<li><a href="#forum-ch-16">私信功能怎么测</a></li>
+<li><a href="#forum-ch-17">举报、拉黑、屏蔽功能怎么测</a></li>
+<li><a href="#forum-ch-18">管理员后台与内容审核怎么测</a></li>
+<li><a href="#forum-ch-19">海外项目功能测试特别注意点</a></li>
+<li><a href="#forum-ch-20">如何写测试用例</a></li>
+<li><a href="#forum-ch-21">如何提交一个合格 Bug</a></li>
+<li><a href="#forum-ch-22">新手常见误区</a></li>
+<li><a href="#forum-ch-23">建议你实际测试时的学习路线</a></li>
+<li><a href="#forum-ch-24">最后总结</a></li>
+</ol>
+</details>
+
+<hr>
+<p><a id="forum-ch-01"></a></p>
+<h2 id="1-先认识什么是海外社区论坛项目"><a href="#1-先认识什么是海外社区论坛项目" class="headerlink" title="1. 先认识什么是海外社区论坛项目"></a>1. 先认识什么是海外社区论坛项目</h2><p>社区论坛项目可以简单理解为：</p>
+<blockquote>
+<p>用户注册登录后，可以发布内容、浏览内容、评论互动、点赞收藏、关注别人、收到通知，并且平台会对内容和用户进行管理。</p>
+</blockquote>
+<p>常见的社区论坛产品包括：</p>
+<ul>
+<li>Reddit 类社区</li>
+<li>Discord 社区部分功能</li>
+<li>Facebook Group</li>
+<li>兴趣论坛</li>
+<li>品牌用户社区</li>
+<li>游戏社区</li>
+<li>产品用户反馈社区</li>
+<li>海外 App 用户交流社区</li>
+</ul>
+<p>不同类型的社区论坛虽然都属于“用户交流平台”，但产品定位、用户行为和测试重点会有明显区别。测试前先理解它们的特点，可以帮助你判断：这个项目更像哪一类社区？核心风险在哪里？哪些功能必须优先测？</p>
+<h3 id="1-1-常见社区论坛产品的特点与区别"><a href="#1-1-常见社区论坛产品的特点与区别" class="headerlink" title="1.1 常见社区论坛产品的特点与区别"></a>1.1 常见社区论坛产品的特点与区别</h3><table>
+<thead>
+<tr>
+<th>产品类型</th>
+<th>产品特点</th>
+<th>用户主要行为</th>
+<th>功能测试重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Reddit 类社区</td>
+<td>以话题&#x2F;兴趣板块为核心，内容多由用户发帖产生，强调投票、评论、热度排序</td>
+<td>发帖、评论、Upvote&#x2F;Downvote、加入板块、浏览热门内容</td>
+<td>板块权限、帖子排序、投票数据、评论楼层、内容审核、举报处理</td>
+</tr>
+<tr>
+<td>Discord 社区</td>
+<td>更偏实时聊天和社群运营，通常按服务器、频道组织用户</td>
+<td>加入服务器、进入频道聊天、语音互动、接收群通知</td>
+<td>频道权限、消息实时性、角色权限、消息同步、禁言&#x2F;踢出&#x2F;封禁</td>
+</tr>
+<tr>
+<td>Facebook Group</td>
+<td>以熟人或半熟人社群为主，重视小组加入、成员审核和动态互动</td>
+<td>加入小组、发动态、评论、点赞、查看成员</td>
+<td>小组可见性、入组审核、帖子审核、成员权限、隐私设置</td>
+</tr>
+<tr>
+<td>兴趣论坛</td>
+<td>围绕某一兴趣主题展开，例如摄影、健身、数码、宠物等</td>
+<td>发经验帖、提问、回复、收藏、搜索历史内容</td>
+<td>分类板块、发帖规则、搜索准确性、精华帖、标签、内容沉淀</td>
+</tr>
+<tr>
+<td>品牌用户社区</td>
+<td>围绕某个品牌或产品建立，常用于用户交流、售后支持和活动运营</td>
+<td>提问、反馈问题、查看公告、参与活动、联系官方</td>
+<td>官方账号权限、问题反馈流程、公告展示、活动报名、用户反馈闭环</td>
+</tr>
+<tr>
+<td>游戏社区</td>
+<td>围绕游戏玩家交流，内容可能包括攻略、战绩、角色、活动、BUG反馈</td>
+<td>发攻略、晒战绩、组队、评论、参与活动</td>
+<td>游戏账号绑定、活动规则、战绩展示、反作弊举报、内容分区</td>
+</tr>
+<tr>
+<td>产品用户反馈社区</td>
+<td>偏产品改进和问题反馈，用户提交建议、Bug、需求投票</td>
+<td>提交反馈、补充问题、投票、查看处理进度</td>
+<td>反馈状态流转、投票规则、管理员回复、问题分类、处理结果通知</td>
+</tr>
+<tr>
+<td>海外 App 用户交流社区</td>
+<td>服务海外 App 用户，通常用于用户自助交流、经验分享和问题求助</td>
+<td>发帖求助、搜索问题、评论互动、联系支持</td>
+<td>多语言、时区、第三方登录、内容合规、举报、隐私与账号注销</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-它们之间最大的区别是什么？"><a href="#1-2-它们之间最大的区别是什么？" class="headerlink" title="1.2 它们之间最大的区别是什么？"></a>1.2 它们之间最大的区别是什么？</h3><p>可以从 5 个角度理解：</p>
+<h4 id="1）内容组织方式不同"><a href="#1）内容组织方式不同" class="headerlink" title="1）内容组织方式不同"></a>1）内容组织方式不同</h4><p>有的社区按“板块&#x2F;话题”组织内容，例如 Reddit、兴趣论坛；有的按“群组&#x2F;频道”组织内容，例如 Discord、Facebook Group；有的按“问题类型&#x2F;反馈状态”组织内容，例如产品反馈社区。</p>
+<p>测试时要先看清楚内容结构：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">内容是发到全站首页？</span><br><span class="line">还是发到某个板块？</span><br><span class="line">还是发到某个群组？</span><br><span class="line">还是进入一个反馈工单流程？</span><br></pre></td></tr></table></figure>
+
+<p>内容结构不同，测试重点也不同。比如板块型社区要重点测板块权限和板块列表；群组型社区要重点测入群权限和频道权限；反馈型社区要重点测状态流转。</p>
+<h4 id="2）互动方式不同"><a href="#2）互动方式不同" class="headerlink" title="2）互动方式不同"></a>2）互动方式不同</h4><p>Reddit 类社区重视投票和评论；Discord 重视实时聊天；Facebook Group 重视动态互动；产品反馈社区重视投票、官方回复和处理状态。</p>
+<p>测试时不要只看“有没有评论”，还要看互动是否符合产品定位。例如：</p>
+<ul>
+<li>Reddit 类社区：Upvote&#x2F;Downvote 后排序和热度是否变化</li>
+<li>Discord 类社区：消息是否实时到达，频道权限是否生效</li>
+<li>产品反馈社区：用户投票后票数是否正确，状态是否能从“待处理”变为“已解决”</li>
+</ul>
+<h4 id="3）权限模型不同"><a href="#3）权限模型不同" class="headerlink" title="3）权限模型不同"></a>3）权限模型不同</h4><p>社区产品的权限通常很复杂，但不同产品复杂点不同：</p>
+<ul>
+<li>Reddit 类社区：普通用户、版主、管理员之间的权限边界</li>
+<li>Discord 类社区：服务器角色、频道权限、禁言、踢出、封禁</li>
+<li>Facebook Group：公开小组、私密小组、入组审核、成员管理</li>
+<li>品牌社区：普通用户、官方人员、客服、运营管理员</li>
+<li>产品反馈社区：提交者、关注者、产品经理、管理员</li>
+</ul>
+<p>测试权限时一定要问清楚：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">谁可以看？</span><br><span class="line">谁可以发？</span><br><span class="line">谁可以删？</span><br><span class="line">谁可以审核？</span><br><span class="line">谁可以封禁？</span><br><span class="line">谁可以修改状态？</span><br></pre></td></tr></table></figure>
+
+<h4 id="4）内容审核压力不同"><a href="#4）内容审核压力不同" class="headerlink" title="4）内容审核压力不同"></a>4）内容审核压力不同</h4><p>海外社区通常会涉及广告 Spam、骚扰、仇恨言论、色情内容、诈骗链接等问题。</p>
+<p>不同社区审核重点不同：</p>
+<ul>
+<li>兴趣论坛：广告、灌水、无关内容</li>
+<li>游戏社区：外挂、辱骂、诈骗、战绩造假</li>
+<li>品牌社区：恶意攻击、售后投诉、虚假信息</li>
+<li>产品反馈社区：重复反馈、无效反馈、敏感信息泄露</li>
+<li>海外 App 社区：多语言违规内容、钓鱼链接、隐私数据泄露</li>
+</ul>
+<p>功能测试阶段虽然不一定做专业安全测试，但至少要验证：</p>
+<ul>
+<li>举报入口是否可用</li>
+<li>敏感内容是否进入审核</li>
+<li>管理员是否可以处理违规内容</li>
+<li>被删除&#x2F;隐藏内容前台是否同步</li>
+<li>被处罚用户是否受到正确限制</li>
+</ul>
+<h4 id="5）数据关注点不同"><a href="#5）数据关注点不同" class="headerlink" title="5）数据关注点不同"></a>5）数据关注点不同</h4><p>不同社区最容易出错的数据也不同：</p>
+<table>
+<thead>
+<tr>
+<th>社区类型</th>
+<th>高风险数据</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Reddit 类社区</td>
+<td>投票数、评论数、热度排序、板块帖子数</td>
+</tr>
+<tr>
+<td>Discord 类社区</td>
+<td>未读数、在线状态、消息顺序、频道成员数</td>
+</tr>
+<tr>
+<td>Facebook Group</td>
+<td>成员数、入组状态、帖子审核状态、可见性</td>
+</tr>
+<tr>
+<td>兴趣论坛</td>
+<td>浏览数、收藏数、评论数、标签分类</td>
+</tr>
+<tr>
+<td>品牌社区</td>
+<td>问题状态、官方回复、用户反馈记录</td>
+</tr>
+<tr>
+<td>游戏社区</td>
+<td>战绩数据、活动参与状态、奖励领取状态</td>
+</tr>
+<tr>
+<td>产品反馈社区</td>
+<td>投票数、反馈状态、处理进度、重复问题合并</td>
+</tr>
+<tr>
+<td>海外 App 社区</td>
+<td>多语言内容、通知数、举报数、账号状态</td>
+</tr>
+</tbody></table>
+<p>所以测试时不能只验证“页面能显示”，还要验证数据是否在多个地方保持一致，比如列表页、详情页、个人主页、通知中心、后台管理页。</p>
+<p>一个海外社区论坛，通常不仅仅是“发帖和评论”，它还包含很多系统能力：</p>
+<ul>
+<li>账号体系</li>
+<li>内容体系</li>
+<li>评论体系</li>
+<li>互动体系</li>
+<li>社交体系</li>
+<li>通知体系</li>
+<li>审核体系</li>
+<li>风控体系</li>
+<li>多语言与时区支持</li>
+</ul>
+<p>作为测试同学，不能只看页面按钮能不能点，而要理解这个系统背后的业务逻辑。</p>
+<hr>
+<p><a id="forum-ch-02"></a></p>
+<h2 id="2-测试小白应该如何理解“功能测试”"><a href="#2-测试小白应该如何理解“功能测试”" class="headerlink" title="2. 测试小白应该如何理解“功能测试”"></a>2. 测试小白应该如何理解“功能测试”</h2><p>功能测试就是验证：</p>
+<blockquote>
+<p>产品功能是否按照需求正确实现，用户在各种正常和异常场景下使用时，系统是否能给出正确结果。</p>
+</blockquote>
+<p>你可以把功能测试理解成 4 个问题：</p>
+<h3 id="2-1-这个功能能不能正常用？"><a href="#2-1-这个功能能不能正常用？" class="headerlink" title="2.1 这个功能能不能正常用？"></a>2.1 这个功能能不能正常用？</h3><p>例如：</p>
+<ul>
+<li>用户能不能成功注册？</li>
+<li>用户能不能成功发帖？</li>
+<li>用户能不能成功评论？</li>
+<li>点赞后点赞数会不会增加？</li>
+</ul>
+<p>这是最基础的正向流程测试。</p>
+<h3 id="2-2-用户乱操作会不会出问题？"><a href="#2-2-用户乱操作会不会出问题？" class="headerlink" title="2.2 用户乱操作会不会出问题？"></a>2.2 用户乱操作会不会出问题？</h3><p>例如：</p>
+<ul>
+<li>不输入标题能不能发帖？</li>
+<li>连续点击发布按钮会不会发出两篇一样的帖子？</li>
+<li>已经点赞后再次点击会怎么样？</li>
+<li>网络断开后提交内容会不会丢失？</li>
+</ul>
+<p>这是异常场景和边界场景测试。</p>
+<h3 id="2-3-不同用户身份看到的结果是否正确？"><a href="#2-3-不同用户身份看到的结果是否正确？" class="headerlink" title="2.3 不同用户身份看到的结果是否正确？"></a>2.3 不同用户身份看到的结果是否正确？</h3><p>例如：</p>
+<ul>
+<li>游客能不能评论？</li>
+<li>普通用户能不能删除别人的帖子？</li>
+<li>被禁言用户能不能发帖？</li>
+<li>管理员能不能删除违规内容？</li>
+</ul>
+<p>这是权限测试。</p>
+<h3 id="2-4-数据是否正确？"><a href="#2-4-数据是否正确？" class="headerlink" title="2.4 数据是否正确？"></a>2.4 数据是否正确？</h3><p>例如：</p>
+<ul>
+<li>点赞后点赞数是否 +1？</li>
+<li>删除评论后评论数是否 -1？</li>
+<li>关注用户后粉丝数是否变化？</li>
+<li>通知红点是否正确消失？</li>
+</ul>
+<p>这是数据一致性测试，也是社区项目中非常容易出问题的地方。</p>
+<hr>
+<p><a id="forum-ch-03"></a></p>
+<h2 id="3-海外社区论坛的核心业务流程"><a href="#3-海外社区论坛的核心业务流程" class="headerlink" title="3. 海外社区论坛的核心业务流程"></a>3. 海外社区论坛的核心业务流程</h2><p>测试社区论坛项目时，建议先理解一条完整业务链路。</p>
+<h3 id="3-1-用户视角的主流程"><a href="#3-1-用户视角的主流程" class="headerlink" title="3.1 用户视角的主流程"></a>3.1 用户视角的主流程</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">注册/登录</span><br><span class="line">  ↓</span><br><span class="line">完善个人资料</span><br><span class="line">  ↓</span><br><span class="line">浏览帖子/Feed流</span><br><span class="line">  ↓</span><br><span class="line">发布帖子</span><br><span class="line">  ↓</span><br><span class="line">其他用户评论/点赞/收藏</span><br><span class="line">  ↓</span><br><span class="line">作者收到通知</span><br><span class="line">  ↓</span><br><span class="line">用户继续互动</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-平台管理视角的主流程"><a href="#3-2-平台管理视角的主流程" class="headerlink" title="3.2 平台管理视角的主流程"></a>3.2 平台管理视角的主流程</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户发布内容</span><br><span class="line">  ↓</span><br><span class="line">系统审核内容</span><br><span class="line">  ↓</span><br><span class="line">内容通过后展示</span><br><span class="line">  ↓</span><br><span class="line">其他用户举报</span><br><span class="line">  ↓</span><br><span class="line">管理员处理</span><br><span class="line">  ↓</span><br><span class="line">违规内容被删除/用户被处罚</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-测试时要有“链路意识”"><a href="#3-3-测试时要有“链路意识”" class="headerlink" title="3.3 测试时要有“链路意识”"></a>3.3 测试时要有“链路意识”</h3><p>很多新手测试只会测单个按钮，比如“发布按钮能不能点”。</p>
+<p>但社区论坛更应该测完整链路：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A发帖</span><br><span class="line">  ↓</span><br><span class="line">帖子进入列表</span><br><span class="line">  ↓</span><br><span class="line">用户B看到帖子</span><br><span class="line">  ↓</span><br><span class="line">用户B评论</span><br><span class="line">  ↓</span><br><span class="line">用户A收到通知</span><br><span class="line">  ↓</span><br><span class="line">用户A回复评论</span><br><span class="line">  ↓</span><br><span class="line">用户B收到回复通知</span><br></pre></td></tr></table></figure>
+
+<p>这才是真实用户使用场景。</p>
+<hr>
+<p><a id="forum-ch-04"></a></p>
+<h2 id="4-功能测试前需要准备什么"><a href="#4-功能测试前需要准备什么" class="headerlink" title="4. 功能测试前需要准备什么"></a>4. 功能测试前需要准备什么</h2><p>在开始测试之前，你需要先准备测试环境、账号、数据和需求资料。</p>
+<h3 id="4-1-需要了解需求"><a href="#4-1-需要了解需求" class="headerlink" title="4.1 需要了解需求"></a>4.1 需要了解需求</h3><p>至少要看懂以下内容：</p>
+<ul>
+<li>产品需求文档 PRD</li>
+<li>原型图</li>
+<li>UI 设计图</li>
+<li>接口文档</li>
+<li>后台管理说明</li>
+<li>权限说明</li>
+<li>埋点或数据说明，如果有</li>
+</ul>
+<p>如果没有完整文档，也要主动问清楚：</p>
+<ul>
+<li>哪些角色可以使用这个功能？</li>
+<li>有哪些限制？</li>
+<li>哪些内容需要审核？</li>
+<li>是否支持多语言？</li>
+<li>是否支持游客访问？</li>
+<li>是否支持第三方登录？</li>
+</ul>
+<h3 id="4-2-准备测试账号"><a href="#4-2-准备测试账号" class="headerlink" title="4.2 准备测试账号"></a>4.2 准备测试账号</h3><p>至少准备这些账号：</p>
+<table>
+<thead>
+<tr>
+<th>账号类型</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>游客</td>
+<td>测试未登录状态</td>
+</tr>
+<tr>
+<td>新注册用户</td>
+<td>测试新用户限制</td>
+</tr>
+<tr>
+<td>普通用户A</td>
+<td>发帖、评论、互动</td>
+</tr>
+<tr>
+<td>普通用户B</td>
+<td>与用户A互动</td>
+</tr>
+<tr>
+<td>被禁言用户</td>
+<td>测试权限限制</td>
+</tr>
+<tr>
+<td>被封禁用户</td>
+<td>测试登录和访问限制</td>
+</tr>
+<tr>
+<td>版主账号</td>
+<td>测试内容管理权限</td>
+</tr>
+<tr>
+<td>管理员账号</td>
+<td>测试后台管理功能</td>
+</tr>
+</tbody></table>
+<p>为什么至少要两个普通用户？</p>
+<p>因为社区论坛是多人互动产品。只用一个账号，很难测出评论通知、关注关系、权限边界、拉黑屏蔽等问题。</p>
+<h3 id="4-3-准备测试数据"><a href="#4-3-准备测试数据" class="headerlink" title="4.3 准备测试数据"></a>4.3 准备测试数据</h3><p>建议准备以下数据：</p>
+<h4 id="文本数据"><a href="#文本数据" class="headerlink" title="文本数据"></a>文本数据</h4><ul>
+<li>普通英文文本</li>
+<li>中文文本</li>
+<li>日文&#x2F;韩文&#x2F;阿拉伯语</li>
+<li>Emoji</li>
+<li>超长文本</li>
+<li>特殊符号</li>
+<li>URL 链接</li>
+<li>HTML 标签</li>
+<li>敏感词文本</li>
+</ul>
+<h4 id="图片数据"><a href="#图片数据" class="headerlink" title="图片数据"></a>图片数据</h4><ul>
+<li>JPG</li>
+<li>PNG</li>
+<li>GIF</li>
+<li>WebP</li>
+<li>超大图片</li>
+<li>超小图片</li>
+<li>透明背景图片</li>
+<li>损坏图片</li>
+</ul>
+<h4 id="视频数据"><a href="#视频数据" class="headerlink" title="视频数据"></a>视频数据</h4><ul>
+<li>短视频</li>
+<li>长视频</li>
+<li>超过大小限制的视频</li>
+<li>不支持格式的视频</li>
+<li>横屏视频</li>
+<li>竖屏视频</li>
+</ul>
+<h3 id="4-4-明确测试范围"><a href="#4-4-明确测试范围" class="headerlink" title="4.4 明确测试范围"></a>4.4 明确测试范围</h3><p>功能测试前一定要明确：</p>
+<ul>
+<li>本次测试哪些模块？</li>
+<li>哪些模块不测？</li>
+<li>哪些问题属于已知问题？</li>
+<li>哪些功能只是前端展示，哪些功能已接入后端？</li>
+<li>是否需要测试后台？</li>
+</ul>
+<p>新手很容易犯的错误是：不知道范围就开始点页面，最后测试很散。</p>
+<hr>
+<p><a id="forum-ch-05"></a></p>
+<h2 id="5-如何拆分社区论坛的功能模块"><a href="#5-如何拆分社区论坛的功能模块" class="headerlink" title="5. 如何拆分社区论坛的功能模块"></a>5. 如何拆分社区论坛的功能模块</h2><p>建议把海外社区论坛拆成以下模块：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户体系</span><br><span class="line">2. 注册登录</span><br><span class="line">3. 用户资料</span><br><span class="line">4. 内容发布</span><br><span class="line">5. 帖子列表/Feed流</span><br><span class="line">6. 帖子详情</span><br><span class="line">7. 评论回复</span><br><span class="line">8. 点赞收藏分享</span><br><span class="line">9. 关注粉丝</span><br><span class="line">10. 搜索</span><br><span class="line">11. 通知消息</span><br><span class="line">12. 私信聊天</span><br><span class="line">13. 举报拉黑屏蔽</span><br><span class="line">14. 内容审核</span><br><span class="line">15. 管理员后台</span><br><span class="line">16. 多语言/时区</span><br></pre></td></tr></table></figure>
+
+<p>测试时不要一上来就写用例。先做功能拆解，再做测试点设计。</p>
+<p>一个简单方法是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">页面上有什么入口？</span><br><span class="line">每个入口能做什么？</span><br><span class="line">谁可以做？</span><br><span class="line">做完后产生什么数据？</span><br><span class="line">失败时怎么提示？</span><br></pre></td></tr></table></figure>
+
+<p>例如“发帖”模块：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">入口：发布按钮</span><br><span class="line">能做什么：输入标题、正文、上传图片、选择话题、提交</span><br><span class="line">谁可以做：登录用户，未禁言用户</span><br><span class="line">产生数据：新帖子、帖子数、审核状态、通知或推荐数据</span><br><span class="line">失败提示：标题为空、内容过长、网络异常、权限不足</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ch-06"></a></p>
+<h2 id="6-用户体系模块怎么测"><a href="#6-用户体系模块怎么测" class="headerlink" title="6. 用户体系模块怎么测"></a>6. 用户体系模块怎么测</h2><p>用户体系是整个社区的基础。</p>
+<h3 id="6-1-用户角色"><a href="#6-1-用户角色" class="headerlink" title="6.1 用户角色"></a>6.1 用户角色</h3><p>常见角色包括：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>游客</td>
+<td>未登录用户</td>
+</tr>
+<tr>
+<td>普通用户</td>
+<td>已注册用户</td>
+</tr>
+<tr>
+<td>新用户</td>
+<td>刚注册，可能有发帖限制</td>
+</tr>
+<tr>
+<td>认证用户</td>
+<td>邮箱或身份已验证</td>
+</tr>
+<tr>
+<td>VIP&#x2F;会员用户</td>
+<td>可能有额外权益</td>
+</tr>
+<tr>
+<td>版主 Moderator</td>
+<td>管理某些板块</td>
+</tr>
+<tr>
+<td>管理员 Admin</td>
+<td>管理全站内容和用户</td>
+</tr>
+<tr>
+<td>超级管理员 Super Admin</td>
+<td>拥有最高权限</td>
+</tr>
+</tbody></table>
+<h3 id="6-2-用户状态"><a href="#6-2-用户状态" class="headerlink" title="6.2 用户状态"></a>6.2 用户状态</h3><p>用户不只有角色，还有状态：</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正常</td>
+<td>可以正常使用</td>
+</tr>
+<tr>
+<td>未验证邮箱</td>
+<td>部分功能可能受限</td>
+</tr>
+<tr>
+<td>禁言</td>
+<td>不能发帖或评论</td>
+</tr>
+<tr>
+<td>临时封禁</td>
+<td>一段时间不能使用</td>
+</tr>
+<tr>
+<td>永久封禁</td>
+<td>账号不可使用</td>
+</tr>
+<tr>
+<td>注销中</td>
+<td>进入注销流程</td>
+</tr>
+<tr>
+<td>已注销</td>
+<td>账号不可恢复或匿名展示</td>
+</tr>
+</tbody></table>
+<h3 id="6-3-测试重点"><a href="#6-3-测试重点" class="headerlink" title="6.3 测试重点"></a>6.3 测试重点</h3><p>你需要验证：</p>
+<ul>
+<li>不同角色是否看到不同功能入口</li>
+<li>不同状态是否受到正确限制</li>
+<li>前端限制和后端接口限制是否一致</li>
+<li>用户状态变化后是否实时生效</li>
+</ul>
+<h3 id="6-4-示例测试场景"><a href="#6-4-示例测试场景" class="headerlink" title="6.4 示例测试场景"></a>6.4 示例测试场景</h3><h4 id="场景：被禁言用户不能评论"><a href="#场景：被禁言用户不能评论" class="headerlink" title="场景：被禁言用户不能评论"></a>场景：被禁言用户不能评论</h4><p>测试步骤：</p>
+<ol>
+<li>使用管理员账号将用户A设置为禁言</li>
+<li>用户A登录前台</li>
+<li>用户A进入任意帖子详情页</li>
+<li>用户A尝试发表评论</li>
+</ol>
+<p>预期结果：</p>
+<ul>
+<li>评论提交失败</li>
+<li>页面提示用户已被禁言</li>
+<li>评论列表不新增该评论</li>
+<li>评论数不增加</li>
+<li>后端接口不能绕过限制</li>
+</ul>
+<h4 id="场景：普通用户不能删除别人的帖子"><a href="#场景：普通用户不能删除别人的帖子" class="headerlink" title="场景：普通用户不能删除别人的帖子"></a>场景：普通用户不能删除别人的帖子</h4><p>测试步骤：</p>
+<ol>
+<li>用户A发布一篇帖子</li>
+<li>用户B登录</li>
+<li>用户B进入用户A的帖子详情页</li>
+<li>检查是否有删除按钮</li>
+<li>如果没有按钮，尝试直接调用删除接口，或通过页面异常路径访问</li>
+</ol>
+<p>预期结果：</p>
+<ul>
+<li>用户B看不到删除按钮</li>
+<li>用户B不能删除用户A的帖子</li>
+<li>系统返回权限不足</li>
+<li>用户A的帖子仍然存在</li>
+</ul>
+<h3 id="6-5-新手注意点"><a href="#6-5-新手注意点" class="headerlink" title="6.5 新手注意点"></a>6.5 新手注意点</h3><p>权限测试不能只看页面按钮。</p>
+<p>因为前端隐藏按钮不代表安全，后端接口也必须校验权限。功能测试阶段即使你不做深度安全测试，也要有这个意识。</p>
+<hr>
+<p><a id="forum-ch-07"></a></p>
+<h2 id="7-登录注册模块怎么测"><a href="#7-登录注册模块怎么测" class="headerlink" title="7. 登录注册模块怎么测"></a>7. 登录注册模块怎么测</h2><p>登录注册是用户进入社区的第一步，也是海外社区项目中最容易出现“隐藏问题”的模块之一。</p>
+<p>很多新手测试登录注册时，只会验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">输入邮箱 → 输入密码 → 点击注册 → 注册成功</span><br></pre></td></tr></table></figure>
+
+<p>但真实项目里，登录注册远远不止这些。你还需要关注：</p>
+<ul>
+<li>不同注册方式是否都能正常使用</li>
+<li>邮箱、手机号格式是否处理正确</li>
+<li>第三方授权跳转是否稳定</li>
+<li>同一个用户通过不同方式登录时，账号是否会重复创建</li>
+<li>注册成功后，用户状态、资料、登录态是否正确</li>
+</ul>
+<p>可以把注册登录理解成一句话：</p>
+<blockquote>
+<p>系统要能正确识别“这个人是谁”，并且不能因为邮箱、手机号、第三方登录方式不同，就把同一个人错误地当成多个账号。</p>
+</blockquote>
+<hr>
+<h3 id="7-1-常见注册方式有哪些"><a href="#7-1-常见注册方式有哪些" class="headerlink" title="7.1 常见注册方式有哪些"></a>7.1 常见注册方式有哪些</h3><p>海外社区论坛常见注册方式如下：</p>
+<table>
+<thead>
+<tr>
+<th>注册方式</th>
+<th>常见场景</th>
+<th>测试重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>邮箱注册</td>
+<td>最基础、最常见的注册方式</td>
+<td>邮箱格式、验证码、重复注册、大小写、邮箱别名</td>
+</tr>
+<tr>
+<td>手机号注册</td>
+<td>有些 App 或强账号体系会支持</td>
+<td>国家区号、手机号格式、短信验证码、重复绑定</td>
+</tr>
+<tr>
+<td>Google 注册&#x2F;登录</td>
+<td>海外项目最常见</td>
+<td>授权跳转、账号创建、头像昵称同步、重复登录</td>
+</tr>
+<tr>
+<td>Apple 注册&#x2F;登录</td>
+<td>iOS App 海外项目常见，很多审核要求会关注</td>
+<td>隐藏邮箱、授权取消、账号绑定、二次登录</td>
+</tr>
+<tr>
+<td>Facebook 注册&#x2F;登录</td>
+<td>社交类、兴趣社区常见</td>
+<td>授权权限、头像昵称、邮箱获取失败</td>
+</tr>
+<tr>
+<td>X &#x2F; Twitter 注册&#x2F;登录</td>
+<td>内容社区、海外用户社区可能会有</td>
+<td>授权跳转、昵称同步、邮箱缺失处理</td>
+</tr>
+<tr>
+<td>Discord 注册&#x2F;登录</td>
+<td>游戏社区、兴趣社区常见</td>
+<td>Discord 用户信息同步、服务器&#x2F;社区关联场景</td>
+</tr>
+<tr>
+<td>Line 注册&#x2F;登录</td>
+<td>日本、东南亚市场常见</td>
+<td>授权跳转、地区适配、昵称头像同步</td>
+</tr>
+<tr>
+<td>Kakao 注册&#x2F;登录</td>
+<td>韩国市场常见</td>
+<td>授权跳转、地区适配、账号绑定</td>
+</tr>
+</tbody></table>
+<p>新手要注意：</p>
+<blockquote>
+<p>注册方式越多，账号合并、重复账号、第三方跳转失败的风险越高。</p>
+</blockquote>
+<hr>
+<h3 id="7-2-邮箱注册怎么测"><a href="#7-2-邮箱注册怎么测" class="headerlink" title="7.2 邮箱注册怎么测"></a>7.2 邮箱注册怎么测</h3><p>邮箱注册看起来简单，但不要只测一个 Gmail。海外项目里，不同邮箱服务商、邮箱格式、大小写、别名都会影响账号识别。</p>
+<h4 id="7-2-1-邮箱类型要区分测试"><a href="#7-2-1-邮箱类型要区分测试" class="headerlink" title="7.2.1 邮箱类型要区分测试"></a>7.2.1 邮箱类型要区分测试</h4><p>建议至少准备以下邮箱：</p>
+<table>
+<thead>
+<tr>
+<th>邮箱类型</th>
+<th>示例</th>
+<th>为什么要测</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Gmail</td>
+<td><code>test@gmail.com</code></td>
+<td>海外用户最常见</td>
+</tr>
+<tr>
+<td>Outlook &#x2F; Hotmail</td>
+<td><code>test@outlook.com</code> &#x2F; <code>test@hotmail.com</code></td>
+<td>微软邮箱用户较多</td>
+</tr>
+<tr>
+<td>Yahoo</td>
+<td><code>test@yahoo.com</code></td>
+<td>部分海外用户仍常用</td>
+</tr>
+<tr>
+<td>公司域名邮箱</td>
+<td><code>test@company.com</code></td>
+<td>验证非公共邮箱是否支持</td>
+</tr>
+<tr>
+<td>带 <code>+</code> 别名邮箱</td>
+<td><code>test+001@gmail.com</code></td>
+<td>容易影响重复注册和风控判断</td>
+</tr>
+<tr>
+<td>大小写邮箱</td>
+<td><code>Test@Gmail.com</code></td>
+<td>验证系统是否统一转小写处理</td>
+</tr>
+</tbody></table>
+<h4 id="7-2-2-邮箱格式测试点"><a href="#7-2-2-邮箱格式测试点" class="headerlink" title="7.2.2 邮箱格式测试点"></a>7.2.2 邮箱格式测试点</h4><p>需要验证：</p>
+<ul>
+<li>邮箱为空</li>
+<li>邮箱没有 <code>@</code></li>
+<li>邮箱没有域名</li>
+<li>邮箱前后有空格</li>
+<li>邮箱中包含大写字母</li>
+<li>邮箱中包含 <code>+</code> 别名</li>
+<li>邮箱中包含点号 <code>.</code></li>
+<li>邮箱域名不存在</li>
+<li>邮箱已经注册</li>
+<li>邮箱已注册但未验证</li>
+</ul>
+<h4 id="7-2-3-邮箱大小写测试"><a href="#7-2-3-邮箱大小写测试" class="headerlink" title="7.2.3 邮箱大小写测试"></a>7.2.3 邮箱大小写测试</h4><p>重点关注：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">test@gmail.com</span><br><span class="line">Test@gmail.com</span><br><span class="line">TEST@gmail.com</span><br></pre></td></tr></table></figure>
+
+<p>测试目标：确认系统是否把它们识别为同一个账号。</p>
+<p>一般来说，用户使用邮箱登录时，系统通常应该对邮箱做统一处理，例如转成小写，避免同一个邮箱因为大小写不同注册出多个账号。</p>
+<h4 id="7-2-4-Gmail-别名测试"><a href="#7-2-4-Gmail-别名测试" class="headerlink" title="7.2.4 Gmail + 别名测试"></a>7.2.4 Gmail <code>+</code> 别名测试</h4><p>Gmail 支持类似这样的邮箱：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">test@gmail.com</span><br><span class="line">test+001@gmail.com</span><br><span class="line">test+abc@gmail.com</span><br></pre></td></tr></table></figure>
+
+<p>这些邮件通常都会进入同一个 Gmail 邮箱。</p>
+<p>测试时要确认产品规则：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>需要确认</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>test@gmail.com</code> 已注册，再用 <code>test+001@gmail.com</code> 注册</td>
+<td>是否允许注册新账号</td>
+</tr>
+<tr>
+<td>同一个用户用多个 <code>+</code> 邮箱注册</td>
+<td>是否会被风控限制</td>
+</tr>
+<tr>
+<td>验证邮件发送到 <code>+</code> 邮箱</td>
+<td>是否能正常收到</td>
+</tr>
+</tbody></table>
+<p>这里没有绝对正确答案，要以产品需求为准。但测试必须把这个点提出来，因为它可能被用户用来绕过注册限制、活动限制或账号限制。</p>
+<h4 id="7-2-5-邮箱验证码-验证邮件测试"><a href="#7-2-5-邮箱验证码-验证邮件测试" class="headerlink" title="7.2.5 邮箱验证码&#x2F;验证邮件测试"></a>7.2.5 邮箱验证码&#x2F;验证邮件测试</h4><p>如果注册需要邮箱验证码或验证邮件，需要测：</p>
+<ul>
+<li>验证码发送成功</li>
+<li>验证码输入正确后注册成功</li>
+<li>验证码输入错误</li>
+<li>验证码过期</li>
+<li>验证码重复使用</li>
+<li>多次点击发送验证码是否有限制</li>
+<li>验证邮件链接点击成功</li>
+<li>验证邮件链接过期</li>
+<li>验证邮件链接重复点击</li>
+<li>验证邮件进入垃圾箱时，页面是否有合理提示</li>
+</ul>
+<hr>
+<h3 id="7-3-手机号注册怎么测"><a href="#7-3-手机号注册怎么测" class="headerlink" title="7.3 手机号注册怎么测"></a>7.3 手机号注册怎么测</h3><p>如果社区支持手机号注册，海外项目一定要关注“国家区号”。不能只测中国手机号。</p>
+<h4 id="7-3-1-国家区号测试"><a href="#7-3-1-国家区号测试" class="headerlink" title="7.3.1 国家区号测试"></a>7.3.1 国家区号测试</h4><p>建议至少覆盖：</p>
+<table>
+<thead>
+<tr>
+<th>国家&#x2F;地区</th>
+<th>区号</th>
+<th>测试原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>美国&#x2F;加拿大</td>
+<td>+1</td>
+<td>北美用户常见</td>
+</tr>
+<tr>
+<td>英国</td>
+<td>+44</td>
+<td>欧洲用户常见</td>
+</tr>
+<tr>
+<td>新加坡</td>
+<td>+65</td>
+<td>东南亚常见</td>
+</tr>
+<tr>
+<td>日本</td>
+<td>+81</td>
+<td>日本市场常见</td>
+</tr>
+<tr>
+<td>韩国</td>
+<td>+82</td>
+<td>韩国市场常见</td>
+</tr>
+<tr>
+<td>中国</td>
+<td>+86</td>
+<td>对比验证格式兼容</td>
+</tr>
+</tbody></table>
+<h4 id="7-3-2-手机号格式测试点"><a href="#7-3-2-手机号格式测试点" class="headerlink" title="7.3.2 手机号格式测试点"></a>7.3.2 手机号格式测试点</h4><p>需要验证：</p>
+<ul>
+<li>手机号为空</li>
+<li>手机号位数不足</li>
+<li>手机号位数超长</li>
+<li>手机号包含空格</li>
+<li>手机号包含短横线，例如 <code>123-456-7890</code></li>
+<li>手机号前面有 <code>0</code></li>
+<li>切换国家区号后，手机号校验规则是否变化</li>
+<li>同一个手机号是否允许注册多个账号</li>
+<li>一个账号是否允许绑定多个手机号</li>
+</ul>
+<h4 id="7-3-3-短信验证码测试点"><a href="#7-3-3-短信验证码测试点" class="headerlink" title="7.3.3 短信验证码测试点"></a>7.3.3 短信验证码测试点</h4><p>需要验证：</p>
+<ul>
+<li>验证码发送成功</li>
+<li>验证码倒计时显示正确</li>
+<li>验证码错误提示正确</li>
+<li>验证码过期后不能使用</li>
+<li>验证码重复使用失败</li>
+<li>短时间多次获取验证码是否有限制</li>
+<li>更换手机号后，旧验证码是否失效</li>
+<li>切换国家区号后，验证码是否发送到正确手机号</li>
+</ul>
+<h4 id="7-3-4-新手容易漏的点"><a href="#7-3-4-新手容易漏的点" class="headerlink" title="7.3.4 新手容易漏的点"></a>7.3.4 新手容易漏的点</h4><p>手机号注册不要只看“能不能注册成功”，还要看：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">国家区号 + 手机号 是否作为完整唯一标识</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">+1 1234567890</span><br><span class="line">+86 1234567890</span><br></pre></td></tr></table></figure>
+
+<p>这两个不一定是同一个手机号，系统不能只拿后面的数字做唯一判断。</p>
+<hr>
+<h3 id="7-4-第三方注册-登录怎么测"><a href="#7-4-第三方注册-登录怎么测" class="headerlink" title="7.4 第三方注册&#x2F;登录怎么测"></a>7.4 第三方注册&#x2F;登录怎么测</h3><p>第三方注册是海外社区项目的重点，也是隐藏 Bug 最多的地方。</p>
+<p>第三方注册本质上不是简单的“点击按钮登录”，而是一条授权链路：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">点击第三方按钮</span><br><span class="line">  ↓</span><br><span class="line">跳转到第三方授权页</span><br><span class="line">  ↓</span><br><span class="line">用户确认授权</span><br><span class="line">  ↓</span><br><span class="line">第三方返回授权结果</span><br><span class="line">  ↓</span><br><span class="line">平台获取用户信息</span><br><span class="line">  ↓</span><br><span class="line">平台创建账号或登录已有账号</span><br><span class="line">  ↓</span><br><span class="line">回到 App/Web 指定页面</span><br></pre></td></tr></table></figure>
+
+<p>任何一步出错，用户都会登录失败。</p>
+<hr>
+<h4 id="7-4-1-第三方跳转逻辑测试"><a href="#7-4-1-第三方跳转逻辑测试" class="headerlink" title="7.4.1 第三方跳转逻辑测试"></a>7.4.1 第三方跳转逻辑测试</h4><p>这是最容易被忽略的测试点。</p>
+<table>
+<thead>
+<tr>
+<th>测试场景</th>
+<th>预期结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>点击 Google 注册按钮</td>
+<td>跳转到 Google 授权页</td>
+</tr>
+<tr>
+<td>点击 Apple 注册按钮</td>
+<td>跳转到 Apple 授权页</td>
+</tr>
+<tr>
+<td>用户同意授权</td>
+<td>正确回跳到 App 或 Web 页面</td>
+</tr>
+<tr>
+<td>用户取消授权</td>
+<td>返回注册页，并提示用户取消授权</td>
+</tr>
+<tr>
+<td>授权过程中断网</td>
+<td>给出失败提示，可重新发起授权</td>
+</tr>
+<tr>
+<td>授权超时</td>
+<td>不应一直 loading，应提示超时或失败</td>
+</tr>
+<tr>
+<td>授权成功但回跳失败</td>
+<td>不应出现空白页，应有兜底处理</td>
+</tr>
+<tr>
+<td>移动端浏览器打开授权</td>
+<td>回跳地址正确</td>
+</tr>
+<tr>
+<td>App 内 WebView 打开授权</td>
+<td>能正常拉起授权并回到 App</td>
+</tr>
+<tr>
+<td>PC Web 打开授权</td>
+<td>能回到正确网页地址</td>
+</tr>
+</tbody></table>
+<p>测试时要特别观察：</p>
+<ul>
+<li>是否出现空白页</li>
+<li>是否一直 loading</li>
+<li>是否跳到错误页面</li>
+<li>是否回到登录页但没有提示</li>
+<li>是否登录成功但页面仍显示未登录</li>
+</ul>
+<hr>
+<h4 id="7-4-2-第三方账号首次注册测试"><a href="#7-4-2-第三方账号首次注册测试" class="headerlink" title="7.4.2 第三方账号首次注册测试"></a>7.4.2 第三方账号首次注册测试</h4><p>以 Google 为例：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>点击 Google 注册</td>
+<td>进入 Google 授权页</td>
+</tr>
+<tr>
+<td>选择一个未注册过的 Google 账号</td>
+<td>授权成功</td>
+</tr>
+<tr>
+<td>回到社区产品</td>
+<td>自动创建新用户</td>
+</tr>
+<tr>
+<td>查看用户资料</td>
+<td>昵称、头像、邮箱按规则同步</td>
+</tr>
+<tr>
+<td>查看登录状态</td>
+<td>用户处于已登录状态</td>
+</tr>
+</tbody></table>
+<p>还要验证：</p>
+<ul>
+<li>第一次注册后是否需要完善资料</li>
+<li>是否发送欢迎邮件，如果需求有</li>
+<li>是否默认加入某些社区或板块，如果需求有</li>
+<li>是否生成唯一用户 ID</li>
+</ul>
+<hr>
+<h4 id="7-4-3-第三方账号二次登录测试"><a href="#7-4-3-第三方账号二次登录测试" class="headerlink" title="7.4.3 第三方账号二次登录测试"></a>7.4.3 第三方账号二次登录测试</h4><p>同一个第三方账号第二次登录时，应该登录到原来的平台账号，而不是重新创建一个新账号。</p>
+<p>测试步骤：</p>
+<ol>
+<li>使用 Google 账号 A 首次注册</li>
+<li>退出登录</li>
+<li>再次点击 Google 登录</li>
+<li>选择同一个 Google 账号 A</li>
+</ol>
+<p>预期结果：</p>
+<ul>
+<li>登录成功</li>
+<li>进入的是同一个社区账号</li>
+<li>用户 ID 不变</li>
+<li>历史帖子、评论、关注关系仍然存在</li>
+<li>不会生成第二个新账号</li>
+</ul>
+<hr>
+<h4 id="7-4-4-同邮箱不同注册方式测试"><a href="#7-4-4-同邮箱不同注册方式测试" class="headerlink" title="7.4.4 同邮箱不同注册方式测试"></a>7.4.4 同邮箱不同注册方式测试</h4><p>这是非常重要的隐藏测试点。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">先用 test@gmail.com 邮箱密码注册</span><br><span class="line">再用同一个 test@gmail.com 的 Google 账号登录</span><br></pre></td></tr></table></figure>
+
+<p>需要确认系统规则：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>需要验证</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>邮箱注册后，再用同邮箱 Google 登录</td>
+<td>是自动绑定原账号，还是提示账号已存在</td>
+</tr>
+<tr>
+<td>Google 注册后，再用邮箱密码注册</td>
+<td>是否允许设置密码，还是提示账号已存在</td>
+</tr>
+<tr>
+<td>Google 注册后，再用 Apple 登录，邮箱相同</td>
+<td>是否合并到同一个账号</td>
+</tr>
+<tr>
+<td>第三方返回邮箱为空</td>
+<td>是否允许注册，如何生成账号</td>
+</tr>
+<tr>
+<td>第三方返回邮箱未验证</td>
+<td>是否允许登录</td>
+</tr>
+</tbody></table>
+<p>这个点一定要和产品&#x2F;开发确认规则，不同产品设计可能不同。</p>
+<p>但测试目标很明确：</p>
+<blockquote>
+<p>不能让用户在不知情的情况下创建多个重复账号，也不能错误地把两个不同用户合并成一个账号。</p>
+</blockquote>
+<hr>
+<h4 id="7-4-5-Apple-登录的特殊测试点"><a href="#7-4-5-Apple-登录的特殊测试点" class="headerlink" title="7.4.5 Apple 登录的特殊测试点"></a>7.4.5 Apple 登录的特殊测试点</h4><p>Apple 登录要特别关注“隐藏邮箱”。</p>
+<p>用户使用 Apple 登录时，可能选择：</p>
+<ul>
+<li>共享真实邮箱</li>
+<li>隐藏邮箱</li>
+</ul>
+<p>如果用户选择隐藏邮箱，平台拿到的可能是一个 Apple 中转邮箱，而不是用户真实邮箱。</p>
+<p>需要测试：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>测试重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Apple 登录选择共享真实邮箱</td>
+<td>平台是否正确获取邮箱</td>
+</tr>
+<tr>
+<td>Apple 登录选择隐藏邮箱</td>
+<td>平台是否能正常创建账号</td>
+</tr>
+<tr>
+<td>隐藏邮箱用户再次登录</td>
+<td>是否登录同一个账号</td>
+</tr>
+<tr>
+<td>Apple 不返回昵称</td>
+<td>页面是否有默认昵称</td>
+</tr>
+<tr>
+<td>Apple 不返回头像</td>
+<td>页面是否有默认头像</td>
+</tr>
+<tr>
+<td>Apple 账号解绑后再次登录</td>
+<td>是否符合绑定&#x2F;解绑规则</td>
+</tr>
+</tbody></table>
+<p>新手注意：Apple 有些用户信息可能只在首次授权时返回。二次登录时，昵称等信息可能不会再次返回。因此不能要求每次登录都重新获取完整资料，要看产品和接口设计。</p>
+<hr>
+<h4 id="7-4-6-第三方头像、昵称、邮箱同步测试"><a href="#7-4-6-第三方头像、昵称、邮箱同步测试" class="headerlink" title="7.4.6 第三方头像、昵称、邮箱同步测试"></a>7.4.6 第三方头像、昵称、邮箱同步测试</h4><p>第三方登录成功后，平台通常会同步一些资料：</p>
+<ul>
+<li>昵称</li>
+<li>头像</li>
+<li>邮箱</li>
+<li>第三方用户 ID</li>
+</ul>
+<p>需要测试：</p>
+<ul>
+<li>昵称为空时是否有默认昵称</li>
+<li>昵称包含 Emoji 是否正常展示</li>
+<li>昵称过长是否截断或提示</li>
+<li>头像获取失败时是否使用默认头像</li>
+<li>第三方邮箱为空时是否允许注册</li>
+<li>第三方邮箱和已有账号邮箱冲突时如何处理</li>
+<li>第三方资料变更后，平台是否同步更新，按需求判断</li>
+</ul>
+<hr>
+<h4 id="7-4-7-第三方绑定与解绑测试"><a href="#7-4-7-第三方绑定与解绑测试" class="headerlink" title="7.4.7 第三方绑定与解绑测试"></a>7.4.7 第三方绑定与解绑测试</h4><p>如果产品支持账号绑定，需要测试：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>已登录账号绑定 Google</td>
+<td>绑定成功，后续可用 Google 登录</td>
+</tr>
+<tr>
+<td>已登录账号绑定 Apple</td>
+<td>绑定成功，后续可用 Apple 登录</td>
+</tr>
+<tr>
+<td>绑定已被其他账号使用的第三方账号</td>
+<td>绑定失败并提示原因</td>
+</tr>
+<tr>
+<td>解绑唯一登录方式</td>
+<td>应阻止解绑，或提示先设置密码&#x2F;绑定其他方式</td>
+</tr>
+<tr>
+<td>解绑后再次用该第三方登录</td>
+<td>按规则创建新账号或提示未绑定</td>
+</tr>
+</tbody></table>
+<p>重点原则：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">不能让用户解绑后彻底无法登录账号。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="7-5-登录功能怎么测"><a href="#7-5-登录功能怎么测" class="headerlink" title="7.5 登录功能怎么测"></a>7.5 登录功能怎么测</h3><p>注册解决的是“创建账号”，登录解决的是“进入账号”。</p>
+<h4 id="7-5-1-正常登录场景"><a href="#7-5-1-正常登录场景" class="headerlink" title="7.5.1 正常登录场景"></a>7.5.1 正常登录场景</h4><ul>
+<li>邮箱 + 密码登录</li>
+<li>手机号 + 验证码登录，如果支持</li>
+<li>Google 登录</li>
+<li>Apple 登录</li>
+<li>Facebook 登录</li>
+<li>退出登录</li>
+<li>退出后重新登录</li>
+<li>登录后返回原页面</li>
+<li>登录状态保持</li>
+</ul>
+<h4 id="7-5-2-异常登录场景"><a href="#7-5-2-异常登录场景" class="headerlink" title="7.5.2 异常登录场景"></a>7.5.2 异常登录场景</h4><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>账号不存在</td>
+<td>提示账号不存在或账号&#x2F;密码错误</td>
+</tr>
+<tr>
+<td>密码错误</td>
+<td>提示登录失败，不应泄露过多账号信息</td>
+</tr>
+<tr>
+<td>账号被冻结</td>
+<td>提示账号不可用</td>
+</tr>
+<tr>
+<td>账号被封禁</td>
+<td>提示封禁原因或封禁状态</td>
+</tr>
+<tr>
+<td>邮箱未验证</td>
+<td>提示先验证邮箱，或限制部分功能</td>
+</tr>
+<tr>
+<td>网络异常</td>
+<td>提示网络异常，可重试</td>
+</tr>
+<tr>
+<td>第三方授权取消</td>
+<td>提示用户已取消授权</td>
+</tr>
+<tr>
+<td>第三方授权失败</td>
+<td>提示登录失败，可重新尝试</td>
+</tr>
+</tbody></table>
+<h4 id="7-5-3-登录后状态测试"><a href="#7-5-3-登录后状态测试" class="headerlink" title="7.5.3 登录后状态测试"></a>7.5.3 登录后状态测试</h4><p>登录成功后不要马上结束测试，还要验证：</p>
+<ul>
+<li>页面是否显示用户头像&#x2F;昵称</li>
+<li>Token 或登录态是否生效</li>
+<li>刷新页面后是否仍保持登录</li>
+<li>关闭 App 再打开是否仍保持登录，按需求判断</li>
+<li>登录后是否回到登录前想访问的页面</li>
+<li>多端登录是否符合需求</li>
+<li>退出登录后是否不能访问个人页面</li>
+</ul>
+<hr>
+<h3 id="7-6-注册登录模块高风险-Bug"><a href="#7-6-注册登录模块高风险-Bug" class="headerlink" title="7.6 注册登录模块高风险 Bug"></a>7.6 注册登录模块高风险 Bug</h3><table>
+<thead>
+<tr>
+<th>高风险问题</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>同一邮箱生成多个账号</td>
+<td>邮箱大小写、<code>+</code> 别名或第三方登录处理不一致导致</td>
+</tr>
+<tr>
+<td>第三方授权成功但回跳失败</td>
+<td>用户授权完成后停留在空白页或错误页</td>
+</tr>
+<tr>
+<td>Apple 隐藏邮箱导致账号重复</td>
+<td>同一 Apple 用户二次登录被识别成新用户</td>
+</tr>
+<tr>
+<td>绑定&#x2F;解绑后无法登录</td>
+<td>用户解绑唯一登录方式，没有其他登录入口</td>
+</tr>
+<tr>
+<td>验证码可重复使用</td>
+<td>可能导致安全风险和异常注册</td>
+</tr>
+<tr>
+<td>连续点击注册创建多个账号</td>
+<td>注册接口缺少防重复提交</td>
+</tr>
+<tr>
+<td>登录成功但页面仍显示未登录</td>
+<td>登录态没有正确写入或刷新</td>
+</tr>
+<tr>
+<td>被封禁账号仍能第三方登录</td>
+<td>用户状态校验不完整</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-08"></a></p>
+<h2 id="8-内容发布模块怎么测"><a href="#8-内容发布模块怎么测" class="headerlink" title="8. 内容发布模块怎么测"></a>8. 内容发布模块怎么测</h2><p>内容发布是社区论坛最核心的功能之一。</p>
+<h3 id="8-1-发帖入口测试"><a href="#8-1-发帖入口测试" class="headerlink" title="8.1 发帖入口测试"></a>8.1 发帖入口测试</h3><p>先确认哪些地方可以发帖：</p>
+<ul>
+<li>首页发布按钮</li>
+<li>板块内发布按钮</li>
+<li>个人主页发布入口</li>
+<li>移动端底部发布按钮</li>
+</ul>
+<p>测试点：</p>
+<ul>
+<li>未登录用户点击发布是否跳转登录</li>
+<li>登录用户是否能进入发布页</li>
+<li>被禁言用户是否不能发布</li>
+<li>被封禁用户是否不能发布</li>
+<li>不同板块是否有不同发布权限</li>
+</ul>
+<h3 id="8-2-文本内容测试"><a href="#8-2-文本内容测试" class="headerlink" title="8.2 文本内容测试"></a>8.2 文本内容测试</h3><h4 id="标题测试"><a href="#标题测试" class="headerlink" title="标题测试"></a>标题测试</h4><ul>
+<li>标题为空</li>
+<li>标题只输入空格</li>
+<li>标题长度刚好等于最小限制</li>
+<li>标题长度刚好等于最大限制</li>
+<li>标题超过最大限制</li>
+<li>标题包含 Emoji</li>
+<li>标题包含多语言字符</li>
+<li>标题包含特殊符号</li>
+</ul>
+<h4 id="正文测试"><a href="#正文测试" class="headerlink" title="正文测试"></a>正文测试</h4><ul>
+<li>正文为空</li>
+<li>正文只有图片</li>
+<li>正文只有链接</li>
+<li>正文超长</li>
+<li>正文包含换行</li>
+<li>正文包含表情</li>
+<li>正文包含敏感词</li>
+<li>正文包含 HTML 标签</li>
+</ul>
+<h3 id="8-3-图片上传测试"><a href="#8-3-图片上传测试" class="headerlink" title="8.3 图片上传测试"></a>8.3 图片上传测试</h3><p>测试点：</p>
+<ul>
+<li>上传单张图片</li>
+<li>上传多张图片</li>
+<li>超过最大数量限制</li>
+<li>超过最大大小限制</li>
+<li>上传不支持格式</li>
+<li>上传失败后重新上传</li>
+<li>删除已上传图片</li>
+<li>调整图片顺序，如果支持</li>
+<li>图片预览是否正常</li>
+<li>发布后图片是否正常展示</li>
+</ul>
+<h3 id="8-4-视频上传测试"><a href="#8-4-视频上传测试" class="headerlink" title="8.4 视频上传测试"></a>8.4 视频上传测试</h3><p>如果支持视频发帖，需要测试：</p>
+<ul>
+<li>上传视频成功</li>
+<li>视频过大</li>
+<li>视频格式不支持</li>
+<li>视频上传中取消</li>
+<li>视频转码中状态展示</li>
+<li>视频封面生成</li>
+<li>视频播放失败处理</li>
+<li>横屏&#x2F;竖屏展示</li>
+</ul>
+<h3 id="8-5-草稿功能测试"><a href="#8-5-草稿功能测试" class="headerlink" title="8.5 草稿功能测试"></a>8.5 草稿功能测试</h3><p>如果有草稿功能，非常重要。</p>
+<p>测试点：</p>
+<ul>
+<li>输入内容后退出页面是否保存草稿</li>
+<li>重新进入是否恢复草稿</li>
+<li>发布成功后草稿是否清空</li>
+<li>编辑草稿后是否更新</li>
+<li>多端草稿是否同步，如果支持</li>
+<li>网络异常时草稿是否保留</li>
+</ul>
+<h3 id="8-6-发布成功后的验证"><a href="#8-6-发布成功后的验证" class="headerlink" title="8.6 发布成功后的验证"></a>8.6 发布成功后的验证</h3><p>发帖成功不代表测试结束，还要继续验证：</p>
+<ul>
+<li>是否跳转到帖子详情页</li>
+<li>首页列表是否出现新帖子</li>
+<li>个人主页是否出现新帖子</li>
+<li>板块列表是否出现新帖子</li>
+<li>发帖数是否增加</li>
+<li>内容格式是否保持一致</li>
+<li>图片&#x2F;视频是否展示正常</li>
+<li>如果需要审核，帖子是否进入审核状态</li>
+</ul>
+<h3 id="8-7-内容发布高风险-Bug"><a href="#8-7-内容发布高风险-Bug" class="headerlink" title="8.7 内容发布高风险 Bug"></a>8.7 内容发布高风险 Bug</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>重复发帖</td>
+<td>用户连点发布，产生多篇重复帖子</td>
+</tr>
+<tr>
+<td>内容丢失</td>
+<td>网络异常或返回上一页后内容消失</td>
+</tr>
+<tr>
+<td>图片顺序错乱</td>
+<td>上传后顺序与发布后顺序不一致</td>
+</tr>
+<tr>
+<td>审核状态错误</td>
+<td>违规内容直接展示，或正常内容被误拦截</td>
+</tr>
+<tr>
+<td>数据不同步</td>
+<td>个人主页有帖子，首页没有；或反过来</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-09"></a></p>
+<h2 id="9-帖子详情页怎么测"><a href="#9-帖子详情页怎么测" class="headerlink" title="9. 帖子详情页怎么测"></a>9. 帖子详情页怎么测</h2><p>帖子详情页是用户阅读和互动的主要页面。</p>
+<h3 id="9-1-页面展示测试"><a href="#9-1-页面展示测试" class="headerlink" title="9.1 页面展示测试"></a>9.1 页面展示测试</h3><p>需要验证：</p>
+<ul>
+<li>帖子标题展示正确</li>
+<li>作者头像、昵称展示正确</li>
+<li>发布时间展示正确</li>
+<li>正文内容展示正确</li>
+<li>图片展示正确</li>
+<li>视频展示正确</li>
+<li>标签&#x2F;话题展示正确</li>
+<li>点赞数、评论数、收藏数展示正确</li>
+</ul>
+<h3 id="9-2-帖子状态测试"><a href="#9-2-帖子状态测试" class="headerlink" title="9.2 帖子状态测试"></a>9.2 帖子状态测试</h3><p>不同状态的帖子展示不同：</p>
+<table>
+<thead>
+<tr>
+<th>帖子状态</th>
+<th>预期展示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正常</td>
+<td>正常展示内容</td>
+</tr>
+<tr>
+<td>审核中</td>
+<td>作者可见，其他用户可能不可见</td>
+</tr>
+<tr>
+<td>审核失败</td>
+<td>展示失败原因或仅作者可见</td>
+</tr>
+<tr>
+<td>已删除</td>
+<td>提示内容不存在</td>
+</tr>
+<tr>
+<td>被管理员隐藏</td>
+<td>普通用户不可见</td>
+</tr>
+<tr>
+<td>作者已注销</td>
+<td>作者信息匿名或按需求展示</td>
+</tr>
+</tbody></table>
+<h3 id="9-3-作者操作测试"><a href="#9-3-作者操作测试" class="headerlink" title="9.3 作者操作测试"></a>9.3 作者操作测试</h3><p>作者通常可以：</p>
+<ul>
+<li>编辑帖子</li>
+<li>删除帖子</li>
+<li>查看审核状态</li>
+<li>置顶自己的帖子，如果支持</li>
+</ul>
+<p>需要验证：</p>
+<ul>
+<li>作者可以编辑自己的帖子</li>
+<li>作者不能编辑别人帖子</li>
+<li>删除后列表和详情页状态正确</li>
+<li>编辑后内容更新正确</li>
+<li>编辑后是否重新审核</li>
+</ul>
+<h3 id="9-4-非作者操作测试"><a href="#9-4-非作者操作测试" class="headerlink" title="9.4 非作者操作测试"></a>9.4 非作者操作测试</h3><p>非作者通常可以：</p>
+<ul>
+<li>浏览帖子</li>
+<li>点赞</li>
+<li>收藏</li>
+<li>评论</li>
+<li>举报</li>
+<li>分享</li>
+</ul>
+<p>需要验证：</p>
+<ul>
+<li>非作者不能编辑帖子</li>
+<li>非作者不能删除帖子</li>
+<li>非作者可以举报帖子</li>
+<li>被拉黑用户是否还能看到帖子，按需求判断</li>
+</ul>
+<hr>
+<p><a id="forum-ch-10"></a></p>
+<h2 id="10-评论与回复模块怎么测"><a href="#10-评论与回复模块怎么测" class="headerlink" title="10. 评论与回复模块怎么测"></a>10. 评论与回复模块怎么测</h2><p>评论系统是社区论坛事故高发区。</p>
+<h3 id="10-1-评论发布测试"><a href="#10-1-评论发布测试" class="headerlink" title="10.1 评论发布测试"></a>10.1 评论发布测试</h3><p>测试点：</p>
+<ul>
+<li>发布普通文字评论</li>
+<li>发布 Emoji 评论</li>
+<li>发布多语言评论</li>
+<li>发布图片评论，如果支持</li>
+<li>评论为空</li>
+<li>评论超长</li>
+<li>评论包含敏感词</li>
+<li>评论包含链接</li>
+<li>未登录评论</li>
+<li>被禁言用户评论</li>
+</ul>
+<h3 id="10-2-回复功能测试"><a href="#10-2-回复功能测试" class="headerlink" title="10.2 回复功能测试"></a>10.2 回复功能测试</h3><p>测试点：</p>
+<ul>
+<li>回复一级评论</li>
+<li>回复二级评论</li>
+<li>回复自己</li>
+<li>回复被删除评论</li>
+<li>回复被隐藏评论</li>
+<li>@ 用户是否正确</li>
+<li>被回复用户是否收到通知</li>
+</ul>
+<h3 id="10-3-评论列表测试"><a href="#10-3-评论列表测试" class="headerlink" title="10.3 评论列表测试"></a>10.3 评论列表测试</h3><p>需要验证：</p>
+<ul>
+<li>评论排序是否正确</li>
+<li>最新评论是否展示在正确位置</li>
+<li>热门评论排序是否正确，如果有</li>
+<li>分页加载是否正常</li>
+<li>上拉加载是否重复</li>
+<li>删除评论后列表是否刷新</li>
+<li>评论数是否正确</li>
+</ul>
+<h3 id="10-4-删除评论测试"><a href="#10-4-删除评论测试" class="headerlink" title="10.4 删除评论测试"></a>10.4 删除评论测试</h3><p>不同角色删除权限不同：</p>
+<table>
+<thead>
+<tr>
+<th>操作人</th>
+<th>是否可删除</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>评论作者</td>
+<td>可以删除自己的评论</td>
+</tr>
+<tr>
+<td>帖子作者</td>
+<td>视需求而定，可能可以删除帖子下评论</td>
+</tr>
+<tr>
+<td>普通用户</td>
+<td>不能删除别人的评论</td>
+</tr>
+<tr>
+<td>版主</td>
+<td>可以删除所管板块评论</td>
+</tr>
+<tr>
+<td>管理员</td>
+<td>可以删除所有评论</td>
+</tr>
+</tbody></table>
+<h3 id="10-5-评论模块高风险-Bug"><a href="#10-5-评论模块高风险-Bug" class="headerlink" title="10.5 评论模块高风险 Bug"></a>10.5 评论模块高风险 Bug</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>评论丢失</td>
+<td>提示成功但列表没有展示</td>
+</tr>
+<tr>
+<td>评论重复</td>
+<td>连续点击发布导致重复评论</td>
+</tr>
+<tr>
+<td>楼层错乱</td>
+<td>回复 A 却显示到 B 下方</td>
+</tr>
+<tr>
+<td>评论数不准</td>
+<td>实际评论数和展示评论数不一致</td>
+</tr>
+<tr>
+<td>通知错误</td>
+<td>回复了 A，通知却发给 B</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-11"></a></p>
+<h2 id="11-点赞、收藏、分享模块怎么测"><a href="#11-点赞、收藏、分享模块怎么测" class="headerlink" title="11. 点赞、收藏、分享模块怎么测"></a>11. 点赞、收藏、分享模块怎么测</h2><p>这些功能看起来简单，但数据最容易错。</p>
+<h3 id="11-1-点赞测试"><a href="#11-1-点赞测试" class="headerlink" title="11.1 点赞测试"></a>11.1 点赞测试</h3><p>测试点：</p>
+<ul>
+<li>点赞帖子</li>
+<li>取消点赞</li>
+<li>重复快速点击点赞</li>
+<li>多端同时点赞</li>
+<li>未登录点赞</li>
+<li>被封禁用户点赞</li>
+<li>点赞后数量 +1</li>
+<li>取消点赞后数量 -1</li>
+<li>刷新页面后状态保持</li>
+</ul>
+<h3 id="11-2-收藏测试"><a href="#11-2-收藏测试" class="headerlink" title="11.2 收藏测试"></a>11.2 收藏测试</h3><p>测试点：</p>
+<ul>
+<li>收藏帖子</li>
+<li>取消收藏</li>
+<li>收藏后进入收藏列表查看</li>
+<li>删除帖子后收藏列表如何展示</li>
+<li>未登录收藏</li>
+<li>重复收藏</li>
+</ul>
+<h3 id="11-3-分享测试"><a href="#11-3-分享测试" class="headerlink" title="11.3 分享测试"></a>11.3 分享测试</h3><p>测试点：</p>
+<ul>
+<li>复制链接</li>
+<li>分享到第三方平台</li>
+<li>分享链接打开是否正确</li>
+<li>未登录用户打开分享链接</li>
+<li>被删除帖子链接打开状态</li>
+<li>私密帖子是否可被分享</li>
+</ul>
+<h3 id="11-4-新手特别注意"><a href="#11-4-新手特别注意" class="headerlink" title="11.4 新手特别注意"></a>11.4 新手特别注意</h3><p>点赞和收藏必须验证两个东西：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 数量是否正确</span><br><span class="line">2. 当前用户状态是否正确</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<ul>
+<li>帖子显示 10 个赞</li>
+<li>当前用户按钮状态显示“已点赞”</li>
+</ul>
+<p>这两个数据都要正确。</p>
+<hr>
+<p><a id="forum-ch-12"></a></p>
+<h2 id="12-关注、粉丝、用户主页怎么测"><a href="#12-关注、粉丝、用户主页怎么测" class="headerlink" title="12. 关注、粉丝、用户主页怎么测"></a>12. 关注、粉丝、用户主页怎么测</h2><h3 id="12-1-关注功能测试"><a href="#12-1-关注功能测试" class="headerlink" title="12.1 关注功能测试"></a>12.1 关注功能测试</h3><p>测试点：</p>
+<ul>
+<li>关注用户</li>
+<li>取消关注</li>
+<li>重复点击关注</li>
+<li>关注自己</li>
+<li>关注已注销用户</li>
+<li>关注被封禁用户</li>
+<li>被拉黑后是否还能关注</li>
+<li>关注后粉丝数 +1</li>
+<li>取消关注后粉丝数 -1</li>
+</ul>
+<h3 id="12-2-粉丝-关注列表测试"><a href="#12-2-粉丝-关注列表测试" class="headerlink" title="12.2 粉丝&#x2F;关注列表测试"></a>12.2 粉丝&#x2F;关注列表测试</h3><p>测试点：</p>
+<ul>
+<li>关注列表展示正确</li>
+<li>粉丝列表展示正确</li>
+<li>分页加载正常</li>
+<li>用户头像昵称正确</li>
+<li>被注销用户如何展示</li>
+<li>被拉黑用户如何展示</li>
+</ul>
+<h3 id="12-3-用户主页测试"><a href="#12-3-用户主页测试" class="headerlink" title="12.3 用户主页测试"></a>12.3 用户主页测试</h3><p>用户主页通常包含：</p>
+<ul>
+<li>头像</li>
+<li>昵称</li>
+<li>简介</li>
+<li>发帖列表</li>
+<li>评论或动态</li>
+<li>关注数</li>
+<li>粉丝数</li>
+<li>获赞数</li>
+<li>勋章或等级</li>
+</ul>
+<p>需要验证：</p>
+<ul>
+<li>自己看自己的主页</li>
+<li>别人看自己的主页</li>
+<li>游客看用户主页</li>
+<li>被拉黑用户看主页</li>
+<li>隐私设置是否生效</li>
+</ul>
+<hr>
+<p><a id="forum-ch-13"></a></p>
+<h2 id="13-Feed-信息流怎么测"><a href="#13-Feed-信息流怎么测" class="headerlink" title="13. Feed 信息流怎么测"></a>13. Feed 信息流怎么测</h2><p>Feed 流就是用户打开社区后看到的帖子列表，例如首页推荐流、关注流、热门流、最新流。</p>
+<h3 id="13-1-Feed-类型"><a href="#13-1-Feed-类型" class="headerlink" title="13.1 Feed 类型"></a>13.1 Feed 类型</h3><p>常见 Feed 包括：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>推荐流</td>
+<td>系统推荐内容</td>
+</tr>
+<tr>
+<td>最新流</td>
+<td>按发布时间排序</td>
+</tr>
+<tr>
+<td>热门流</td>
+<td>按热度排序</td>
+</tr>
+<tr>
+<td>关注流</td>
+<td>只看关注用户内容</td>
+</tr>
+<tr>
+<td>板块流</td>
+<td>某个频道或话题下的内容</td>
+</tr>
+</tbody></table>
+<h3 id="13-2-基础测试点"><a href="#13-2-基础测试点" class="headerlink" title="13.2 基础测试点"></a>13.2 基础测试点</h3><ul>
+<li>首次进入列表加载成功</li>
+<li>下拉刷新成功</li>
+<li>上拉加载更多成功</li>
+<li>无数据时展示空状态</li>
+<li>网络异常时展示错误状态</li>
+<li>点击帖子进入详情页</li>
+<li>返回列表后位置是否保持</li>
+</ul>
+<h3 id="13-3-排序测试"><a href="#13-3-排序测试" class="headerlink" title="13.3 排序测试"></a>13.3 排序测试</h3><p>按需求验证：</p>
+<ul>
+<li>最新流是否按发布时间倒序</li>
+<li>热门流是否按热度排序</li>
+<li>关注流是否只展示关注用户帖子</li>
+<li>被删除帖子是否不展示</li>
+<li>审核未通过帖子是否不展示</li>
+</ul>
+<h3 id="13-4-分页测试"><a href="#13-4-分页测试" class="headerlink" title="13.4 分页测试"></a>13.4 分页测试</h3><p>Feed 分页很容易出 Bug。</p>
+<p>重点验证：</p>
+<ul>
+<li>上拉加载不会重复出现帖子</li>
+<li>上拉加载不会漏帖子</li>
+<li>下拉刷新后数据正确</li>
+<li>新帖子插入后列表顺序正确</li>
+<li>最后一页没有更多数据时提示正确</li>
+</ul>
+<h3 id="13-5-Feed-高风险-Bug"><a href="#13-5-Feed-高风险-Bug" class="headerlink" title="13.5 Feed 高风险 Bug"></a>13.5 Feed 高风险 Bug</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>重复帖子</td>
+<td>同一篇帖子出现多次</td>
+</tr>
+<tr>
+<td>帖子丢失</td>
+<td>明明存在但列表没有展示</td>
+</tr>
+<tr>
+<td>排序错误</td>
+<td>最新帖子没有在前面</td>
+</tr>
+<tr>
+<td>状态不同步</td>
+<td>已删除帖子仍然展示</td>
+</tr>
+<tr>
+<td>返回位置丢失</td>
+<td>看完详情返回列表回到顶部</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-14"></a></p>
+<h2 id="14-搜索功能怎么测"><a href="#14-搜索功能怎么测" class="headerlink" title="14. 搜索功能怎么测"></a>14. 搜索功能怎么测</h2><p>搜索是海外社区中很重要的功能，尤其内容多以后。</p>
+<h3 id="14-1-搜索对象"><a href="#14-1-搜索对象" class="headerlink" title="14.1 搜索对象"></a>14.1 搜索对象</h3><p>搜索可能包括：</p>
+<ul>
+<li>帖子</li>
+<li>用户</li>
+<li>话题</li>
+<li>标签</li>
+<li>板块</li>
+<li>评论，如果支持</li>
+</ul>
+<h3 id="14-2-搜索输入测试"><a href="#14-2-搜索输入测试" class="headerlink" title="14.2 搜索输入测试"></a>14.2 搜索输入测试</h3><p>测试点：</p>
+<ul>
+<li>输入关键词搜索</li>
+<li>输入空内容搜索</li>
+<li>输入空格搜索</li>
+<li>输入特殊字符</li>
+<li>输入 Emoji</li>
+<li>输入超长关键词</li>
+<li>输入多语言关键词</li>
+<li>大小写搜索</li>
+</ul>
+<h3 id="14-3-搜索结果测试"><a href="#14-3-搜索结果测试" class="headerlink" title="14.3 搜索结果测试"></a>14.3 搜索结果测试</h3><p>需要验证：</p>
+<ul>
+<li>结果是否相关</li>
+<li>标题命中是否展示</li>
+<li>内容命中是否展示</li>
+<li>用户搜索结果是否正确</li>
+<li>无结果时空状态是否正确</li>
+<li>搜索结果分页是否正常</li>
+<li>点击结果是否跳转正确</li>
+</ul>
+<h3 id="14-4-海外项目注意点"><a href="#14-4-海外项目注意点" class="headerlink" title="14.4 海外项目注意点"></a>14.4 海外项目注意点</h3><p>海外项目一定要关注英文搜索：</p>
+<ul>
+<li>大小写是否敏感</li>
+<li>单复数是否能搜到</li>
+<li>拼写错误是否有容错，如果需求支持</li>
+<li>多语言搜索是否正常</li>
+</ul>
+<p>例如搜索：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">battery</span><br><span class="line">Battery</span><br><span class="line">batteries</span><br></pre></td></tr></table></figure>
+
+<p>结果是否符合预期，需要结合需求判断。</p>
+<hr>
+<p><a id="forum-ch-15"></a></p>
+<h2 id="15-通知消息怎么测"><a href="#15-通知消息怎么测" class="headerlink" title="15. 通知消息怎么测"></a>15. 通知消息怎么测</h2><p>通知系统负责告诉用户：有人点赞、评论、关注、私信你。</p>
+<h3 id="15-1-通知类型"><a href="#15-1-通知类型" class="headerlink" title="15.1 通知类型"></a>15.1 通知类型</h3><p>常见通知包括：</p>
+<ul>
+<li>点赞通知</li>
+<li>评论通知</li>
+<li>回复通知</li>
+<li>关注通知</li>
+<li>私信通知</li>
+<li>系统公告</li>
+<li>审核结果通知</li>
+<li>违规处罚通知</li>
+</ul>
+<h3 id="15-2-测试重点"><a href="#15-2-测试重点" class="headerlink" title="15.2 测试重点"></a>15.2 测试重点</h3><p>需要验证：</p>
+<ul>
+<li>触发动作后是否生成通知</li>
+<li>通知接收人是否正确</li>
+<li>通知内容是否正确</li>
+<li>点击通知是否跳转正确</li>
+<li>未读数是否增加</li>
+<li>阅读后未读数是否减少</li>
+<li>全部已读是否生效</li>
+<li>删除通知是否生效</li>
+</ul>
+<h3 id="15-3-示例场景"><a href="#15-3-示例场景" class="headerlink" title="15.3 示例场景"></a>15.3 示例场景</h3><h4 id="用户B评论用户A的帖子"><a href="#用户B评论用户A的帖子" class="headerlink" title="用户B评论用户A的帖子"></a>用户B评论用户A的帖子</h4><p>步骤：</p>
+<ol>
+<li>用户A发布帖子</li>
+<li>用户B评论该帖子</li>
+<li>用户A查看通知列表</li>
+</ol>
+<p>预期：</p>
+<ul>
+<li>用户A收到评论通知</li>
+<li>通知内容包含用户B和帖子信息</li>
+<li>点击通知进入对应帖子详情</li>
+<li>用户B自己不应收到这条通知</li>
+</ul>
+<h3 id="15-4-高风险-Bug"><a href="#15-4-高风险-Bug" class="headerlink" title="15.4 高风险 Bug"></a>15.4 高风险 Bug</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>通知重复</td>
+<td>一次点赞收到多条通知</td>
+</tr>
+<tr>
+<td>通知错发</td>
+<td>通知发给了错误用户</td>
+</tr>
+<tr>
+<td>红点不消失</td>
+<td>已读后仍显示未读</td>
+</tr>
+<tr>
+<td>跳转错误</td>
+<td>点击通知进入错误帖子</td>
+</tr>
+<tr>
+<td>删除内容通知异常</td>
+<td>帖子删除后通知点击报错</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-16"></a></p>
+<h2 id="16-私信功能怎么测"><a href="#16-私信功能怎么测" class="headerlink" title="16. 私信功能怎么测"></a>16. 私信功能怎么测</h2><p>如果社区支持私信，需要关注消息可靠性和权限限制。</p>
+<h3 id="16-1-基础功能"><a href="#16-1-基础功能" class="headerlink" title="16.1 基础功能"></a>16.1 基础功能</h3><p>测试点：</p>
+<ul>
+<li>发送文本消息</li>
+<li>发送图片消息</li>
+<li>发送 Emoji</li>
+<li>接收消息</li>
+<li>消息已读</li>
+<li>消息未读数</li>
+<li>消息列表排序</li>
+<li>删除会话</li>
+</ul>
+<h3 id="16-2-权限限制"><a href="#16-2-权限限制" class="headerlink" title="16.2 权限限制"></a>16.2 权限限制</h3><p>需要验证：</p>
+<ul>
+<li>未登录不能发私信</li>
+<li>被封禁用户不能发私信</li>
+<li>被拉黑后不能发私信</li>
+<li>是否允许陌生人私信</li>
+<li>是否允许只接收关注人的私信</li>
+</ul>
+<h3 id="16-3-消息状态"><a href="#16-3-消息状态" class="headerlink" title="16.3 消息状态"></a>16.3 消息状态</h3><p>重点验证：</p>
+<ul>
+<li>发送中</li>
+<li>发送成功</li>
+<li>发送失败</li>
+<li>重新发送</li>
+<li>已读</li>
+<li>未读</li>
+</ul>
+<h3 id="16-4-高风险-Bug"><a href="#16-4-高风险-Bug" class="headerlink" title="16.4 高风险 Bug"></a>16.4 高风险 Bug</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>消息丢失</td>
+<td>发送成功但对方收不到</td>
+</tr>
+<tr>
+<td>消息重复</td>
+<td>对方收到两条一样的消息</td>
+</tr>
+<tr>
+<td>顺序错乱</td>
+<td>后发的消息显示在前面</td>
+</tr>
+<tr>
+<td>未读数错误</td>
+<td>已读后仍显示未读</td>
+</tr>
+<tr>
+<td>拉黑失效</td>
+<td>拉黑后仍能收到消息</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-17"></a></p>
+<h2 id="17-举报、拉黑、屏蔽功能怎么测"><a href="#17-举报、拉黑、屏蔽功能怎么测" class="headerlink" title="17. 举报、拉黑、屏蔽功能怎么测"></a>17. 举报、拉黑、屏蔽功能怎么测</h2><p>这些是社区治理相关功能。</p>
+<h3 id="17-1-举报功能"><a href="#17-1-举报功能" class="headerlink" title="17.1 举报功能"></a>17.1 举报功能</h3><p>测试点：</p>
+<ul>
+<li>举报帖子</li>
+<li>举报评论</li>
+<li>举报用户</li>
+<li>选择举报原因</li>
+<li>填写补充说明</li>
+<li>提交成功</li>
+<li>重复举报</li>
+<li>举报后后台是否收到记录</li>
+</ul>
+<p>常见举报原因：</p>
+<ul>
+<li>Spam 广告</li>
+<li>色情内容</li>
+<li>骚扰</li>
+<li>仇恨言论</li>
+<li>暴力内容</li>
+<li>诈骗</li>
+<li>其他</li>
+</ul>
+<h3 id="17-2-拉黑功能"><a href="#17-2-拉黑功能" class="headerlink" title="17.2 拉黑功能"></a>17.2 拉黑功能</h3><p>测试点：</p>
+<ul>
+<li>拉黑用户</li>
+<li>取消拉黑</li>
+<li>拉黑后对方是否能私信我</li>
+<li>拉黑后是否还能看到对方内容</li>
+<li>拉黑后是否还能评论互动</li>
+<li>拉黑列表是否正确展示</li>
+</ul>
+<h3 id="17-3-屏蔽功能"><a href="#17-3-屏蔽功能" class="headerlink" title="17.3 屏蔽功能"></a>17.3 屏蔽功能</h3><p>屏蔽可能包括：</p>
+<ul>
+<li>屏蔽某个用户内容</li>
+<li>屏蔽某个话题</li>
+<li>屏蔽某类推荐</li>
+</ul>
+<p>测试点：</p>
+<ul>
+<li>屏蔽后 Feed 是否不再展示</li>
+<li>取消屏蔽后是否恢复</li>
+<li>屏蔽规则是否多端同步</li>
+</ul>
+<hr>
+<p><a id="forum-ch-18"></a></p>
+<h2 id="18-管理员后台与内容审核怎么测"><a href="#18-管理员后台与内容审核怎么测" class="headerlink" title="18. 管理员后台与内容审核怎么测"></a>18. 管理员后台与内容审核怎么测</h2><p>管理员后台是社区项目的重要组成部分。</p>
+<h3 id="18-1-内容审核流程"><a href="#18-1-内容审核流程" class="headerlink" title="18.1 内容审核流程"></a>18.1 内容审核流程</h3><p>常见流程：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户发布内容</span><br><span class="line">  ↓</span><br><span class="line">内容进入审核</span><br><span class="line">  ↓</span><br><span class="line">管理员查看</span><br><span class="line">  ↓</span><br><span class="line">审核通过/拒绝/删除</span><br><span class="line">  ↓</span><br><span class="line">前台展示对应状态</span><br></pre></td></tr></table></figure>
+
+<h3 id="18-2-后台功能测试"><a href="#18-2-后台功能测试" class="headerlink" title="18.2 后台功能测试"></a>18.2 后台功能测试</h3><p>测试点：</p>
+<ul>
+<li>查看待审核帖子</li>
+<li>审核通过</li>
+<li>审核拒绝</li>
+<li>删除帖子</li>
+<li>恢复帖子</li>
+<li>查看举报列表</li>
+<li>处理举报</li>
+<li>封禁用户</li>
+<li>禁言用户</li>
+<li>解封用户</li>
+</ul>
+<h3 id="18-3-前后台联动测试"><a href="#18-3-前后台联动测试" class="headerlink" title="18.3 前后台联动测试"></a>18.3 前后台联动测试</h3><p>一定要验证后台操作对前台是否生效。</p>
+<p>例如：</p>
+<h4 id="管理员删除帖子"><a href="#管理员删除帖子" class="headerlink" title="管理员删除帖子"></a>管理员删除帖子</h4><p>步骤：</p>
+<ol>
+<li>用户A发布帖子</li>
+<li>管理员后台删除该帖子</li>
+<li>用户A查看帖子详情</li>
+<li>用户B查看首页列表</li>
+</ol>
+<p>预期：</p>
+<ul>
+<li>帖子详情提示内容不存在或已删除</li>
+<li>首页不再展示该帖子</li>
+<li>用户A个人主页按需求展示或隐藏</li>
+<li>评论、点赞入口不可用</li>
+</ul>
+<h3 id="18-4-管理员权限测试"><a href="#18-4-管理员权限测试" class="headerlink" title="18.4 管理员权限测试"></a>18.4 管理员权限测试</h3><p>后台也有权限边界：</p>
+<ul>
+<li>版主只能管理自己负责的板块</li>
+<li>普通管理员不能操作超级管理员</li>
+<li>管理员不能越权修改系统配置</li>
+<li>操作日志应记录管理员行为</li>
+</ul>
+<hr>
+<p><a id="forum-ch-19"></a></p>
+<h2 id="19-海外项目功能测试特别注意点"><a href="#19-海外项目功能测试特别注意点" class="headerlink" title="19. 海外项目功能测试特别注意点"></a>19. 海外项目功能测试特别注意点</h2><p>海外社区和国内社区相比，最大的区别不只是“用户在国外”，而是会涉及：</p>
+<ul>
+<li>多语言展示</li>
+<li>不同时区</li>
+<li>夏令时</li>
+<li>不同国家&#x2F;地区的账号习惯</li>
+<li>不同地区的内容合规要求</li>
+<li>不同市场的隐私与数据保护要求</li>
+<li>不同文化背景下的内容理解差异</li>
+</ul>
+<p>这些内容在功能测试阶段也要关注。虽然测试同学不需要像法务一样判断法律条款，但你需要验证：</p>
+<blockquote>
+<p>产品是否提供了支持海外用户正常使用、正常理解、正常管理个人数据的功能能力。</p>
+</blockquote>
+<hr>
+<h3 id="19-1-多语言测试"><a href="#19-1-多语言测试" class="headerlink" title="19.1 多语言测试"></a>19.1 多语言测试</h3><p>多语言不是简单地看“有没有英文”。真正的多语言测试，需要关注：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">翻译是否完整</span><br><span class="line">文案是否正确</span><br><span class="line">页面是否能放得下</span><br><span class="line">不同语言输入是否正常</span><br><span class="line">不同语言搜索是否正常</span><br><span class="line">不同语言内容审核是否正常</span><br></pre></td></tr></table></figure>
+
+<h4 id="19-1-1-常见需要支持的语言"><a href="#19-1-1-常见需要支持的语言" class="headerlink" title="19.1.1 常见需要支持的语言"></a>19.1.1 常见需要支持的语言</h4><p>海外社区常见语言包括：</p>
+<table>
+<thead>
+<tr>
+<th>语言</th>
+<th>特点</th>
+<th>测试重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>英文</td>
+<td>最常见，单词长度差异较大</td>
+<td>大小写、单复数、长单词换行</td>
+</tr>
+<tr>
+<td>德语</td>
+<td>单词普遍较长</td>
+<td>UI 是否被撑开、按钮是否换行异常</td>
+</tr>
+<tr>
+<td>法语</td>
+<td>有重音字符</td>
+<td>特殊字符展示、搜索匹配</td>
+</tr>
+<tr>
+<td>西班牙语</td>
+<td>用户量大，含重音字符</td>
+<td>字符展示、输入、搜索</td>
+</tr>
+<tr>
+<td>日语</td>
+<td>没有空格分词，字符宽度不同</td>
+<td>换行、搜索分词、输入法兼容</td>
+</tr>
+<tr>
+<td>韩语</td>
+<td>字符组合复杂</td>
+<td>输入、删除、搜索、展示</td>
+</tr>
+<tr>
+<td>阿拉伯语</td>
+<td>从右向左书写，RTL 语言</td>
+<td>页面方向、图标方向、排版顺序</td>
+</tr>
+<tr>
+<td>泰语</td>
+<td>单词之间通常没有空格</td>
+<td>自动换行、搜索、截断</td>
+</tr>
+<tr>
+<td>中文</td>
+<td>字符密度高，无空格分词</td>
+<td>搜索分词、换行、敏感词识别</td>
+</tr>
+</tbody></table>
+<h4 id="19-1-2-UI-展示测试"><a href="#19-1-2-UI-展示测试" class="headerlink" title="19.1.2 UI 展示测试"></a>19.1.2 UI 展示测试</h4><p>多语言最常见的问题是 UI 被撑坏。</p>
+<p>需要验证：</p>
+<ul>
+<li>按钮文案变长后是否显示完整</li>
+<li>Tab 名称变长后是否重叠</li>
+<li>弹窗标题是否换行正常</li>
+<li>错误提示是否超出弹窗</li>
+<li>列表中的标题是否正确省略</li>
+<li>用户昵称过长是否撑破页面</li>
+<li>多语言混排是否正常</li>
+<li>Emoji 与文字混排是否正常</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">中文：发布</span><br><span class="line">英文：Post</span><br><span class="line">德语：Veröffentlichen</span><br></pre></td></tr></table></figure>
+
+<p>同一个按钮，不同语言长度差异很大。测试时不能只看中文或英文，要切换语言后重新检查核心页面。</p>
+<h4 id="19-1-3-文案完整性测试"><a href="#19-1-3-文案完整性测试" class="headerlink" title="19.1.3 文案完整性测试"></a>19.1.3 文案完整性测试</h4><p>需要检查：</p>
+<ul>
+<li>是否有未翻译文案</li>
+<li>是否出现 key 值，例如 <code>login.error.password_invalid</code></li>
+<li>是否中英文混杂</li>
+<li>是否使用了错误语境的翻译</li>
+<li>是否变量丢失，例如用户名、数量、时间没有显示</li>
+</ul>
+<p>例如通知文案：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Alice commented on your post.</span><br></pre></td></tr></table></figure>
+
+<p>要检查：</p>
+<ul>
+<li>Alice 是否正确显示</li>
+<li>post 是否指向正确帖子</li>
+<li>不同语言下变量位置是否正确</li>
+</ul>
+<h4 id="19-1-4-复数规则测试"><a href="#19-1-4-复数规则测试" class="headerlink" title="19.1.4 复数规则测试"></a>19.1.4 复数规则测试</h4><p>英文等语言有单复数差异。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1 comment</span><br><span class="line">2 comments</span><br></pre></td></tr></table></figure>
+
+<p>测试时要验证：</p>
+<table>
+<thead>
+<tr>
+<th>数量</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0 comments 或按产品规则展示</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1 comment</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2 comments</td>
+</tr>
+<tr>
+<td>100</td>
+<td>100 comments</td>
+</tr>
+</tbody></table>
+<p>有些语言的复数规则比英文复杂，测试时至少要检查不同数量下文案是否异常，不能所有数量都显示同一种错误文案。</p>
+<h4 id="19-1-5-RTL-语言测试"><a href="#19-1-5-RTL-语言测试" class="headerlink" title="19.1.5 RTL 语言测试"></a>19.1.5 RTL 语言测试</h4><p>RTL 指 Right To Left，即从右向左书写的语言，例如阿拉伯语、希伯来语。</p>
+<p>测试重点：</p>
+<ul>
+<li>页面整体方向是否从右向左</li>
+<li>返回箭头方向是否正确</li>
+<li>输入框光标方向是否正确</li>
+<li>数字、英文、阿拉伯语混排是否正常</li>
+<li>评论列表、消息气泡方向是否正确</li>
+<li>图标是否需要镜像</li>
+<li>左右滑动手势是否符合预期</li>
+</ul>
+<p>例如英文页面通常是：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">头像  昵称  内容</span><br></pre></td></tr></table></figure>
+
+<p>RTL 页面可能需要变成：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">内容  昵称  头像</span><br></pre></td></tr></table></figure>
+
+<p>这类问题如果不专门切换语言，很容易漏掉。</p>
+<h4 id="19-1-6-多语言输入测试"><a href="#19-1-6-多语言输入测试" class="headerlink" title="19.1.6 多语言输入测试"></a>19.1.6 多语言输入测试</h4><p>社区论坛是 UGC 产品，用户会自己输入内容，所以一定要测输入。</p>
+<p>需要验证：</p>
+<ul>
+<li>标题输入英文、中文、日文、韩文、阿拉伯语是否正常</li>
+<li>评论输入 Emoji 是否正常</li>
+<li>昵称输入特殊字符是否正常</li>
+<li>输入法联想过程中是否误提交</li>
+<li>删除组合字符时是否异常</li>
+<li>字数限制是否按字符数、字节数还是展示长度计算</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Hello</span><br><span class="line">你好</span><br><span class="line">こんにちは</span><br><span class="line">안녕하세요</span><br><span class="line">مرحبا</span><br><span class="line">😀😀😀</span><br></pre></td></tr></table></figure>
+
+<p>这些都应该作为基础输入数据。</p>
+<h4 id="19-1-7-字数限制测试"><a href="#19-1-7-字数限制测试" class="headerlink" title="19.1.7 字数限制测试"></a>19.1.7 字数限制测试</h4><p>不同语言字符长度差异很大，字数限制容易出问题。</p>
+<p>需要确认：</p>
+<ul>
+<li>标题限制是 100 个字符，还是 100 个字节</li>
+<li>Emoji 算 1 个字符还是多个字符</li>
+<li>中文、日文是否被错误计算成多个字节导致提前超限</li>
+<li>超过限制时是禁止输入，还是提交时报错</li>
+<li>剩余字数提示是否准确</li>
+</ul>
+<p>常见 Bug：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">英文可以输入 100 个字符</span><br><span class="line">中文只能输入 33 个字</span><br><span class="line">Emoji 输入几个就提示超长</span><br></pre></td></tr></table></figure>
+
+<h4 id="19-1-8-多语言搜索测试"><a href="#19-1-8-多语言搜索测试" class="headerlink" title="19.1.8 多语言搜索测试"></a>19.1.8 多语言搜索测试</h4><p>搜索也要考虑多语言。</p>
+<p>测试点：</p>
+<ul>
+<li>英文大小写搜索</li>
+<li>英文单复数搜索</li>
+<li>中文关键词搜索</li>
+<li>日文无空格搜索</li>
+<li>韩文搜索</li>
+<li>带重音字符搜索，例如 café &#x2F; cafe</li>
+<li>Emoji 是否可搜索，按需求判断</li>
+<li>混合语言搜索，例如 “battery 电池”</li>
+</ul>
+<p>搜索测试不要只看“有结果”，还要看结果是否相关、排序是否合理。</p>
+<h4 id="19-1-9-多语言内容审核测试"><a href="#19-1-9-多语言内容审核测试" class="headerlink" title="19.1.9 多语言内容审核测试"></a>19.1.9 多语言内容审核测试</h4><p>海外社区的内容审核不能只测中文敏感词。</p>
+<p>需要关注：</p>
+<ul>
+<li>英文违规词</li>
+<li>多语言辱骂词</li>
+<li>拼写变体</li>
+<li>空格、符号、Emoji 绕过</li>
+<li>URL 链接绕过</li>
+<li>图片文字内容，如果系统支持图片审核</li>
+</ul>
+<p>功能测试阶段可以先验证：</p>
+<ul>
+<li>违规内容是否被拦截或进入审核</li>
+<li>正常内容是否不会被误拦截</li>
+<li>被拦截后提示是否清楚</li>
+<li>后台是否能看到审核记录</li>
+</ul>
+<hr>
+<h3 id="19-2-时区测试"><a href="#19-2-时区测试" class="headerlink" title="19.2 时区测试"></a>19.2 时区测试</h3><p>时区是海外项目非常重要的测试点。</p>
+<p>国内项目通常默认使用北京时间，问题不明显；但海外用户分布在不同国家，如果时区处理不好，就会出现：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">刚发的帖子显示为昨天</span><br><span class="line">刚评论的内容显示为明天</span><br><span class="line">活动明明还没开始却显示已结束</span><br><span class="line">通知时间和帖子时间对不上</span><br></pre></td></tr></table></figure>
+
+<h4 id="19-2-1-先理解什么是时区"><a href="#19-2-1-先理解什么是时区" class="headerlink" title="19.2.1 先理解什么是时区"></a>19.2.1 先理解什么是时区</h4><p>世界各地时间不同，例如同一时刻：</p>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>时区示例</th>
+<th>可能显示时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>新加坡</td>
+<td>UTC+8</td>
+<td>2026-05-08 20:00</td>
+</tr>
+<tr>
+<td>日本</td>
+<td>UTC+9</td>
+<td>2026-05-08 21:00</td>
+</tr>
+<tr>
+<td>英国</td>
+<td>UTC+0 或 UTC+1</td>
+<td>2026-05-08 12:00 或 13:00</td>
+</tr>
+<tr>
+<td>美国纽约</td>
+<td>UTC-5 或 UTC-4</td>
+<td>2026-05-08 07:00 或 08:00</td>
+</tr>
+<tr>
+<td>美国洛杉矶</td>
+<td>UTC-8 或 UTC-7</td>
+<td>2026-05-08 04:00 或 05:00</td>
+</tr>
+</tbody></table>
+<p>测试时要确认产品规则：</p>
+<ul>
+<li>后台存储时间使用什么时区？通常建议使用 UTC</li>
+<li>前台展示时间使用用户本地时区，还是社区默认时区？</li>
+<li>后台管理系统展示 UTC、服务器时区，还是管理员本地时区？</li>
+<li>API 返回的是时间戳、UTC 时间，还是带时区的时间字符串？</li>
+</ul>
+<h4 id="19-2-2-需要测试哪些时间字段"><a href="#19-2-2-需要测试哪些时间字段" class="headerlink" title="19.2.2 需要测试哪些时间字段"></a>19.2.2 需要测试哪些时间字段</h4><p>社区项目中很多地方都有时间：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>时间字段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>帖子</td>
+<td>发布时间、编辑时间、删除时间</td>
+</tr>
+<tr>
+<td>评论</td>
+<td>评论时间、回复时间</td>
+</tr>
+<tr>
+<td>通知</td>
+<td>通知生成时间、已读时间</td>
+</tr>
+<tr>
+<td>私信</td>
+<td>消息发送时间、已读时间</td>
+</tr>
+<tr>
+<td>用户</td>
+<td>注册时间、最后登录时间、封禁到期时间</td>
+</tr>
+<tr>
+<td>活动</td>
+<td>开始时间、结束时间、报名截止时间</td>
+</tr>
+<tr>
+<td>审核</td>
+<td>提交审核时间、审核处理时间</td>
+</tr>
+<tr>
+<td>后台</td>
+<td>操作日志时间</td>
+</tr>
+</tbody></table>
+<p>这些时间都需要验证前台、后台、接口之间是否一致。</p>
+<h4 id="19-2-3-切换时区怎么测"><a href="#19-2-3-切换时区怎么测" class="headerlink" title="19.2.3 切换时区怎么测"></a>19.2.3 切换时区怎么测</h4><p>可以准备几个典型时区进行测试：</p>
+<table>
+<thead>
+<tr>
+<th>测试时区</th>
+<th>代表地区</th>
+<th>为什么要测</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UTC+8</td>
+<td>新加坡、中国</td>
+<td>亚洲常见时区</td>
+</tr>
+<tr>
+<td>UTC+9</td>
+<td>日本、韩国</td>
+<td>亚洲市场常见</td>
+</tr>
+<tr>
+<td>UTC+0</td>
+<td>英国标准时间</td>
+<td>和 UTC 对齐，方便对比</td>
+</tr>
+<tr>
+<td>UTC-5 &#x2F; UTC-4</td>
+<td>美国纽约</td>
+<td>北美东部，涉及夏令时</td>
+</tr>
+<tr>
+<td>UTC-8 &#x2F; UTC-7</td>
+<td>美国洛杉矶</td>
+<td>北美西部，涉及夏令时</td>
+</tr>
+</tbody></table>
+<p>测试方法：</p>
+<ol>
+<li>修改手机或电脑系统时区</li>
+<li>重新打开 App 或刷新网页</li>
+<li>发布一篇帖子</li>
+<li>查看帖子时间显示</li>
+<li>用另一个时区的设备或浏览器查看同一帖子</li>
+<li>对比两个端看到的时间是否符合规则</li>
+</ol>
+<p>示例：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A在新加坡时间 20:00 发帖</span><br><span class="line">用户B在纽约查看</span><br><span class="line">用户B不应该看到“未来时间”</span><br></pre></td></tr></table></figure>
+
+<h4 id="19-2-4-相对时间与绝对时间测试"><a href="#19-2-4-相对时间与绝对时间测试" class="headerlink" title="19.2.4 相对时间与绝对时间测试"></a>19.2.4 相对时间与绝对时间测试</h4><p>社区常用相对时间：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">刚刚</span><br><span class="line">5 minutes ago</span><br><span class="line">2 hours ago</span><br><span class="line">yesterday</span><br></pre></td></tr></table></figure>
+
+<p>也会用绝对时间：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">2026-05-08 20:00</span><br><span class="line">May 8, 2026, 8:00 PM</span><br></pre></td></tr></table></figure>
+
+<p>需要测试：</p>
+<ul>
+<li>刚发布时是否显示“刚刚”</li>
+<li>1 分钟后是否显示 “1 minute ago”</li>
+<li>2 分钟后是否显示 “2 minutes ago”</li>
+<li>1 小时后是否显示 “1 hour ago”</li>
+<li>跨天后是否显示 yesterday 或具体日期</li>
+<li>不同语言下相对时间是否翻译正确</li>
+<li>不同时区下“昨天&#x2F;今天&#x2F;明天”是否判断正确</li>
+</ul>
+<p>常见 Bug：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">帖子刚发布显示 8 hours ago</span><br><span class="line">评论显示 tomorrow</span><br><span class="line">通知时间比当前时间还晚</span><br></pre></td></tr></table></figure>
+
+<h4 id="19-2-5-活动时间测试"><a href="#19-2-5-活动时间测试" class="headerlink" title="19.2.5 活动时间测试"></a>19.2.5 活动时间测试</h4><p>如果社区有活动、投票、报名、抽奖、限时任务，要重点测时间边界。</p>
+<p>测试点：</p>
+<ul>
+<li>活动未开始时不能参与</li>
+<li>活动开始瞬间可以参与</li>
+<li>活动结束前可以参与</li>
+<li>活动结束后不能参与</li>
+<li>不同时区用户看到的开始&#x2F;结束时间是否正确</li>
+<li>倒计时是否正确</li>
+<li>后台设置的活动时间和前台展示是否一致</li>
+</ul>
+<p>边界用例：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开始前 1 分钟</td>
+<td>不能参与，提示未开始</td>
+</tr>
+<tr>
+<td>开始时刻</td>
+<td>可以参与</td>
+</tr>
+<tr>
+<td>结束前 1 分钟</td>
+<td>可以参与</td>
+</tr>
+<tr>
+<td>结束时刻</td>
+<td>按需求判断是否允许</td>
+</tr>
+<tr>
+<td>结束后 1 分钟</td>
+<td>不能参与，提示已结束</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="19-3-夏令时测试"><a href="#19-3-夏令时测试" class="headerlink" title="19.3 夏令时测试"></a>19.3 夏令时测试</h3><h4 id="19-3-1-夏令时是什么"><a href="#19-3-1-夏令时是什么" class="headerlink" title="19.3.1 夏令时是什么"></a>19.3.1 夏令时是什么</h4><p>夏令时，英文是 Daylight Saving Time，简称 DST。</p>
+<p>简单理解：</p>
+<blockquote>
+<p>有些国家会在一年中的某段时间，把本地时间拨快 1 小时；到了另一段时间，再把时间拨回去。</p>
+</blockquote>
+<p>例如美国部分地区：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">冬天：纽约可能是 UTC-5</span><br><span class="line">夏天：纽约可能是 UTC-4</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，同一个城市在不同日期，和 UTC 的时差可能不一样。</p>
+<p>这就是为什么不能简单写死：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">纽约永远等于 UTC-5</span><br><span class="line">洛杉矶永远等于 UTC-8</span><br></pre></td></tr></table></figure>
+
+<p>这是错误的。</p>
+<h4 id="19-3-2-夏令时为什么会影响测试"><a href="#19-3-2-夏令时为什么会影响测试" class="headerlink" title="19.3.2 夏令时为什么会影响测试"></a>19.3.2 夏令时为什么会影响测试</h4><p>夏令时会导致一些特殊问题：</p>
+<ul>
+<li>某一天会少 1 个小时</li>
+<li>某一天会多 1 个小时</li>
+<li>某些本地时间不存在</li>
+<li>某些本地时间会出现两次</li>
+</ul>
+<p>例如夏令时开始时，时间可能从：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">01:59 直接跳到 03:00</span><br></pre></td></tr></table></figure>
+
+<p>这意味着当天的 <code>02:30</code> 可能不存在。</p>
+<p>夏令时结束时，时间可能从：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">01:59 又回到 01:00</span><br></pre></td></tr></table></figure>
+
+<p>这意味着 <code>01:30</code> 可能出现两次。</p>
+<h4 id="19-3-3-哪些功能容易受夏令时影响"><a href="#19-3-3-哪些功能容易受夏令时影响" class="headerlink" title="19.3.3 哪些功能容易受夏令时影响"></a>19.3.3 哪些功能容易受夏令时影响</h4><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>可能问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>发帖时间</td>
+<td>显示早一小时或晚一小时</td>
+</tr>
+<tr>
+<td>活动开始&#x2F;结束</td>
+<td>活动提前开始或延后结束</td>
+</tr>
+<tr>
+<td>定时发布</td>
+<td>定时任务不执行或执行两次</td>
+</tr>
+<tr>
+<td>通知推送</td>
+<td>推送时间错误</td>
+</tr>
+<tr>
+<td>封禁到期</td>
+<td>用户提前或延后解封</td>
+</tr>
+<tr>
+<td>签到&#x2F;每日任务</td>
+<td>一天被计算成 23 小时或 25 小时</td>
+</tr>
+<tr>
+<td>数据统计</td>
+<td>日活、发帖数按天统计错误</td>
+</tr>
+</tbody></table>
+<h4 id="19-3-4-夏令时怎么测"><a href="#19-3-4-夏令时怎么测" class="headerlink" title="19.3.4 夏令时怎么测"></a>19.3.4 夏令时怎么测</h4><p>新手可以不用一开始就做非常复杂的 DST 专项，但至少要知道有这个风险。</p>
+<p>测试方法：</p>
+<ol>
+<li>选择有夏令时的地区，例如美国纽约、美国洛杉矶、英国、德国</li>
+<li>找到夏令时切换日期附近的数据或测试环境</li>
+<li>在切换日前后创建帖子、评论、活动或通知</li>
+<li>检查时间显示、排序、活动状态是否正确</li>
+</ol>
+<p>重点测试边界：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>测试重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>夏令时开始前</td>
+<td>时间显示正常</td>
+</tr>
+<tr>
+<td>夏令时开始当天</td>
+<td>不出现不存在的时间，排序不乱</td>
+</tr>
+<tr>
+<td>夏令时开始后</td>
+<td>UTC 偏移正确变化</td>
+</tr>
+<tr>
+<td>夏令时结束当天</td>
+<td>重复小时不导致数据排序错误</td>
+</tr>
+<tr>
+<td>夏令时结束后</td>
+<td>时间显示恢复正确</td>
+</tr>
+</tbody></table>
+<p>如果测试环境不方便修改真实日期，也可以向开发确认是否有模拟时间、测试开关或接口造数能力。</p>
+<h4 id="19-3-5-新手记忆点"><a href="#19-3-5-新手记忆点" class="headerlink" title="19.3.5 新手记忆点"></a>19.3.5 新手记忆点</h4><p>你只需要先记住：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">时区是“不同地区时间不同”</span><br><span class="line">夏令时是“同一个地区在不同日期时差也可能不同”</span><br></pre></td></tr></table></figure>
+
+<p>所以测试时不要写死某个城市永远等于 UTC±固定小时。</p>
+<hr>
+<h3 id="19-4-地区与本地化规则测试"><a href="#19-4-地区与本地化规则测试" class="headerlink" title="19.4 地区与本地化规则测试"></a>19.4 地区与本地化规则测试</h3><p>海外项目还会受到地区习惯影响，不同国家用户看到的格式可能不同。</p>
+<h4 id="19-4-1-日期格式"><a href="#19-4-1-日期格式" class="headerlink" title="19.4.1 日期格式"></a>19.4.1 日期格式</h4><p>不同地区日期格式不同：</p>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>常见格式</th>
+<th>容易混淆点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>美国</td>
+<td>MM&#x2F;DD&#x2F;YYYY</td>
+<td>05&#x2F;08&#x2F;2026 表示 5 月 8 日</td>
+</tr>
+<tr>
+<td>英国&#x2F;欧洲</td>
+<td>DD&#x2F;MM&#x2F;YYYY</td>
+<td>05&#x2F;08&#x2F;2026 可能表示 8 月 5 日</td>
+</tr>
+<tr>
+<td>中国&#x2F;日本&#x2F;韩国</td>
+<td>YYYY&#x2F;MM&#x2F;DD</td>
+<td>年月日顺序更清晰</td>
+</tr>
+</tbody></table>
+<p>测试点：</p>
+<ul>
+<li>日期格式是否符合当前语言&#x2F;地区</li>
+<li>月份和日期是否反了</li>
+<li>后台和前台格式是否一致</li>
+<li>活动截止日期是否会被用户误解</li>
+</ul>
+<h4 id="19-4-2-数字格式"><a href="#19-4-2-数字格式" class="headerlink" title="19.4.2 数字格式"></a>19.4.2 数字格式</h4><p>不同地区数字分隔符不同：</p>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>美国&#x2F;英国</td>
+<td>1,234.56</td>
+</tr>
+<tr>
+<td>德国&#x2F;法国部分场景</td>
+<td>1.234,56</td>
+</tr>
+</tbody></table>
+<p>社区里可能涉及：</p>
+<ul>
+<li>粉丝数</li>
+<li>点赞数</li>
+<li>浏览数</li>
+<li>积分</li>
+<li>活动奖励数量</li>
+</ul>
+<p>测试点：</p>
+<ul>
+<li>大数字是否显示正确</li>
+<li>千分位是否正确</li>
+<li>小数点是否符合地区习惯，如果有小数</li>
+<li>排序是否按真实数值，而不是按字符串排序</li>
+</ul>
+<h4 id="19-4-3-货币格式"><a href="#19-4-3-货币格式" class="headerlink" title="19.4.3 货币格式"></a>19.4.3 货币格式</h4><p>如果社区有会员、打赏、积分兑换、付费活动，需要测货币。</p>
+<p>测试点：</p>
+<ul>
+<li>币种符号是否正确，例如 <code>$</code>、<code>€</code>、<code>£</code>、<code>¥</code></li>
+<li>金额小数位是否正确</li>
+<li>支付金额和订单金额是否一致</li>
+<li>退款金额是否一致</li>
+<li>不同地区是否展示正确币种</li>
+</ul>
+<p>如果当前社区没有付费能力，可以先不深入，但要知道这是海外项目常见风险。</p>
+<h4 id="19-4-4-地址、邮编、手机号格式"><a href="#19-4-4-地址、邮编、手机号格式" class="headerlink" title="19.4.4 地址、邮编、手机号格式"></a>19.4.4 地址、邮编、手机号格式</h4><p>如果产品涉及收货地址、活动奖品邮寄、实体礼品兑换，需要关注：</p>
+<ul>
+<li>国家&#x2F;地区选择</li>
+<li>省&#x2F;州&#x2F;城市字段</li>
+<li>邮编格式</li>
+<li>地址长度</li>
+<li>特殊字符</li>
+<li>手机号国家区号</li>
+</ul>
+<p>例如：</p>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>注意点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>美国</td>
+<td>州、ZIP Code</td>
+</tr>
+<tr>
+<td>英国</td>
+<td>Postcode 格式复杂</td>
+</tr>
+<tr>
+<td>日本</td>
+<td>邮编、都道府县</td>
+</tr>
+<tr>
+<td>新加坡</td>
+<td>6 位邮编</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="19-5-海外合法合规功能测试"><a href="#19-5-海外合法合规功能测试" class="headerlink" title="19.5 海外合法合规功能测试"></a>19.5 海外合法合规功能测试</h3><p>海外项目确实会遇到不同地域的合法合规问题。这里要注意：</p>
+<blockquote>
+<p>测试同学通常不负责解释法律，也不负责决定产品是否合规；但测试同学要验证产品设计出来的合规功能是否可用、是否生效、是否有明显遗漏。</p>
+</blockquote>
+<p>常见合规方向如下。</p>
+<h4 id="19-5-1-GDPR：欧盟数据保护"><a href="#19-5-1-GDPR：欧盟数据保护" class="headerlink" title="19.5.1 GDPR：欧盟数据保护"></a>19.5.1 GDPR：欧盟数据保护</h4><p>GDPR 常见于欧盟用户场景，和用户个人数据保护有关。</p>
+<p>功能测试可以关注：</p>
+<ul>
+<li>用户是否可以查看隐私政策</li>
+<li>用户是否可以同意或拒绝 Cookie，Web 场景常见</li>
+<li>用户是否可以导出个人数据，如果产品支持</li>
+<li>用户是否可以申请删除账号</li>
+<li>用户注销后，个人主页如何展示</li>
+<li>用户注销后，历史帖子、评论如何处理</li>
+<li>用户注销后，头像、昵称是否匿名化</li>
+<li>用户是否可以撤回营销邮件订阅</li>
+<li>隐私设置修改后是否立即生效</li>
+</ul>
+<p>社区项目中特别要测：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>测试重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户注销账号</td>
+<td>登录失效、个人资料不可见或匿名化</td>
+</tr>
+<tr>
+<td>用户删除个人资料</td>
+<td>前台和后台是否同步</td>
+</tr>
+<tr>
+<td>用户导出数据</td>
+<td>导出内容是否包含帖子、评论、资料等</td>
+</tr>
+<tr>
+<td>用户撤回同意</td>
+<td>相关追踪或通知是否停止，按需求判断</td>
+</tr>
+</tbody></table>
+<h4 id="19-5-2-CCPA-CPRA：加州隐私相关要求"><a href="#19-5-2-CCPA-CPRA：加州隐私相关要求" class="headerlink" title="19.5.2 CCPA&#x2F;CPRA：加州隐私相关要求"></a>19.5.2 CCPA&#x2F;CPRA：加州隐私相关要求</h4><p>如果产品面向美国加州用户，可能涉及 CCPA&#x2F;CPRA 相关隐私功能。</p>
+<p>功能测试可以关注：</p>
+<ul>
+<li>是否有隐私入口</li>
+<li>是否有“不出售或共享我的个人信息”相关入口，如果产品要求</li>
+<li>用户隐私选择保存后是否生效</li>
+<li>不同设备登录后隐私选择是否同步，按需求判断</li>
+<li>注销或删除请求流程是否可用</li>
+</ul>
+<h4 id="19-5-3-COPPA：儿童隐私保护"><a href="#19-5-3-COPPA：儿童隐私保护" class="headerlink" title="19.5.3 COPPA：儿童隐私保护"></a>19.5.3 COPPA：儿童隐私保护</h4><p>如果产品面向美国用户，且可能涉及儿童用户，需要关注 COPPA 相关功能。</p>
+<p>功能测试可以关注：</p>
+<ul>
+<li>注册时是否收集生日或年龄段，按需求判断</li>
+<li>未达到年龄要求时是否限制注册</li>
+<li>儿童账号是否限制公开发帖、私信、个性化推荐等功能，按需求判断</li>
+<li>年龄输入错误或边界年龄是否处理正确</li>
+</ul>
+<p>年龄边界测试示例：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>年龄小于允许年龄</td>
+<td>不允许注册或进入受限模式</td>
+</tr>
+<tr>
+<td>年龄刚好等于允许年龄</td>
+<td>按产品规则处理</td>
+</tr>
+<tr>
+<td>年龄大于允许年龄</td>
+<td>正常注册</td>
+</tr>
+<tr>
+<td>不填写生日</td>
+<td>按需求提示或允许跳过</td>
+</tr>
+</tbody></table>
+<h4 id="19-5-4-Cookie-与追踪授权"><a href="#19-5-4-Cookie-与追踪授权" class="headerlink" title="19.5.4 Cookie 与追踪授权"></a>19.5.4 Cookie 与追踪授权</h4><p>Web 海外项目常见 Cookie Banner。</p>
+<p>测试点：</p>
+<ul>
+<li>首次访问是否展示 Cookie 弹窗</li>
+<li>接受全部后弹窗是否消失</li>
+<li>拒绝非必要 Cookie 后是否仍能使用基础功能</li>
+<li>自定义 Cookie 偏好是否可保存</li>
+<li>清除浏览器 Cookie 后是否重新展示</li>
+<li>不同地区是否展示不同 Cookie 文案，按需求判断</li>
+</ul>
+<h4 id="19-5-5-用户协议与隐私政策"><a href="#19-5-5-用户协议与隐私政策" class="headerlink" title="19.5.5 用户协议与隐私政策"></a>19.5.5 用户协议与隐私政策</h4><p>测试点：</p>
+<ul>
+<li>注册页是否有用户协议和隐私政策入口</li>
+<li>链接是否能打开</li>
+<li>不同语言下协议是否切换正确</li>
+<li>勾选同意后才能注册，按需求判断</li>
+<li>协议更新后是否需要用户重新同意，按需求判断</li>
+</ul>
+<h4 id="19-5-6-内容合规与社区规则"><a href="#19-5-6-内容合规与社区规则" class="headerlink" title="19.5.6 内容合规与社区规则"></a>19.5.6 内容合规与社区规则</h4><p>海外社区内容治理要求更复杂。</p>
+<p>需要关注：</p>
+<ul>
+<li>社区规则入口是否明显</li>
+<li>发帖页是否有规则提示，按需求判断</li>
+<li>举报原因是否覆盖常见违规类型</li>
+<li>管理员是否可以处理举报</li>
+<li>违规处理结果是否通知用户</li>
+<li>用户是否可以申诉，按需求判断</li>
+</ul>
+<p>常见举报原因包括：</p>
+<ul>
+<li>Spam 广告</li>
+<li>Harassment 骚扰</li>
+<li>Hate Speech 仇恨言论</li>
+<li>Nudity &#x2F; Sexual Content 色情或裸露内容</li>
+<li>Violence 暴力内容</li>
+<li>Self-harm 自伤相关内容</li>
+<li>Scam &#x2F; Fraud 诈骗</li>
+<li>Misinformation 虚假信息</li>
+<li>Privacy Violation 隐私泄露</li>
+<li>Intellectual Property 侵权</li>
+</ul>
+<p>功能测试阶段至少要验证举报链路是否完整：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户举报</span><br><span class="line">  ↓</span><br><span class="line">后台收到举报</span><br><span class="line">  ↓</span><br><span class="line">管理员处理</span><br><span class="line">  ↓</span><br><span class="line">内容状态变化</span><br><span class="line">  ↓</span><br><span class="line">相关用户收到通知或限制</span><br></pre></td></tr></table></figure>
+
+<h4 id="19-5-7-数据存储地区与地区限制"><a href="#19-5-7-数据存储地区与地区限制" class="headerlink" title="19.5.7 数据存储地区与地区限制"></a>19.5.7 数据存储地区与地区限制</h4><p>有些海外项目会涉及数据存储地区、服务可用地区限制。</p>
+<p>功能测试可以关注：</p>
+<ul>
+<li>某些国家&#x2F;地区是否限制访问，按需求判断</li>
+<li>用户选择地区后，功能是否有差异</li>
+<li>地区切换后，语言、时区、内容推荐是否变化</li>
+<li>后台是否能按地区筛选用户或内容</li>
+</ul>
+<p>如果需求没有明确写，测试同学可以提出问题，但不要自行判断必须怎么做。</p>
+<hr>
+<h3 id="19-6-海外支付、订阅与税费场景，如果项目涉及"><a href="#19-6-海外支付、订阅与税费场景，如果项目涉及" class="headerlink" title="19.6 海外支付、订阅与税费场景，如果项目涉及"></a>19.6 海外支付、订阅与税费场景，如果项目涉及</h3><p>如果社区有会员、付费内容、打赏、积分购买，就会涉及更多海外差异。</p>
+<p>功能测试可关注：</p>
+<ul>
+<li>不同币种价格展示</li>
+<li>App Store &#x2F; Google Play 订阅状态同步</li>
+<li>订阅成功后权益是否开通</li>
+<li>订阅取消后权益何时失效</li>
+<li>订阅续费失败如何提示</li>
+<li>退款后权益是否回收</li>
+<li>不同地区税费是否展示，按需求判断</li>
+</ul>
+<p>如果当前社区没有商业化功能，这部分可以作为后续扩展，不作为当前功能测试重点。</p>
+<hr>
+<h3 id="19-7-新手怎么理解海外专项测试"><a href="#19-7-新手怎么理解海外专项测试" class="headerlink" title="19.7 新手怎么理解海外专项测试"></a>19.7 新手怎么理解海外专项测试</h3><p>你可以用这几个问题来检查海外项目：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">不同语言能不能看懂？</span><br><span class="line">不同语言会不会把页面撑坏？</span><br><span class="line">不同国家看到的时间是否正确？</span><br><span class="line">夏令时会不会导致时间差一小时？</span><br><span class="line">不同地区的注册、手机号、邮箱是否正常？</span><br><span class="line">用户是否能管理自己的隐私和账号？</span><br><span class="line">举报、删除、注销这些治理功能是否真的生效？</span><br></pre></td></tr></table></figure>
+
+<p>海外项目测试不是只把语言切成英文看一遍，而是要验证：</p>
+<blockquote>
+<p>来自不同国家、使用不同语言、处在不同时区的用户，都能正常完成社区核心操作。</p>
+</blockquote>
+<hr>
+<p><a id="forum-ch-20"></a></p>
+<h2 id="20-如何写测试用例"><a href="#20-如何写测试用例" class="headerlink" title="20. 如何写测试用例"></a>20. 如何写测试用例</h2><p>测试用例不是简单写“测试发帖功能”。一个合格用例要包括：</p>
+<ul>
+<li>用例编号</li>
+<li>模块</li>
+<li>用例标题</li>
+<li>前置条件</li>
+<li>测试步骤</li>
+<li>预期结果</li>
+<li>优先级</li>
+</ul>
+<h3 id="20-1-用例模板"><a href="#20-1-用例模板" class="headerlink" title="20.1 用例模板"></a>20.1 用例模板</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用例编号</td>
+<td>POST_001</td>
+</tr>
+<tr>
+<td>模块</td>
+<td>内容发布</td>
+</tr>
+<tr>
+<td>用例标题</td>
+<td>登录用户发布纯文本帖子成功</td>
+</tr>
+<tr>
+<td>前置条件</td>
+<td>用户A已登录，账号状态正常</td>
+</tr>
+<tr>
+<td>测试步骤</td>
+<td>1. 进入发布页；2. 输入标题；3. 输入正文；4. 点击发布</td>
+</tr>
+<tr>
+<td>预期结果</td>
+<td>1. 发布成功；2. 跳转帖子详情；3. 首页展示该帖子；4. 个人主页帖子数 +1</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<h3 id="20-2-发帖模块示例用例"><a href="#20-2-发帖模块示例用例" class="headerlink" title="20.2 发帖模块示例用例"></a>20.2 发帖模块示例用例</h3><table>
+<thead>
+<tr>
+<th>用例编号</th>
+<th>用例标题</th>
+<th>前置条件</th>
+<th>操作步骤</th>
+<th>预期结果</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>POST_001</td>
+<td>发布纯文本帖子成功</td>
+<td>用户已登录</td>
+<td>输入标题和正文，点击发布</td>
+<td>发布成功，详情页展示正确</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>POST_002</td>
+<td>标题为空发布失败</td>
+<td>用户已登录</td>
+<td>正文有内容，标题为空，点击发布</td>
+<td>提示标题不能为空</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>POST_003</td>
+<td>正文超长发布失败</td>
+<td>用户已登录</td>
+<td>输入超过限制的正文，点击发布</td>
+<td>提示内容超长</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>POST_004</td>
+<td>未登录用户点击发布</td>
+<td>用户未登录</td>
+<td>点击发布入口</td>
+<td>跳转登录页</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>POST_005</td>
+<td>被禁言用户发布失败</td>
+<td>用户被禁言</td>
+<td>输入内容点击发布</td>
+<td>提示账号已禁言，发布失败</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>POST_006</td>
+<td>连续点击发布按钮</td>
+<td>用户已登录</td>
+<td>快速多次点击发布</td>
+<td>只生成一篇帖子</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<h3 id="20-3-评论模块示例用例"><a href="#20-3-评论模块示例用例" class="headerlink" title="20.3 评论模块示例用例"></a>20.3 评论模块示例用例</h3><table>
+<thead>
+<tr>
+<th>用例编号</th>
+<th>用例标题</th>
+<th>前置条件</th>
+<th>操作步骤</th>
+<th>预期结果</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CMT_001</td>
+<td>发布评论成功</td>
+<td>用户已登录，帖子存在</td>
+<td>输入评论，点击发送</td>
+<td>评论展示成功，评论数 +1</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>CMT_002</td>
+<td>空评论发送失败</td>
+<td>用户已登录</td>
+<td>评论框为空，点击发送</td>
+<td>提示请输入评论内容</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>CMT_003</td>
+<td>回复评论成功</td>
+<td>用户A有一条评论</td>
+<td>用户B回复该评论</td>
+<td>回复展示在正确评论下方</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>CMT_004</td>
+<td>删除自己的评论</td>
+<td>用户已发布评论</td>
+<td>点击删除评论</td>
+<td>评论被删除，评论数 -1</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>CMT_005</td>
+<td>删除别人评论失败</td>
+<td>用户B查看用户A评论</td>
+<td>尝试删除</td>
+<td>无删除入口或提示无权限</td>
+<td>P0</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-21"></a></p>
+<h2 id="21-如何提交一个合格-Bug"><a href="#21-如何提交一个合格-Bug" class="headerlink" title="21. 如何提交一个合格 Bug"></a>21. 如何提交一个合格 Bug</h2><p>新手提交 Bug 时，最容易写得太模糊，比如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">评论有问题</span><br><span class="line">点赞不对</span><br><span class="line">页面异常</span><br></pre></td></tr></table></figure>
+
+<p>这会让开发很难定位。</p>
+<h3 id="21-1-Bug-应该包含什么"><a href="#21-1-Bug-应该包含什么" class="headerlink" title="21.1 Bug 应该包含什么"></a>21.1 Bug 应该包含什么</h3><p>一个合格 Bug 应包括：</p>
+<ul>
+<li>Bug 标题</li>
+<li>测试环境</li>
+<li>账号信息</li>
+<li>前置条件</li>
+<li>复现步骤</li>
+<li>实际结果</li>
+<li>预期结果</li>
+<li>复现概率</li>
+<li>附件：截图、录屏、日志、接口返回</li>
+</ul>
+<h3 id="21-2-Bug-示例"><a href="#21-2-Bug-示例" class="headerlink" title="21.2 Bug 示例"></a>21.2 Bug 示例</h3><h4 id="Bug-标题"><a href="#Bug-标题" class="headerlink" title="Bug 标题"></a>Bug 标题</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[评论模块] 用户连续点击发送按钮后生成两条重复评论</span><br></pre></td></tr></table></figure>
+
+<h4 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户A已登录，账号状态正常，帖子P001存在且允许评论。</span><br></pre></td></tr></table></figure>
+
+<h4 id="复现步骤"><a href="#复现步骤" class="headerlink" title="复现步骤"></a>复现步骤</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户A进入帖子P001详情页</span><br><span class="line">2. 在评论框输入“test comment”</span><br><span class="line">3. 快速连续点击发送按钮 3 次</span><br><span class="line">4. 查看评论列表</span><br></pre></td></tr></table></figure>
+
+<h4 id="实际结果"><a href="#实际结果" class="headerlink" title="实际结果"></a>实际结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">评论列表出现 2 条相同内容的评论，评论数增加 2。</span><br></pre></td></tr></table></figure>
+
+<h4 id="预期结果"><a href="#预期结果" class="headerlink" title="预期结果"></a>预期结果</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">系统只应生成 1 条评论；发送中按钮应置灰或接口应做幂等处理。</span><br></pre></td></tr></table></figure>
+
+<h4 id="复现概率"><a href="#复现概率" class="headerlink" title="复现概率"></a>复现概率</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">5/5 必现</span><br></pre></td></tr></table></figure>
+
+<h3 id="21-3-Bug-严重程度参考"><a href="#21-3-Bug-严重程度参考" class="headerlink" title="21.3 Bug 严重程度参考"></a>21.3 Bug 严重程度参考</h3><table>
+<thead>
+<tr>
+<th>严重程度</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Blocker</td>
+<td>阻塞主流程</td>
+<td>无法登录、无法发帖</td>
+</tr>
+<tr>
+<td>Critical</td>
+<td>严重影响核心功能</td>
+<td>评论丢失、越权删帖</td>
+</tr>
+<tr>
+<td>Major</td>
+<td>影响功能但有绕过方式</td>
+<td>通知不准、列表重复</td>
+</tr>
+<tr>
+<td>Minor</td>
+<td>小问题</td>
+<td>文案错误、UI 错位</td>
+</tr>
+<tr>
+<td>Trivial</td>
+<td>极小问题</td>
+<td>个别标点、轻微样式</td>
+</tr>
+</tbody></table>
+<hr>
+<p><a id="forum-ch-22"></a></p>
+<h2 id="22-新手常见误区"><a href="#22-新手常见误区" class="headerlink" title="22. 新手常见误区"></a>22. 新手常见误区</h2><h3 id="22-1-只测正常流程"><a href="#22-1-只测正常流程" class="headerlink" title="22.1 只测正常流程"></a>22.1 只测正常流程</h3><p>错误做法：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">能发帖成功，就认为发帖功能没问题。</span><br></pre></td></tr></table></figure>
+
+<p>正确做法：</p>
+<p>还要测：</p>
+<ul>
+<li>空标题</li>
+<li>超长内容</li>
+<li>未登录</li>
+<li>被禁言</li>
+<li>连续点击</li>
+<li>网络异常</li>
+<li>上传失败</li>
+<li>发布后数据同步</li>
+</ul>
+<h3 id="22-2-只看页面，不看数据"><a href="#22-2-只看页面，不看数据" class="headerlink" title="22.2 只看页面，不看数据"></a>22.2 只看页面，不看数据</h3><p>例如点赞后按钮变亮了，但点赞数没有增加，这也是 Bug。</p>
+<p>测试时要同时看：</p>
+<ul>
+<li>页面状态</li>
+<li>数量变化</li>
+<li>列表展示</li>
+<li>详情展示</li>
+<li>个人主页展示</li>
+</ul>
+<h3 id="22-3-只用一个账号测试"><a href="#22-3-只用一个账号测试" class="headerlink" title="22.3 只用一个账号测试"></a>22.3 只用一个账号测试</h3><p>社区项目一定要多账号测试。</p>
+<p>至少需要：</p>
+<ul>
+<li>用户A：发帖人</li>
+<li>用户B：互动人</li>
+<li>管理员：审核和管理</li>
+</ul>
+<h3 id="22-4-不测权限"><a href="#22-4-不测权限" class="headerlink" title="22.4 不测权限"></a>22.4 不测权限</h3><p>权限问题是高危问题。</p>
+<p>一定要验证：</p>
+<ul>
+<li>谁能看</li>
+<li>谁能点</li>
+<li>谁能提交成功</li>
+<li>谁不能越权操作</li>
+</ul>
+<h3 id="22-5-不测异常提示"><a href="#22-5-不测异常提示" class="headerlink" title="22.5 不测异常提示"></a>22.5 不测异常提示</h3><p>异常提示也属于功能。</p>
+<p>例如：</p>
+<ul>
+<li>发布失败是否有提示</li>
+<li>上传失败是否可重试</li>
+<li>登录过期是否跳转登录</li>
+<li>无权限是否说明原因</li>
+</ul>
+<hr>
+<p><a id="forum-ch-23"></a></p>
+<h2 id="23-建议你实际测试时的学习路线"><a href="#23-建议你实际测试时的学习路线" class="headerlink" title="23. 建议你实际测试时的学习路线"></a>23. 建议你实际测试时的学习路线</h2><p>如果你是测试小白，不建议一开始就追求“大而全”。可以按下面顺序学习和实践：</p>
+<h3 id="第一阶段：先跑通主流程"><a href="#第一阶段：先跑通主流程" class="headerlink" title="第一阶段：先跑通主流程"></a>第一阶段：先跑通主流程</h3><p>目标：知道产品怎么用。</p>
+<p>测试内容：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">注册 → 登录 → 发帖 → 评论 → 点赞 → 收到通知</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二阶段：补异常场景"><a href="#第二阶段：补异常场景" class="headerlink" title="第二阶段：补异常场景"></a>第二阶段：补异常场景</h3><p>目标：知道用户乱操作会发生什么。</p>
+<p>测试内容：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">空输入、超长输入、未登录、重复点击、网络异常</span><br></pre></td></tr></table></figure>
+
+<h3 id="第三阶段：补权限场景"><a href="#第三阶段：补权限场景" class="headerlink" title="第三阶段：补权限场景"></a>第三阶段：补权限场景</h3><p>目标：知道不同用户能做什么，不能做什么。</p>
+<p>测试内容：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">游客、普通用户、作者、非作者、禁言用户、管理员</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四阶段：补数据一致性"><a href="#第四阶段：补数据一致性" class="headerlink" title="第四阶段：补数据一致性"></a>第四阶段：补数据一致性</h3><p>目标：知道数据是否真实可靠。</p>
+<p>测试内容：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">点赞数、评论数、粉丝数、通知未读数、列表与详情一致</span><br></pre></td></tr></table></figure>
+
+<h3 id="第五阶段：补海外特性"><a href="#第五阶段：补海外特性" class="headerlink" title="第五阶段：补海外特性"></a>第五阶段：补海外特性</h3><p>目标：适应海外项目。</p>
+<p>测试内容：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">多语言、时区、第三方登录、举报治理、隐私设置</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><a id="forum-ch-24"></a></p>
+<h2 id="24-最后总结"><a href="#24-最后总结" class="headerlink" title="24. 最后总结"></a>24. 最后总结</h2><p>海外社区论坛功能测试的核心不是“把页面点一遍”，而是要围绕真实用户行为去验证：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户能否顺利进入社区</span><br><span class="line">用户能否正常发布内容</span><br><span class="line">其他用户能否正常互动</span><br><span class="line">互动数据是否准确</span><br><span class="line">不同权限是否受控</span><br><span class="line">异常场景是否有正确提示</span><br><span class="line">后台管理是否能影响前台</span><br><span class="line">海外用户使用是否正常</span><br></pre></td></tr></table></figure>
+
+<p>作为测试小白，你可以先记住一个万能测试思路：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">这个功能谁能用？</span><br><span class="line">从哪里进入？</span><br><span class="line">正常怎么用？</span><br><span class="line">异常怎么处理？</span><br><span class="line">产生什么数据？</span><br><span class="line">数据在哪里展示？</span><br><span class="line">别人能不能看到？</span><br><span class="line">管理员能不能管理？</span><br></pre></td></tr></table></figure>
+
+<p>只要你每个功能都按这几个问题去拆，测试思路就会越来越清晰。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-05-07-overseas-forum-functional-testing-guide/">https://linn0813.github.io/2026-05-07-overseas-forum-functional-testing-guide/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B/">社区论坛</a><a class="post-meta__tags" href="/tags/%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA/">海外社区</a><a class="post-meta__tags" href="/tags/%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/">功能测试</a><a class="post-meta__tags" href="/tags/%E7%99%BB%E5%BD%95%E6%B3%A8%E5%86%8C/">登录注册</a><a class="post-meta__tags" href="/tags/%E6%B5%8B%E8%AF%95%E5%85%A5%E9%97%A8/">测试入门</a></div><div class="post-share"><div class="social-share" data-image="/img/overseas-forum-functional-testing-guide.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-05-06-community-forum-testing-strategy/" title="新阶段开启：海外版社区论坛测试方案学习"><img class="cover" src="/img/testing-strategy-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">新阶段开启：海外版社区论坛测试方案学习</div></div><div class="info-2"><div class="info-item-1">开启测试能力进阶的新阶段，围绕海外版社区论坛测试方案系统学习，覆盖功能、海外化、合规、安全、性能、自动化与 AI 辅助测试。</div></div></div></a><a class="pagination-related" href="/2026-05-09-overseas-forum-api-testing-guide/" title="学习笔记：海外社区论坛 - 接口测试入门"><img class="cover" src="/img/overseas-forum-api-testing-guide.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习笔记：海外社区论坛 - 接口测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026-05-10-overseas-forum-data-consistency-guide/" title="学习笔记：海外社区论坛 - 数据库与数据一致性入门"><img class="cover" src="/img/overseas-forum-data-consistency-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-10</div><div class="info-item-2">学习笔记：海外社区论坛 - 数据库与数据一致性入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛数据与一致性测试入门：存储层级、业务模块数据校验、交叉验证与缓存延迟。</div></div></div></a><a class="pagination-related" href="/2026-05-09-overseas-forum-api-testing-guide/" title="学习笔记：海外社区论坛 - 接口测试入门"><img class="cover" src="/img/overseas-forum-api-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-09</div><div class="info-item-2">学习笔记：海外社区论坛 - 接口测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛接口测试入门：HTTP 与鉴权基础、各业务模块接口要点、专项能力与用例、Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-12-overseas-forum-risk-moderation-guide/" title="学习笔记：海外社区论坛 - 风控与内容审核专项入门"><img class="cover" src="/img/overseas-forum-risk-moderation-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-12</div><div class="info-item-2">学习笔记：海外社区论坛 - 风控与内容审核专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛风控与内容审核专项入门：审核链路、违规类型与状态流转、各模块实战、敏感词与 Spam 及用例 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-11-overseas-forum-permission-testing-guide/" title="学习笔记：海外社区论坛 - 权限测试专项入门"><img class="cover" src="/img/overseas-forum-permission-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-11</div><div class="info-item-2">学习笔记：海外社区论坛 - 权限测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛权限测试专项入门：角色与状态、前后端权限、越权与权限矩阵、按模块实战及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-13-overseas-forum-i18n-l10n-guide/" title="学习笔记：海外社区论坛 - 国际化与本地化专项入门"><img class="cover" src="/img/overseas-forum-i18n-l10n-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-13</div><div class="info-item-2">学习笔记：海外社区论坛 - 国际化与本地化专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛国际化与本地化专项入门：I18N/L10N 基础、各模块实战、文案布局与时区等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-14-overseas-forum-compatibility-guide/" title="学习笔记：海外社区论坛 - 兼容性测试专项入门"><img class="cover" src="/img/overseas-forum-compatibility-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-14</div><div class="info-item-2">学习笔记：海外社区论坛 - 兼容性测试专项入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛兼容性测试专项入门：兼容维度与风险、各模块实战、设备系统浏览器网络等方法，以及用例与 Bug 落地。</div></div></div></a><a class="pagination-related" href="/2026-05-06-community-forum-testing-strategy/" title="新阶段开启：海外版社区论坛测试方案学习"><img class="cover" src="/img/testing-strategy-cover.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-06</div><div class="info-item-2">新阶段开启：海外版社区论坛测试方案学习</div></div><div class="info-2"><div class="info-item-1">开启测试能力进阶的新阶段，围绕海外版社区论坛测试方案系统学习，覆盖功能、海外化、合规、安全、性能、自动化与 AI 辅助测试。</div></div></div></a><a class="pagination-related" href="/2026-05-15-overseas-forum-performance-guide/" title="学习笔记：海外社区论坛 - 性能测试入门"><img class="cover" src="/img/overseas-forum-performance-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-15</div><div class="info-item-2">学习笔记：海外社区论坛 - 性能测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">yuxiaoling</div><div class="author-info-description">AI 系统测试与测试工程化｜大模型质量评估、Prompt 回归、Agent 链路测试｜自动化与平台实践</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">127</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">457</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Linn0813"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Linn0813" target="_blank" title="GitHub"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:yuxiaoling.yxl@qq.com" target="_blank" title="Email"><i class="fa fa-envelope-open-text"></i></a><a class="social-icon" href="javascript:alert('微信公众号：Linn的技术笔记')" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">开启新阶段：深入学习海外版社区论坛测试方案，覆盖功能、海外化、合规、安全、性能、AI 辅助测试</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%88%E8%AE%A4%E8%AF%86%E4%BB%80%E4%B9%88%E6%98%AF%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">1. 先认识什么是海外社区论坛项目</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%B8%B8%E8%A7%81%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E4%BA%A7%E5%93%81%E7%9A%84%E7%89%B9%E7%82%B9%E4%B8%8E%E5%8C%BA%E5%88%AB"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 常见社区论坛产品的特点与区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%AE%83%E4%BB%AC%E4%B9%8B%E9%97%B4%E6%9C%80%E5%A4%A7%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 它们之间最大的区别是什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%BC%89%E5%86%85%E5%AE%B9%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F%E4%B8%8D%E5%90%8C"><span class="toc-number">1.2.1.</span> <span class="toc-text">1）内容组织方式不同</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%BC%89%E4%BA%92%E5%8A%A8%E6%96%B9%E5%BC%8F%E4%B8%8D%E5%90%8C"><span class="toc-number">1.2.2.</span> <span class="toc-text">2）互动方式不同</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%BC%89%E6%9D%83%E9%99%90%E6%A8%A1%E5%9E%8B%E4%B8%8D%E5%90%8C"><span class="toc-number">1.2.3.</span> <span class="toc-text">3）权限模型不同</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%EF%BC%89%E5%86%85%E5%AE%B9%E5%AE%A1%E6%A0%B8%E5%8E%8B%E5%8A%9B%E4%B8%8D%E5%90%8C"><span class="toc-number">1.2.4.</span> <span class="toc-text">4）内容审核压力不同</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%EF%BC%89%E6%95%B0%E6%8D%AE%E5%85%B3%E6%B3%A8%E7%82%B9%E4%B8%8D%E5%90%8C"><span class="toc-number">1.2.5.</span> <span class="toc-text">5）数据关注点不同</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%B5%8B%E8%AF%95%E5%B0%8F%E7%99%BD%E5%BA%94%E8%AF%A5%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E2%80%9C%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E2%80%9D"><span class="toc-number">2.</span> <span class="toc-text">2. 测试小白应该如何理解“功能测试”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E8%BF%99%E4%B8%AA%E5%8A%9F%E8%83%BD%E8%83%BD%E4%B8%8D%E8%83%BD%E6%AD%A3%E5%B8%B8%E7%94%A8%EF%BC%9F"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 这个功能能不能正常用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E7%94%A8%E6%88%B7%E4%B9%B1%E6%93%8D%E4%BD%9C%E4%BC%9A%E4%B8%8D%E4%BC%9A%E5%87%BA%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 用户乱操作会不会出问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E4%B8%8D%E5%90%8C%E7%94%A8%E6%88%B7%E8%BA%AB%E4%BB%BD%E7%9C%8B%E5%88%B0%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E5%90%A6%E6%AD%A3%E7%A1%AE%EF%BC%9F"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 不同用户身份看到的结果是否正确？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E6%95%B0%E6%8D%AE%E6%98%AF%E5%90%A6%E6%AD%A3%E7%A1%AE%EF%BC%9F"><span class="toc-number">2.4.</span> <span class="toc-text">2.4 数据是否正确？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E7%9A%84%E6%A0%B8%E5%BF%83%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">3. 海外社区论坛的核心业务流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%94%A8%E6%88%B7%E8%A7%86%E8%A7%92%E7%9A%84%E4%B8%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 用户视角的主流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%B9%B3%E5%8F%B0%E7%AE%A1%E7%90%86%E8%A7%86%E8%A7%92%E7%9A%84%E4%B8%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 平台管理视角的主流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%B5%8B%E8%AF%95%E6%97%B6%E8%A6%81%E6%9C%89%E2%80%9C%E9%93%BE%E8%B7%AF%E6%84%8F%E8%AF%86%E2%80%9D"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 测试时要有“链路意识”</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E5%89%8D%E9%9C%80%E8%A6%81%E5%87%86%E5%A4%87%E4%BB%80%E4%B9%88"><span class="toc-number">4.</span> <span class="toc-text">4. 功能测试前需要准备什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E9%9C%80%E6%B1%82"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 需要了解需求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E8%B4%A6%E5%8F%B7"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 准备测试账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 准备测试数据</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E6%9C%AC%E6%95%B0%E6%8D%AE"><span class="toc-number">4.3.1.</span> <span class="toc-text">文本数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E6%95%B0%E6%8D%AE"><span class="toc-number">4.3.2.</span> <span class="toc-text">图片数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%86%E9%A2%91%E6%95%B0%E6%8D%AE"><span class="toc-number">4.3.3.</span> <span class="toc-text">视频数据</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E6%98%8E%E7%A1%AE%E6%B5%8B%E8%AF%95%E8%8C%83%E5%9B%B4"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 明确测试范围</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A6%82%E4%BD%95%E6%8B%86%E5%88%86%E7%A4%BE%E5%8C%BA%E8%AE%BA%E5%9D%9B%E7%9A%84%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97"><span class="toc-number">5.</span> <span class="toc-text">5. 如何拆分社区论坛的功能模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%94%A8%E6%88%B7%E4%BD%93%E7%B3%BB%E6%A8%A1%E5%9D%97%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">6.</span> <span class="toc-text">6. 用户体系模块怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E7%94%A8%E6%88%B7%E8%A7%92%E8%89%B2"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 用户角色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E7%94%A8%E6%88%B7%E7%8A%B6%E6%80%81"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 用户状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E6%B5%8B%E8%AF%95%E9%87%8D%E7%82%B9"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 测试重点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E7%A4%BA%E4%BE%8B%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF"><span class="toc-number">6.4.</span> <span class="toc-text">6.4 示例测试场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%EF%BC%9A%E8%A2%AB%E7%A6%81%E8%A8%80%E7%94%A8%E6%88%B7%E4%B8%8D%E8%83%BD%E8%AF%84%E8%AE%BA"><span class="toc-number">6.4.1.</span> <span class="toc-text">场景：被禁言用户不能评论</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%EF%BC%9A%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E4%B8%8D%E8%83%BD%E5%88%A0%E9%99%A4%E5%88%AB%E4%BA%BA%E7%9A%84%E5%B8%96%E5%AD%90"><span class="toc-number">6.4.2.</span> <span class="toc-text">场景：普通用户不能删除别人的帖子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-%E6%96%B0%E6%89%8B%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">6.5.</span> <span class="toc-text">6.5 新手注意点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E7%99%BB%E5%BD%95%E6%B3%A8%E5%86%8C%E6%A8%A1%E5%9D%97%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">7.</span> <span class="toc-text">7. 登录注册模块怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E5%B8%B8%E8%A7%81%E6%B3%A8%E5%86%8C%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 常见注册方式有哪些</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E9%82%AE%E7%AE%B1%E6%B3%A8%E5%86%8C%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 邮箱注册怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2-1-%E9%82%AE%E7%AE%B1%E7%B1%BB%E5%9E%8B%E8%A6%81%E5%8C%BA%E5%88%86%E6%B5%8B%E8%AF%95"><span class="toc-number">7.2.1.</span> <span class="toc-text">7.2.1 邮箱类型要区分测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2-2-%E9%82%AE%E7%AE%B1%E6%A0%BC%E5%BC%8F%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">7.2.2.</span> <span class="toc-text">7.2.2 邮箱格式测试点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2-3-%E9%82%AE%E7%AE%B1%E5%A4%A7%E5%B0%8F%E5%86%99%E6%B5%8B%E8%AF%95"><span class="toc-number">7.2.3.</span> <span class="toc-text">7.2.3 邮箱大小写测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2-4-Gmail-%E5%88%AB%E5%90%8D%E6%B5%8B%E8%AF%95"><span class="toc-number">7.2.4.</span> <span class="toc-text">7.2.4 Gmail + 别名测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-2-5-%E9%82%AE%E7%AE%B1%E9%AA%8C%E8%AF%81%E7%A0%81-%E9%AA%8C%E8%AF%81%E9%82%AE%E4%BB%B6%E6%B5%8B%E8%AF%95"><span class="toc-number">7.2.5.</span> <span class="toc-text">7.2.5 邮箱验证码&#x2F;验证邮件测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%89%8B%E6%9C%BA%E5%8F%B7%E6%B3%A8%E5%86%8C%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">7.3.</span> <span class="toc-text">7.3 手机号注册怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-1-%E5%9B%BD%E5%AE%B6%E5%8C%BA%E5%8F%B7%E6%B5%8B%E8%AF%95"><span class="toc-number">7.3.1.</span> <span class="toc-text">7.3.1 国家区号测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-2-%E6%89%8B%E6%9C%BA%E5%8F%B7%E6%A0%BC%E5%BC%8F%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">7.3.2.</span> <span class="toc-text">7.3.2 手机号格式测试点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-3-%E7%9F%AD%E4%BF%A1%E9%AA%8C%E8%AF%81%E7%A0%81%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">7.3.3.</span> <span class="toc-text">7.3.3 短信验证码测试点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-3-4-%E6%96%B0%E6%89%8B%E5%AE%B9%E6%98%93%E6%BC%8F%E7%9A%84%E7%82%B9"><span class="toc-number">7.3.4.</span> <span class="toc-text">7.3.4 新手容易漏的点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E7%AC%AC%E4%B8%89%E6%96%B9%E6%B3%A8%E5%86%8C-%E7%99%BB%E5%BD%95%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">7.4.</span> <span class="toc-text">7.4 第三方注册&#x2F;登录怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-1-%E7%AC%AC%E4%B8%89%E6%96%B9%E8%B7%B3%E8%BD%AC%E9%80%BB%E8%BE%91%E6%B5%8B%E8%AF%95"><span class="toc-number">7.4.1.</span> <span class="toc-text">7.4.1 第三方跳转逻辑测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-2-%E7%AC%AC%E4%B8%89%E6%96%B9%E8%B4%A6%E5%8F%B7%E9%A6%96%E6%AC%A1%E6%B3%A8%E5%86%8C%E6%B5%8B%E8%AF%95"><span class="toc-number">7.4.2.</span> <span class="toc-text">7.4.2 第三方账号首次注册测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-3-%E7%AC%AC%E4%B8%89%E6%96%B9%E8%B4%A6%E5%8F%B7%E4%BA%8C%E6%AC%A1%E7%99%BB%E5%BD%95%E6%B5%8B%E8%AF%95"><span class="toc-number">7.4.3.</span> <span class="toc-text">7.4.3 第三方账号二次登录测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-4-%E5%90%8C%E9%82%AE%E7%AE%B1%E4%B8%8D%E5%90%8C%E6%B3%A8%E5%86%8C%E6%96%B9%E5%BC%8F%E6%B5%8B%E8%AF%95"><span class="toc-number">7.4.4.</span> <span class="toc-text">7.4.4 同邮箱不同注册方式测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-5-Apple-%E7%99%BB%E5%BD%95%E7%9A%84%E7%89%B9%E6%AE%8A%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">7.4.5.</span> <span class="toc-text">7.4.5 Apple 登录的特殊测试点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-6-%E7%AC%AC%E4%B8%89%E6%96%B9%E5%A4%B4%E5%83%8F%E3%80%81%E6%98%B5%E7%A7%B0%E3%80%81%E9%82%AE%E7%AE%B1%E5%90%8C%E6%AD%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">7.4.6.</span> <span class="toc-text">7.4.6 第三方头像、昵称、邮箱同步测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-4-7-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%BB%91%E5%AE%9A%E4%B8%8E%E8%A7%A3%E7%BB%91%E6%B5%8B%E8%AF%95"><span class="toc-number">7.4.7.</span> <span class="toc-text">7.4.7 第三方绑定与解绑测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-%E7%99%BB%E5%BD%95%E5%8A%9F%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">7.5.</span> <span class="toc-text">7.5 登录功能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5-1-%E6%AD%A3%E5%B8%B8%E7%99%BB%E5%BD%95%E5%9C%BA%E6%99%AF"><span class="toc-number">7.5.1.</span> <span class="toc-text">7.5.1 正常登录场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5-2-%E5%BC%82%E5%B8%B8%E7%99%BB%E5%BD%95%E5%9C%BA%E6%99%AF"><span class="toc-number">7.5.2.</span> <span class="toc-text">7.5.2 异常登录场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-5-3-%E7%99%BB%E5%BD%95%E5%90%8E%E7%8A%B6%E6%80%81%E6%B5%8B%E8%AF%95"><span class="toc-number">7.5.3.</span> <span class="toc-text">7.5.3 登录后状态测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-6-%E6%B3%A8%E5%86%8C%E7%99%BB%E5%BD%95%E6%A8%A1%E5%9D%97%E9%AB%98%E9%A3%8E%E9%99%A9-Bug"><span class="toc-number">7.6.</span> <span class="toc-text">7.6 注册登录模块高风险 Bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%86%85%E5%AE%B9%E5%8F%91%E5%B8%83%E6%A8%A1%E5%9D%97%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">8.</span> <span class="toc-text">8. 内容发布模块怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%8F%91%E5%B8%96%E5%85%A5%E5%8F%A3%E6%B5%8B%E8%AF%95"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 发帖入口测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E6%96%87%E6%9C%AC%E5%86%85%E5%AE%B9%E6%B5%8B%E8%AF%95"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 文本内容测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%87%E9%A2%98%E6%B5%8B%E8%AF%95"><span class="toc-number">8.2.1.</span> <span class="toc-text">标题测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A3%E6%96%87%E6%B5%8B%E8%AF%95"><span class="toc-number">8.2.2.</span> <span class="toc-text">正文测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E6%B5%8B%E8%AF%95"><span class="toc-number">8.3.</span> <span class="toc-text">8.3 图片上传测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E8%A7%86%E9%A2%91%E4%B8%8A%E4%BC%A0%E6%B5%8B%E8%AF%95"><span class="toc-number">8.4.</span> <span class="toc-text">8.4 视频上传测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E8%8D%89%E7%A8%BF%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">8.5.</span> <span class="toc-text">8.5 草稿功能测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-%E5%8F%91%E5%B8%83%E6%88%90%E5%8A%9F%E5%90%8E%E7%9A%84%E9%AA%8C%E8%AF%81"><span class="toc-number">8.6.</span> <span class="toc-text">8.6 发布成功后的验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-7-%E5%86%85%E5%AE%B9%E5%8F%91%E5%B8%83%E9%AB%98%E9%A3%8E%E9%99%A9-Bug"><span class="toc-number">8.7.</span> <span class="toc-text">8.7 内容发布高风险 Bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%B8%96%E5%AD%90%E8%AF%A6%E6%83%85%E9%A1%B5%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">9.</span> <span class="toc-text">9. 帖子详情页怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E9%A1%B5%E9%9D%A2%E5%B1%95%E7%A4%BA%E6%B5%8B%E8%AF%95"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 页面展示测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E5%B8%96%E5%AD%90%E7%8A%B6%E6%80%81%E6%B5%8B%E8%AF%95"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 帖子状态测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E4%BD%9C%E8%80%85%E6%93%8D%E4%BD%9C%E6%B5%8B%E8%AF%95"><span class="toc-number">9.3.</span> <span class="toc-text">9.3 作者操作测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E9%9D%9E%E4%BD%9C%E8%80%85%E6%93%8D%E4%BD%9C%E6%B5%8B%E8%AF%95"><span class="toc-number">9.4.</span> <span class="toc-text">9.4 非作者操作测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E8%AF%84%E8%AE%BA%E4%B8%8E%E5%9B%9E%E5%A4%8D%E6%A8%A1%E5%9D%97%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">10.</span> <span class="toc-text">10. 评论与回复模块怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E8%AF%84%E8%AE%BA%E5%8F%91%E5%B8%83%E6%B5%8B%E8%AF%95"><span class="toc-number">10.1.</span> <span class="toc-text">10.1 评论发布测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E5%9B%9E%E5%A4%8D%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">10.2.</span> <span class="toc-text">10.2 回复功能测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E8%AF%84%E8%AE%BA%E5%88%97%E8%A1%A8%E6%B5%8B%E8%AF%95"><span class="toc-number">10.3.</span> <span class="toc-text">10.3 评论列表测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-%E5%88%A0%E9%99%A4%E8%AF%84%E8%AE%BA%E6%B5%8B%E8%AF%95"><span class="toc-number">10.4.</span> <span class="toc-text">10.4 删除评论测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-5-%E8%AF%84%E8%AE%BA%E6%A8%A1%E5%9D%97%E9%AB%98%E9%A3%8E%E9%99%A9-Bug"><span class="toc-number">10.5.</span> <span class="toc-text">10.5 评论模块高风险 Bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%82%B9%E8%B5%9E%E3%80%81%E6%94%B6%E8%97%8F%E3%80%81%E5%88%86%E4%BA%AB%E6%A8%A1%E5%9D%97%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">11.</span> <span class="toc-text">11. 点赞、收藏、分享模块怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E7%82%B9%E8%B5%9E%E6%B5%8B%E8%AF%95"><span class="toc-number">11.1.</span> <span class="toc-text">11.1 点赞测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E6%94%B6%E8%97%8F%E6%B5%8B%E8%AF%95"><span class="toc-number">11.2.</span> <span class="toc-text">11.2 收藏测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-%E5%88%86%E4%BA%AB%E6%B5%8B%E8%AF%95"><span class="toc-number">11.3.</span> <span class="toc-text">11.3 分享测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-4-%E6%96%B0%E6%89%8B%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F"><span class="toc-number">11.4.</span> <span class="toc-text">11.4 新手特别注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%85%B3%E6%B3%A8%E3%80%81%E7%B2%89%E4%B8%9D%E3%80%81%E7%94%A8%E6%88%B7%E4%B8%BB%E9%A1%B5%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">12.</span> <span class="toc-text">12. 关注、粉丝、用户主页怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E5%85%B3%E6%B3%A8%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">12.1.</span> <span class="toc-text">12.1 关注功能测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E7%B2%89%E4%B8%9D-%E5%85%B3%E6%B3%A8%E5%88%97%E8%A1%A8%E6%B5%8B%E8%AF%95"><span class="toc-number">12.2.</span> <span class="toc-text">12.2 粉丝&#x2F;关注列表测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E7%94%A8%E6%88%B7%E4%B8%BB%E9%A1%B5%E6%B5%8B%E8%AF%95"><span class="toc-number">12.3.</span> <span class="toc-text">12.3 用户主页测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-Feed-%E4%BF%A1%E6%81%AF%E6%B5%81%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">13.</span> <span class="toc-text">13. Feed 信息流怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-Feed-%E7%B1%BB%E5%9E%8B"><span class="toc-number">13.1.</span> <span class="toc-text">13.1 Feed 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E5%9F%BA%E7%A1%80%E6%B5%8B%E8%AF%95%E7%82%B9"><span class="toc-number">13.2.</span> <span class="toc-text">13.2 基础测试点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-%E6%8E%92%E5%BA%8F%E6%B5%8B%E8%AF%95"><span class="toc-number">13.3.</span> <span class="toc-text">13.3 排序测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-4-%E5%88%86%E9%A1%B5%E6%B5%8B%E8%AF%95"><span class="toc-number">13.4.</span> <span class="toc-text">13.4 分页测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-5-Feed-%E9%AB%98%E9%A3%8E%E9%99%A9-Bug"><span class="toc-number">13.5.</span> <span class="toc-text">13.5 Feed 高风险 Bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">14.</span> <span class="toc-text">14. 搜索功能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E6%90%9C%E7%B4%A2%E5%AF%B9%E8%B1%A1"><span class="toc-number">14.1.</span> <span class="toc-text">14.1 搜索对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E6%90%9C%E7%B4%A2%E8%BE%93%E5%85%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">14.2.</span> <span class="toc-text">14.2 搜索输入测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-3-%E6%90%9C%E7%B4%A2%E7%BB%93%E6%9E%9C%E6%B5%8B%E8%AF%95"><span class="toc-number">14.3.</span> <span class="toc-text">14.3 搜索结果测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-4-%E6%B5%B7%E5%A4%96%E9%A1%B9%E7%9B%AE%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">14.4.</span> <span class="toc-text">14.4 海外项目注意点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E9%80%9A%E7%9F%A5%E6%B6%88%E6%81%AF%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">15.</span> <span class="toc-text">15. 通知消息怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E9%80%9A%E7%9F%A5%E7%B1%BB%E5%9E%8B"><span class="toc-number">15.1.</span> <span class="toc-text">15.1 通知类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E6%B5%8B%E8%AF%95%E9%87%8D%E7%82%B9"><span class="toc-number">15.2.</span> <span class="toc-text">15.2 测试重点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-3-%E7%A4%BA%E4%BE%8B%E5%9C%BA%E6%99%AF"><span class="toc-number">15.3.</span> <span class="toc-text">15.3 示例场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%A8%E6%88%B7B%E8%AF%84%E8%AE%BA%E7%94%A8%E6%88%B7A%E7%9A%84%E5%B8%96%E5%AD%90"><span class="toc-number">15.3.1.</span> <span class="toc-text">用户B评论用户A的帖子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-4-%E9%AB%98%E9%A3%8E%E9%99%A9-Bug"><span class="toc-number">15.4.</span> <span class="toc-text">15.4 高风险 Bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-%E7%A7%81%E4%BF%A1%E5%8A%9F%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">16.</span> <span class="toc-text">16. 私信功能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#16-1-%E5%9F%BA%E7%A1%80%E5%8A%9F%E8%83%BD"><span class="toc-number">16.1.</span> <span class="toc-text">16.1 基础功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-2-%E6%9D%83%E9%99%90%E9%99%90%E5%88%B6"><span class="toc-number">16.2.</span> <span class="toc-text">16.2 权限限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-3-%E6%B6%88%E6%81%AF%E7%8A%B6%E6%80%81"><span class="toc-number">16.3.</span> <span class="toc-text">16.3 消息状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-4-%E9%AB%98%E9%A3%8E%E9%99%A9-Bug"><span class="toc-number">16.4.</span> <span class="toc-text">16.4 高风险 Bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-%E4%B8%BE%E6%8A%A5%E3%80%81%E6%8B%89%E9%BB%91%E3%80%81%E5%B1%8F%E8%94%BD%E5%8A%9F%E8%83%BD%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">17.</span> <span class="toc-text">17. 举报、拉黑、屏蔽功能怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#17-1-%E4%B8%BE%E6%8A%A5%E5%8A%9F%E8%83%BD"><span class="toc-number">17.1.</span> <span class="toc-text">17.1 举报功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-2-%E6%8B%89%E9%BB%91%E5%8A%9F%E8%83%BD"><span class="toc-number">17.2.</span> <span class="toc-text">17.2 拉黑功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-3-%E5%B1%8F%E8%94%BD%E5%8A%9F%E8%83%BD"><span class="toc-number">17.3.</span> <span class="toc-text">17.3 屏蔽功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-%E7%AE%A1%E7%90%86%E5%91%98%E5%90%8E%E5%8F%B0%E4%B8%8E%E5%86%85%E5%AE%B9%E5%AE%A1%E6%A0%B8%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">18.</span> <span class="toc-text">18. 管理员后台与内容审核怎么测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#18-1-%E5%86%85%E5%AE%B9%E5%AE%A1%E6%A0%B8%E6%B5%81%E7%A8%8B"><span class="toc-number">18.1.</span> <span class="toc-text">18.1 内容审核流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-2-%E5%90%8E%E5%8F%B0%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">18.2.</span> <span class="toc-text">18.2 后台功能测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-3-%E5%89%8D%E5%90%8E%E5%8F%B0%E8%81%94%E5%8A%A8%E6%B5%8B%E8%AF%95"><span class="toc-number">18.3.</span> <span class="toc-text">18.3 前后台联动测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%A1%E7%90%86%E5%91%98%E5%88%A0%E9%99%A4%E5%B8%96%E5%AD%90"><span class="toc-number">18.3.1.</span> <span class="toc-text">管理员删除帖子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-4-%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90%E6%B5%8B%E8%AF%95"><span class="toc-number">18.4.</span> <span class="toc-text">18.4 管理员权限测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-%E6%B5%B7%E5%A4%96%E9%A1%B9%E7%9B%AE%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">19.</span> <span class="toc-text">19. 海外项目功能测试特别注意点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#19-1-%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.</span> <span class="toc-text">19.1 多语言测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-1-%E5%B8%B8%E8%A7%81%E9%9C%80%E8%A6%81%E6%94%AF%E6%8C%81%E7%9A%84%E8%AF%AD%E8%A8%80"><span class="toc-number">19.1.1.</span> <span class="toc-text">19.1.1 常见需要支持的语言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-2-UI-%E5%B1%95%E7%A4%BA%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.2.</span> <span class="toc-text">19.1.2 UI 展示测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-3-%E6%96%87%E6%A1%88%E5%AE%8C%E6%95%B4%E6%80%A7%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.3.</span> <span class="toc-text">19.1.3 文案完整性测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-4-%E5%A4%8D%E6%95%B0%E8%A7%84%E5%88%99%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.4.</span> <span class="toc-text">19.1.4 复数规则测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-5-RTL-%E8%AF%AD%E8%A8%80%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.5.</span> <span class="toc-text">19.1.5 RTL 语言测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-6-%E5%A4%9A%E8%AF%AD%E8%A8%80%E8%BE%93%E5%85%A5%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.6.</span> <span class="toc-text">19.1.6 多语言输入测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-7-%E5%AD%97%E6%95%B0%E9%99%90%E5%88%B6%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.7.</span> <span class="toc-text">19.1.7 字数限制测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-8-%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%90%9C%E7%B4%A2%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.8.</span> <span class="toc-text">19.1.8 多语言搜索测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-1-9-%E5%A4%9A%E8%AF%AD%E8%A8%80%E5%86%85%E5%AE%B9%E5%AE%A1%E6%A0%B8%E6%B5%8B%E8%AF%95"><span class="toc-number">19.1.9.</span> <span class="toc-text">19.1.9 多语言内容审核测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-2-%E6%97%B6%E5%8C%BA%E6%B5%8B%E8%AF%95"><span class="toc-number">19.2.</span> <span class="toc-text">19.2 时区测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#19-2-1-%E5%85%88%E7%90%86%E8%A7%A3%E4%BB%80%E4%B9%88%E6%98%AF%E6%97%B6%E5%8C%BA"><span class="toc-number">19.2.1.</span> <span class="toc-text">19.2.1 先理解什么是时区</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-2-2-%E9%9C%80%E8%A6%81%E6%B5%8B%E8%AF%95%E5%93%AA%E4%BA%9B%E6%97%B6%E9%97%B4%E5%AD%97%E6%AE%B5"><span class="toc-number">19.2.2.</span> <span class="toc-text">19.2.2 需要测试哪些时间字段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-2-3-%E5%88%87%E6%8D%A2%E6%97%B6%E5%8C%BA%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">19.2.3.</span> <span class="toc-text">19.2.3 切换时区怎么测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-2-4-%E7%9B%B8%E5%AF%B9%E6%97%B6%E9%97%B4%E4%B8%8E%E7%BB%9D%E5%AF%B9%E6%97%B6%E9%97%B4%E6%B5%8B%E8%AF%95"><span class="toc-number">19.2.4.</span> <span class="toc-text">19.2.4 相对时间与绝对时间测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-2-5-%E6%B4%BB%E5%8A%A8%E6%97%B6%E9%97%B4%E6%B5%8B%E8%AF%95"><span class="toc-number">19.2.5.</span> <span class="toc-text">19.2.5 活动时间测试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-3-%E5%A4%8F%E4%BB%A4%E6%97%B6%E6%B5%8B%E8%AF%95"><span class="toc-number">19.3.</span> <span class="toc-text">19.3 夏令时测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#19-3-1-%E5%A4%8F%E4%BB%A4%E6%97%B6%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">19.3.1.</span> <span class="toc-text">19.3.1 夏令时是什么</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-3-2-%E5%A4%8F%E4%BB%A4%E6%97%B6%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%BD%B1%E5%93%8D%E6%B5%8B%E8%AF%95"><span class="toc-number">19.3.2.</span> <span class="toc-text">19.3.2 夏令时为什么会影响测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-3-3-%E5%93%AA%E4%BA%9B%E5%8A%9F%E8%83%BD%E5%AE%B9%E6%98%93%E5%8F%97%E5%A4%8F%E4%BB%A4%E6%97%B6%E5%BD%B1%E5%93%8D"><span class="toc-number">19.3.3.</span> <span class="toc-text">19.3.3 哪些功能容易受夏令时影响</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-3-4-%E5%A4%8F%E4%BB%A4%E6%97%B6%E6%80%8E%E4%B9%88%E6%B5%8B"><span class="toc-number">19.3.4.</span> <span class="toc-text">19.3.4 夏令时怎么测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-3-5-%E6%96%B0%E6%89%8B%E8%AE%B0%E5%BF%86%E7%82%B9"><span class="toc-number">19.3.5.</span> <span class="toc-text">19.3.5 新手记忆点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-4-%E5%9C%B0%E5%8C%BA%E4%B8%8E%E6%9C%AC%E5%9C%B0%E5%8C%96%E8%A7%84%E5%88%99%E6%B5%8B%E8%AF%95"><span class="toc-number">19.4.</span> <span class="toc-text">19.4 地区与本地化规则测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#19-4-1-%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F"><span class="toc-number">19.4.1.</span> <span class="toc-text">19.4.1 日期格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-4-2-%E6%95%B0%E5%AD%97%E6%A0%BC%E5%BC%8F"><span class="toc-number">19.4.2.</span> <span class="toc-text">19.4.2 数字格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-4-3-%E8%B4%A7%E5%B8%81%E6%A0%BC%E5%BC%8F"><span class="toc-number">19.4.3.</span> <span class="toc-text">19.4.3 货币格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-4-4-%E5%9C%B0%E5%9D%80%E3%80%81%E9%82%AE%E7%BC%96%E3%80%81%E6%89%8B%E6%9C%BA%E5%8F%B7%E6%A0%BC%E5%BC%8F"><span class="toc-number">19.4.4.</span> <span class="toc-text">19.4.4 地址、邮编、手机号格式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-5-%E6%B5%B7%E5%A4%96%E5%90%88%E6%B3%95%E5%90%88%E8%A7%84%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-number">19.5.</span> <span class="toc-text">19.5 海外合法合规功能测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#19-5-1-GDPR%EF%BC%9A%E6%AC%A7%E7%9B%9F%E6%95%B0%E6%8D%AE%E4%BF%9D%E6%8A%A4"><span class="toc-number">19.5.1.</span> <span class="toc-text">19.5.1 GDPR：欧盟数据保护</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-5-2-CCPA-CPRA%EF%BC%9A%E5%8A%A0%E5%B7%9E%E9%9A%90%E7%A7%81%E7%9B%B8%E5%85%B3%E8%A6%81%E6%B1%82"><span class="toc-number">19.5.2.</span> <span class="toc-text">19.5.2 CCPA&#x2F;CPRA：加州隐私相关要求</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-5-3-COPPA%EF%BC%9A%E5%84%BF%E7%AB%A5%E9%9A%90%E7%A7%81%E4%BF%9D%E6%8A%A4"><span class="toc-number">19.5.3.</span> <span class="toc-text">19.5.3 COPPA：儿童隐私保护</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-5-4-Cookie-%E4%B8%8E%E8%BF%BD%E8%B8%AA%E6%8E%88%E6%9D%83"><span class="toc-number">19.5.4.</span> <span class="toc-text">19.5.4 Cookie 与追踪授权</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-5-5-%E7%94%A8%E6%88%B7%E5%8D%8F%E8%AE%AE%E4%B8%8E%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96"><span class="toc-number">19.5.5.</span> <span class="toc-text">19.5.5 用户协议与隐私政策</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-5-6-%E5%86%85%E5%AE%B9%E5%90%88%E8%A7%84%E4%B8%8E%E7%A4%BE%E5%8C%BA%E8%A7%84%E5%88%99"><span class="toc-number">19.5.6.</span> <span class="toc-text">19.5.6 内容合规与社区规则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-5-7-%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%9C%B0%E5%8C%BA%E4%B8%8E%E5%9C%B0%E5%8C%BA%E9%99%90%E5%88%B6"><span class="toc-number">19.5.7.</span> <span class="toc-text">19.5.7 数据存储地区与地区限制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-6-%E6%B5%B7%E5%A4%96%E6%94%AF%E4%BB%98%E3%80%81%E8%AE%A2%E9%98%85%E4%B8%8E%E7%A8%8E%E8%B4%B9%E5%9C%BA%E6%99%AF%EF%BC%8C%E5%A6%82%E6%9E%9C%E9%A1%B9%E7%9B%AE%E6%B6%89%E5%8F%8A"><span class="toc-number">19.6.</span> <span class="toc-text">19.6 海外支付、订阅与税费场景，如果项目涉及</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-7-%E6%96%B0%E6%89%8B%E6%80%8E%E4%B9%88%E7%90%86%E8%A7%A3%E6%B5%B7%E5%A4%96%E4%B8%93%E9%A1%B9%E6%B5%8B%E8%AF%95"><span class="toc-number">19.7.</span> <span class="toc-text">19.7 新手怎么理解海外专项测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-%E5%A6%82%E4%BD%95%E5%86%99%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"><span class="toc-number">20.</span> <span class="toc-text">20. 如何写测试用例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#20-1-%E7%94%A8%E4%BE%8B%E6%A8%A1%E6%9D%BF"><span class="toc-number">20.1.</span> <span class="toc-text">20.1 用例模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-2-%E5%8F%91%E5%B8%96%E6%A8%A1%E5%9D%97%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B"><span class="toc-number">20.2.</span> <span class="toc-text">20.2 发帖模块示例用例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-3-%E8%AF%84%E8%AE%BA%E6%A8%A1%E5%9D%97%E7%A4%BA%E4%BE%8B%E7%94%A8%E4%BE%8B"><span class="toc-number">20.3.</span> <span class="toc-text">20.3 评论模块示例用例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E5%A6%82%E4%BD%95%E6%8F%90%E4%BA%A4%E4%B8%80%E4%B8%AA%E5%90%88%E6%A0%BC-Bug"><span class="toc-number">21.</span> <span class="toc-text">21. 如何提交一个合格 Bug</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-1-Bug-%E5%BA%94%E8%AF%A5%E5%8C%85%E5%90%AB%E4%BB%80%E4%B9%88"><span class="toc-number">21.1.</span> <span class="toc-text">21.1 Bug 应该包含什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-2-Bug-%E7%A4%BA%E4%BE%8B"><span class="toc-number">21.2.</span> <span class="toc-text">21.2 Bug 示例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Bug-%E6%A0%87%E9%A2%98"><span class="toc-number">21.2.1.</span> <span class="toc-text">Bug 标题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="toc-number">21.2.2.</span> <span class="toc-text">前置条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-number">21.2.3.</span> <span class="toc-text">复现步骤</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%BB%93%E6%9E%9C"><span class="toc-number">21.2.4.</span> <span class="toc-text">实际结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C"><span class="toc-number">21.2.5.</span> <span class="toc-text">预期结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E6%A6%82%E7%8E%87"><span class="toc-number">21.2.6.</span> <span class="toc-text">复现概率</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-3-Bug-%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6%E5%8F%82%E8%80%83"><span class="toc-number">21.3.</span> <span class="toc-text">21.3 Bug 严重程度参考</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E6%96%B0%E6%89%8B%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">22.</span> <span class="toc-text">22. 新手常见误区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#22-1-%E5%8F%AA%E6%B5%8B%E6%AD%A3%E5%B8%B8%E6%B5%81%E7%A8%8B"><span class="toc-number">22.1.</span> <span class="toc-text">22.1 只测正常流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-2-%E5%8F%AA%E7%9C%8B%E9%A1%B5%E9%9D%A2%EF%BC%8C%E4%B8%8D%E7%9C%8B%E6%95%B0%E6%8D%AE"><span class="toc-number">22.2.</span> <span class="toc-text">22.2 只看页面，不看数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-3-%E5%8F%AA%E7%94%A8%E4%B8%80%E4%B8%AA%E8%B4%A6%E5%8F%B7%E6%B5%8B%E8%AF%95"><span class="toc-number">22.3.</span> <span class="toc-text">22.3 只用一个账号测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-4-%E4%B8%8D%E6%B5%8B%E6%9D%83%E9%99%90"><span class="toc-number">22.4.</span> <span class="toc-text">22.4 不测权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-5-%E4%B8%8D%E6%B5%8B%E5%BC%82%E5%B8%B8%E6%8F%90%E7%A4%BA"><span class="toc-number">22.5.</span> <span class="toc-text">22.5 不测异常提示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E5%BB%BA%E8%AE%AE%E4%BD%A0%E5%AE%9E%E9%99%85%E6%B5%8B%E8%AF%95%E6%97%B6%E7%9A%84%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF"><span class="toc-number">23.</span> <span class="toc-text">23. 建议你实际测试时的学习路线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%85%88%E8%B7%91%E9%80%9A%E4%B8%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">23.1.</span> <span class="toc-text">第一阶段：先跑通主流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E8%A1%A5%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF"><span class="toc-number">23.2.</span> <span class="toc-text">第二阶段：补异常场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E8%A1%A5%E6%9D%83%E9%99%90%E5%9C%BA%E6%99%AF"><span class="toc-number">23.3.</span> <span class="toc-text">第三阶段：补权限场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E8%A1%A5%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">23.4.</span> <span class="toc-text">第四阶段：补数据一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E8%A1%A5%E6%B5%B7%E5%A4%96%E7%89%B9%E6%80%A7"><span class="toc-number">23.5.</span> <span class="toc-text">第五阶段：补海外特性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93"><span class="toc-number">24.</span> <span class="toc-text">24. 最后总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026-05-20-overseas-forum-ai-testing-guide/" title="学习笔记：海外社区论坛 - AI 辅助测试与提效入门"><img src="/img/overseas-forum-ai-testing-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - AI 辅助测试与提效入门"/></a><div class="content"><a class="title" href="/2026-05-20-overseas-forum-ai-testing-guide/" title="学习笔记：海外社区论坛 - AI 辅助测试与提效入门">学习笔记：海外社区论坛 - AI 辅助测试与提效入门</a><time datetime="2026-05-20T02:00:00.000Z" title="发表于 2026-05-20 10:00:00">2026-05-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-19-overseas-forum-release-regression-guide/" title="学习笔记：海外社区论坛 - 上线验收与回归测试入门"><img src="/img/overseas-forum-release-regression-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 上线验收与回归测试入门"/></a><div class="content"><a class="title" href="/2026-05-19-overseas-forum-release-regression-guide/" title="学习笔记：海外社区论坛 - 上线验收与回归测试入门">学习笔记：海外社区论坛 - 上线验收与回归测试入门</a><time datetime="2026-05-19T02:00:00.000Z" title="发表于 2026-05-19 10:00:00">2026-05-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-18-overseas-forum-test-plan-guide/" title="学习笔记：海外社区论坛 - 测试计划与测试方案入门"><img src="/img/overseas-forum-test-plan-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 测试计划与测试方案入门"/></a><div class="content"><a class="title" href="/2026-05-18-overseas-forum-test-plan-guide/" title="学习笔记：海外社区论坛 - 测试计划与测试方案入门">学习笔记：海外社区论坛 - 测试计划与测试方案入门</a><time datetime="2026-05-18T02:00:00.000Z" title="发表于 2026-05-18 10:00:00">2026-05-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-17-overseas-forum-automation-guide/" title="学习笔记：海外社区论坛 - 自动化测试入门"><img src="/img/overseas-forum-automation-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 自动化测试入门"/></a><div class="content"><a class="title" href="/2026-05-17-overseas-forum-automation-guide/" title="学习笔记：海外社区论坛 - 自动化测试入门">学习笔记：海外社区论坛 - 自动化测试入门</a><time datetime="2026-05-17T02:00:00.000Z" title="发表于 2026-05-17 10:00:00">2026-05-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026-05-16-overseas-forum-security-guide/" title="学习笔记：海外社区论坛 - 安全测试入门"><img src="/img/overseas-forum-security-guide.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习笔记：海外社区论坛 - 安全测试入门"/></a><div class="content"><a class="title" href="/2026-05-16-overseas-forum-security-guide/" title="学习笔记：海外社区论坛 - 安全测试入门">学习笔记：海外社区论坛 - 安全测试入门</a><time datetime="2026-05-16T02:00:00.000Z" title="发表于 2026-05-16 10:00:00">2026-05-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
