@@ -3,6 +3,7 @@
 
   const root = document.getElementById('growth-center');
   if (!root) return;
+  const WORKBENCH_URL = 'https://linn-growth-lab.yuxiaoling407.chatgpt.site';
 
   const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[char]);
 
@@ -58,6 +59,7 @@
         <a href="/growth/radar/" data-growth-view="radar">技术雷达</a>
         <a href="/growth/skills/" data-growth-view="skills">Skill 库</a>
         <a href="/growth/reviews/" data-growth-view="reviews">复盘</a>
+        <a class="gc-workbench-nav" href="${WORKBENCH_URL}" target="_blank" rel="noopener">私人工作台 ↗</a>
       </nav>
 
       <section class="gc-hero" data-growth-section="overview">
@@ -69,9 +71,14 @@
         <div><strong>${total}</strong><span>跟踪能力</span></div><div><strong>${independent}</strong><span>达到独立</span></div><div><strong>${gap}</strong><span>仍有差距</span></div><div><strong>${data.focus.length}</strong><span>当前重点</span></div>
       </section>
 
+      <section class="gc-workbench-bridge" data-growth-section="overview">
+        <div><small>PRIVATE WORKBENCH</small><h2>今天的打卡与复盘，在工作台完成</h2><p>博客负责公开沉淀，工作台负责私人操作。两边共享同一份成长目标与公开能力数据。</p></div>
+        <a href="${WORKBENCH_URL}" target="_blank" rel="noopener">打开今日工作台 <span>需要本人登录</span></a>
+      </section>
+
       <section class="gc-today" data-growth-section="overview">
         <div class="gc-today-mark">今日</div><div><time>${escapeHtml(data.today.date)}</time><h2>${escapeHtml(data.today.title)}</h2><p>${escapeHtml(data.today.reason)}</p><ul><li>时间：${escapeHtml(data.today.timebox)}</li><li>交付：${escapeHtml(data.today.deliverable)}</li></ul></div>
-        <button id="gc-copy-feedback">复制完成反馈</button>
+        <div class="gc-today-actions"><a href="${WORKBENCH_URL}" target="_blank" rel="noopener">去工作台打卡</a><button id="gc-copy-feedback">复制完成反馈</button></div>
       </section>
 
       <section class="gc-overview-links" data-growth-section="overview">
