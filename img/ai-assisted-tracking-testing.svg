@@ -23,7 +23,7 @@
     <path d="M180 0V900M420 0V900M660 0V900M900 0V900M1140 0V900M1380 0V900"/>
   </g>
   <text x="130" y="175" fill="#bae6fd" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="34" font-weight="650" letter-spacing="5">AI TESTING · ANALYTICS QUALITY</text>
-  <text x="130" y="300" fill="#f8fafc" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="88" font-weight="800">如何让 AI 协助埋点测试</text>
+  <text x="130" y="300" fill="#f8fafc" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="72" font-weight="800">如何让 AI 协助埋点测试</text>
   <rect x="132" y="343" width="890" height="8" rx="4" fill="url(#accent)"/>
   <text x="130" y="425" fill="#cbd5e1" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="38">从埋点文档到 Firebase 验收报告</text>
   <g filter="url(#shadow)" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">
