@@ -255,3 +255,61 @@
   .gc-flow i { transform: rotate(90deg); text-align: center; }
   .gc-domain-summary, .gc-brief-grid { grid-template-columns: 1fr; }
 }
+
+/* V6 · 博主视角的公开成长档案 */
+.gc-owner-intro { padding: 8px 0 28px; border-bottom: 1px solid var(--gc-line); }
+.gc-owner-intro > p { margin: 0 0 8px; color: var(--gc-blue); font-size: 12px; }
+.gc-owner-intro h2 { max-width: 760px; margin: 0 0 12px; color: var(--gc-text); font-size: 27px; line-height: 1.45; }
+.gc-owner-intro span { color: var(--gc-muted); font-size: 11px; }
+.gc-owner-stats { margin: 24px 0 30px; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--gc-line); border-left: 1px solid var(--gc-line); }
+.gc-owner-stats div { padding: 18px; border-right: 1px solid var(--gc-line); border-bottom: 1px solid var(--gc-line); }
+.gc-owner-stats strong { margin-right: 7px; font-size: 22px; }
+.gc-owner-stats span { color: var(--gc-muted); font-size: 11px; }
+.gc-owner-links { margin: 12px 0 34px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.gc-owner-links > a { padding: 20px; display: grid; gap: 5px; border: 1px solid var(--gc-line); color: var(--gc-text); text-decoration: none; }
+.gc-owner-links small { color: var(--gc-muted); font-size: 10px; }
+.gc-owner-links strong { font-size: 15px; }
+.gc-owner-links span { color: var(--gc-blue); font-size: 11px; }
+.gc-mastered-preview > ul { margin: 0; padding: 0; border-top: 1px solid var(--gc-line); list-style: none; }
+.gc-mastered-preview li { padding: 13px 4px; display: flex; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--gc-line); }
+.gc-mastered-preview li span { color: var(--gc-muted); font-size: 11px; }
+.gc-public-empty { margin: 18px 0; padding: 20px; color: var(--gc-muted); background: var(--gc-soft); font-size: 13px; }
+.gc-digest-list { border-top: 1px solid var(--gc-line); }
+.gc-digest-row { padding: 18px 2px; display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; gap: 18px; align-items: start; border-bottom: 1px solid var(--gc-line); }
+.gc-digest-row > time { color: var(--gc-muted); font-size: 11px; }
+.gc-digest-row h3 { margin: 0 0 4px; font-size: 16px; }
+.gc-digest-row h3 a { color: var(--gc-text); text-decoration: none; }
+.gc-digest-row p { margin: 0 0 5px; color: var(--gc-muted); font-size: 12px; }
+.gc-digest-row small { color: var(--gc-muted); font-size: 10px; }
+.gc-digest-row > a { color: var(--gc-blue); font-size: 11px; text-decoration: none; }
+.gc-public-skill-list { border-top: 1px solid var(--gc-line); }
+.gc-public-skill { border-bottom: 1px solid var(--gc-line); }
+.gc-public-skill > summary { padding: 15px 4px; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto auto; gap: 11px; align-items: center; cursor: pointer; list-style: none; }
+.gc-public-skill > summary::-webkit-details-marker { display: none; }
+.gc-public-skill > summary::after { color: var(--gc-blue); content: '+'; font-size: 16px; }
+.gc-public-skill[open] > summary::after { content: '−'; }
+.gc-public-skill > summary > span { font-size: 20px; }
+.gc-public-skill > summary strong,
+.gc-public-skill > summary small { display: block; }
+.gc-public-skill > summary strong { color: var(--gc-text); font-size: 14px; }
+.gc-public-skill > summary small,
+.gc-public-skill > summary time { color: var(--gc-muted); font-size: 10px; }
+.gc-public-skill-detail { padding: 2px 4px 22px 47px; }
+.gc-public-skill-detail > p { color: var(--gc-muted); font-size: 13px; }
+.gc-public-skill-detail > footer { margin-top: 14px; color: var(--gc-muted); font-size: 10px; }
+.gc-plugin-vault { margin-top: 28px; padding: 16px 18px; border: 1px solid var(--gc-line); background: var(--gc-soft); }
+.gc-plugin-vault > summary { cursor: pointer; font-size: 12px; font-weight: 600; }
+.gc-plugin-list { margin-top: 14px; border-top: 1px solid var(--gc-line); }
+.gc-plugin-list > details { padding: 11px 0; border-bottom: 1px solid var(--gc-line); }
+.gc-plugin-list > details > summary { display: flex; gap: 8px; align-items: center; cursor: pointer; list-style: none; }
+.gc-plugin-list p { margin: 8px 0 3px; color: var(--gc-muted); font-size: 11px; }
+.gc-plugin-list small { color: var(--gc-blue); font-size: 10px; }
+
+@media (max-width: 760px) {
+  .gc-owner-stats,
+  .gc-owner-links { grid-template-columns: 1fr; }
+  .gc-digest-row { grid-template-columns: 1fr; gap: 6px; }
+  .gc-public-skill > summary { grid-template-columns: 28px minmax(0, 1fr) auto; }
+  .gc-public-skill > summary time { display: none; }
+  .gc-public-skill-detail { padding-left: 4px; }
+}
