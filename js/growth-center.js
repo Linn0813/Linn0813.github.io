@@ -52,7 +52,7 @@
     const gap = data.domains.flatMap(domain => domain.capabilities).filter(item => item.current < item.target).length;
     root.innerHTML = `
       <section class="gc-hero">
-        <div><span>AI GROWTH WORKSPACE</span><h1>${escapeHtml(data.meta.title)}</h1><p>${escapeHtml(data.meta.target)}</p><em>${escapeHtml(data.meta.positioning)}</em></div>
+        <div><p>${escapeHtml(data.meta.target)}</p><em>${escapeHtml(data.meta.positioning)}</em></div>
         <div class="gc-meta"><strong>${escapeHtml(data.meta.lastUpdated)}</strong><span>${escapeHtml(data.meta.sourceFreshness)}</span></div>
       </section>
 
