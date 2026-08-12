@@ -1,7 +1,7 @@
 (() => {
   const root = document.getElementById('growth-center');
   if (!root) return;
-  const workbenchUrl = 'https://linn-growth-lab.yuxiaoling407.chatgpt.site/';
+  const workbenchUrl = 'https://linn-growth-lab.linnlingling.workers.dev/';
 
   const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
