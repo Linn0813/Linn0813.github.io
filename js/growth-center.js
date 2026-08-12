@@ -1,6 +1,7 @@
 (() => {
   const root = document.getElementById('growth-center');
   if (!root) return;
+  const workbenchUrl = 'https://linn-growth-lab.yuxiaoling407.chatgpt.site/';
 
   const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
@@ -32,6 +33,7 @@
         <a href="/growth/" data-growth-view="overview">总览</a>
         <a href="/growth/radar/" data-growth-view="radar">每日资讯</a>
         <a href="/growth/skills/" data-growth-view="skills">Skill 库</a>
+        <a class="gc-workbench-nav" href="${workbenchUrl}" target="_blank" rel="noopener noreferrer">私人工作台</a>
       </nav>
 
       <section class="gc-owner-intro" data-growth-section="overview"><p>我的成长记录</p><h2>把掌握的能力、筛选过的资讯和反复使用的工作流留在这里</h2><span>持续更新于 ${escapeHtml(data.meta?.lastUpdated)}</span></section>
