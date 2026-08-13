@@ -22,13 +22,14 @@
 
   function renderPublicTree(projection) {
     const domains = projection?.tree?.domains ?? [];
-    if (!domains.length) return '<p class="gc-public-empty">成长树暂时无法读取，请稍后刷新。已公开掌握内容仍会使用博客快照显示。</p>';
+    if (!projection) return '<p class="gc-public-empty">已掌握内容暂时无法读取，请稍后刷新。</p>';
+    if (!domains.length) return '<p class="gc-public-empty">目前还没有公开已掌握的内容。完成学习并在私人工作台主动确认后，才会显示在这里。</p>';
     return `<div class="gc-public-tree">${domains.map((domain, domainIndex) => `
       <details class="gc-tree-domain" ${domainIndex === 0 ? 'open' : ''}>
         <summary><span>${String(domainIndex + 1).padStart(2, '0')}</span><strong>${escapeHtml(domain.name)}</strong><small>${domain.modules?.length ?? 0} 个模块</small></summary>
         <div>${(domain.modules ?? []).map(module => `
           <section class="gc-tree-module"><h3>${escapeHtml(module.name)}</h3><div>
-            ${(module.contents ?? []).map(content => `<article class="gc-tree-content${content.mastered ? ' is-mastered' : ''}"><div><strong>${escapeHtml(content.name)}</strong><small>${content.mastered ? '已点亮' : '待点亮'}</small></div>${content.masteredAt ? `<time>${escapeHtml(String(content.masteredAt).slice(0, 10))}</time>` : ''}</article>`).join('')}
+            ${(module.contents ?? []).map(content => `<article class="gc-tree-content is-mastered"><div><strong>${escapeHtml(content.name)}</strong><small>已掌握</small></div>${content.masteredAt ? `<time>${escapeHtml(String(content.masteredAt).slice(0, 10))}</time>` : ''}</article>`).join('')}
           </div></section>`).join('')}</div>
       </details>`).join('')}</div>`;
   }
@@ -55,9 +56,9 @@
       <section class="gc-owner-intro" data-growth-section="overview"><p>我的成长记录</p><h2>把掌握的能力、筛选过的资讯和反复使用的工作流留在这里</h2><span>持续更新于 ${escapeHtml(data.meta?.lastUpdated)}</span></section>
       <section class="gc-owner-stats" data-growth-section="overview"><div><strong>${mastered.length}</strong><span>已公开掌握能力</span></div><div><strong>${digests.length}</strong><span>每日资讯整理</span></div><div><strong>${skills.length}</strong><span>个人 Skill</span></div></section>
       <section class="gc-owner-links" data-growth-section="overview"><a href="/growth/radar/"><small>最近的资讯整理</small><strong>${latestDigest ? escapeHtml(latestDigest.title) : '第一篇资讯整理完成后会出现在这里'}</strong><span>${latestDigest ? escapeHtml(latestDigest.date) : '等待首次公开沉淀'} →</span></a><a href="/growth/skills/"><small>最近更新的 Skill</small><strong>${latestSkill ? escapeHtml(latestSkill.name) : 'Skill 资产正在整理'}</strong><span>${latestSkill ? `${escapeHtml(latestSkill.category)} · ${escapeHtml(latestSkill.maturity)}` : '查看 Skill 库'} →</span></a></section>
-      <section class="gc-mastered-preview" data-growth-section="overview"><div class="gc-heading"><div><h2>我已经掌握的能力</h2></div><p>只展示由我亲自确认并公开的内容</p></div>${mastered.length ? `<ul>${mastered.slice(0, 8).map(item => `<li><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml([item.domain, item.module].filter(Boolean).join(' · ') || item.category)}</span></li>`).join('')}</ul><a class="gc-tree-link" href="/growth/capabilities/">查看完整成长树 →</a>` : '<p class="gc-public-empty">完整路线已经建立。学习内容由我在私人工作台确认掌握后，会在成长树中点亮。</p>'}</section>
+      <section class="gc-mastered-preview" data-growth-section="overview"><div class="gc-heading"><div><h2>我已经掌握的能力</h2></div><p>只展示由我亲自确认并公开的内容</p></div>${mastered.length ? `<ul>${mastered.slice(0, 8).map(item => `<li><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml([item.domain, item.module].filter(Boolean).join(' · ') || item.category)}</span></li>`).join('')}</ul><a class="gc-tree-link" href="/growth/capabilities/">查看成长树 →</a>` : '<p class="gc-public-empty">目前还没有公开已掌握的内容。完成学习并在私人工作台主动确认后，才会显示在这里。</p>'}</section>
 
-      <section class="gc-section" data-growth-section="capabilities"><div class="gc-heading"><div><h2>成长树</h2></div><p>树结构是公开的通用路线；只有我在私人工作台主动确认掌握的内容会被点亮</p></div>${renderPublicTree(projection)}</section>
+      <section class="gc-section" data-growth-section="capabilities"><div class="gc-heading"><div><h2>成长树</h2></div><p>这里只展示我在私人工作台主动确认已掌握的内容</p></div>${renderPublicTree(projection)}</section>
 
       <section class="gc-section" data-growth-section="radar"><div class="gc-heading"><div><h2>每日资讯</h2></div><p>每天一篇，只保留我判断后值得留下的内容</p></div>${digests.length ? `<div class="gc-digest-list">${digests.map(renderDigest).join('')}</div>` : '<p class="gc-public-empty">第一篇资讯整理完成后会出现在这里。之后可以按日期查看每天筛选过的内容和详细来源。</p>'}</section>
 
