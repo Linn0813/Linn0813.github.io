@@ -327,7 +327,24 @@
 .gc-plugin-list p { margin: 8px 0 3px; color: var(--gc-muted); font-size: 11px; }
 .gc-plugin-list small { color: var(--gc-blue); font-size: 10px; }
 
+.gc-capability-package-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.gc-capability-package { padding: 22px; border: 1px solid var(--gc-line); background: var(--gc-card); }
+.gc-capability-package header small { color: var(--gc-blue); font-size: 11px; }
+.gc-capability-package h3 { margin: 4px 0 0; color: var(--gc-text); font-size: 20px; line-height: 1.35; }
+.gc-capability-package > p { color: var(--gc-muted); font-size: 13px; }
+.gc-capability-package section { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--gc-line); }
+.gc-capability-package h4 { margin: 0 0 8px; color: var(--gc-text); font-size: 13px; }
+.gc-capability-package section p { margin: 0; color: var(--gc-muted); font-size: 12px; }
+.gc-capability-package ul { margin: 0; padding: 0; list-style: none; }
+.gc-capability-package li { padding: 6px 0; display: grid; grid-template-columns: 78px 1fr; gap: 10px; font-size: 12px; }
+.gc-capability-package li strong { color: var(--gc-blue); }
+.gc-capability-package li span { color: var(--gc-muted); }
+.gc-related-skills { display: flex; flex-wrap: wrap; gap: 7px; }
+.gc-related-skills span { padding: 4px 8px; border-radius: 12px; color: var(--gc-blue); background: var(--gc-soft); font-size: 11px; }
+.gc-capability-evolution { border-left: 3px solid var(--gc-blue); padding-left: 12px; }
+
 @media (max-width: 760px) {
+  .gc-capability-package-grid { grid-template-columns: 1fr; }
   .gc-owner-stats,
   .gc-owner-links { grid-template-columns: 1fr; }
   .gc-tree-module > div { grid-template-columns: 1fr; }
