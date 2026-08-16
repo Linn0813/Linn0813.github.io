@@ -11,16 +11,14 @@
 
   function renderSkill(item) {
     return `<details class="gc-public-skill">
-      <summary><span>${escapeHtml(item.icon)}</span><div><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.category)} · ${escapeHtml(item.maturity)}</small></div><time>${escapeHtml(item.lastUsed)}</time></summary>
-      <div class="gc-public-skill-detail"><p>${escapeHtml(item.overview)}</p><div class="gc-skill-sections"><section><h4>适用场景</h4>${list(item.whenToUse)}</section><section><h4>输入</h4>${list(item.inputs)}</section><section class="gc-workflow"><h4>工作流</h4><ol>${(item.workflow ?? []).map((value, index) => `<li><span>${index + 1}</span>${escapeHtml(value)}</li>`).join('')}</ol></section><section><h4>产出</h4>${list(item.outputs)}</section><section class="gc-limits"><h4>边界与限制</h4>${list(item.limitations)}</section></div><footer>最近更新 ${escapeHtml(item.lastUsed)}</footer></div>
+      <summary><span>${escapeHtml(item.icon)}</span><div><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.category)} · ${escapeHtml(item.maturity)}</small></div><i>查看说明</i></summary>
+      <div class="gc-public-skill-detail"><p>${escapeHtml(item.overview)}</p><p><strong>工作方式：</strong>${escapeHtml((item.workflow ?? []).join(' → '))}</p><p><strong>产出：</strong>${escapeHtml((item.outputs ?? []).join('、'))}</p></div>
     </details>`;
   }
 
-  function renderCapabilityCard(item, skillsById) {
-    const relatedSkills = (item.skillIds ?? []).map(id => skillsById.get(id)).filter(Boolean);
-    const counts = `${relatedSkills.length} Skill · ${(item.tools ?? []).length} 真实 Tool · ${(item.harnesses ?? []).length} Harness`;
+  function renderCapabilityCard(item) {
     return `<a class="gc-capability-package" href="/growth/capabilities/?capability=${encodeURIComponent(item.id)}">
-      <div><small>${escapeHtml(item.domain)}</small><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.problem)}</p><em>${escapeHtml(counts)}</em></div><span>进入详情 →</span>
+      <div><small>${escapeHtml(item.domain)}</small><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.problem)}</p><em>${escapeHtml((item.workflow ?? []).map(step => step.name).join(' → '))}</em></div><span>阅读详情 →</span>
     </a>`;
   }
 
@@ -30,16 +28,13 @@
       <a class="gc-capability-back" href="/growth/capabilities/">← 返回能力资产</a>
       <header><div><small>${escapeHtml(item.domain)}</small><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.problem)}</p></div></header>
       <p class="gc-capability-summary">${escapeHtml(item.summary)}</p>
-        ${(item.workflow ?? []).length ? `<section><h4>怎么工作</h4><ol class="gc-capability-workflow">${item.workflow.map((step, index) => `<li><b>${String(index + 1).padStart(2, '0')}</b><div><strong>${escapeHtml(step.name)}</strong><small>${escapeHtml(step.actor)}</small><p>${escapeHtml(step.action)}</p><em>产出：${escapeHtml(step.output)}</em></div></li>`).join('')}</ol></section>` : ''}
-        ${(relatedSkills.length || (item.tools ?? []).length || (item.harnesses ?? []).length || (item.contracts ?? []).length) ? `<section><h4>现有组成</h4><p>Tool 均对应真实软件、平台或脚本；Harness 单独说明执行编排。</p><div class="gc-capability-assets">
-          ${relatedSkills.length ? `<div><h5>Skill</h5>${relatedSkills.map(renderSkill).join('')}</div>` : ''}
-          ${(item.tools ?? []).length ? `<div><h5>真实 Tool</h5><div class="gc-capability-asset-grid">${item.tools.map(tool => `<article><div class="gc-capability-asset-meta"><span>${escapeHtml(tool.kind)}</span><i>${escapeHtml(tool.status)}</i></div><strong>${escapeHtml(tool.name)}</strong><p>${escapeHtml(tool.role)}</p><code>${escapeHtml(tool.source)}</code></article>`).join('')}</div></div>` : ''}
-          ${(item.harnesses ?? []).length ? `<div><h5>Harness · 执行编排</h5><div class="gc-capability-harness-list">${item.harnesses.map(harness => `<article><div><strong>${escapeHtml(harness.name)}</strong><span>${escapeHtml(harness.status)}</span></div><p>${escapeHtml(harness.role)}</p>${list(harness.includes)}<code>${escapeHtml(harness.source)}</code></article>`).join('')}</div></div>` : ''}
-          ${(item.contracts ?? []).length ? `<div><h5>数据与流程契约</h5><div class="gc-capability-asset-grid">${item.contracts.map(contract => `<article><strong>${escapeHtml(contract.name)}</strong><p>${escapeHtml(contract.role)}</p></article>`).join('')}</div></div>` : ''}
+        ${(item.workflow ?? []).length ? `<section><h4>完整流程</h4><p class="gc-capability-flow-line">${escapeHtml(item.workflow.map(step => step.name).join(' → '))}</p><ol class="gc-capability-workflow">${item.workflow.map((step, index) => `<li><b>${String(index + 1).padStart(2, '0')}</b><div><strong>${escapeHtml(step.name)}</strong><p>${escapeHtml(step.actor)}：${escapeHtml(String(step.action).replace(/[。；;]+$/u, ''))}；产出：${escapeHtml(step.output)}。</p></div></li>`).join('')}</ol></section>` : ''}
+        ${(relatedSkills.length || (item.tools ?? []).length || item.harnessNote) ? `<section><h4>现有组成</h4><div class="gc-capability-assets">
+          ${relatedSkills.length ? `<div><h5>核心 Skill</h5>${relatedSkills.map(renderSkill).join('')}</div>` : ''}
+          ${(item.tools ?? []).length ? `<div><h5>已有工具</h5><div class="gc-capability-tool-table-wrap"><table class="gc-capability-tool-table"><thead><tr><th>名称</th><th>类型</th><th>作用</th></tr></thead><tbody>${item.tools.map(tool => `<tr><td><strong>${escapeHtml(tool.name)}</strong></td><td>${escapeHtml(tool.kind)}</td><td>${escapeHtml(tool.role)}</td></tr>`).join('')}</tbody></table></div></div>` : ''}
+          ${item.harnessNote ? `<div class="gc-capability-harness-summary"><h5>执行 Harness</h5><p>${escapeHtml(item.harnessNote)}</p></div>` : ''}
         </div></section>` : ''}
-        ${(item.outputs ?? []).length ? `<section><h4>交付什么</h4>${list(item.outputs)}</section>` : ''}
-        ${(item.boundaries ?? []).length ? `<section class="gc-capability-boundaries"><h4>运行条件与边界</h4>${list(item.boundaries)}</section>` : ''}
-        ${item.evolution ? `<section class="gc-capability-evolution"><h4>能力演进</h4><p>${escapeHtml(item.evolution)}</p></section>` : ''}
+        ${((item.outputs ?? []).length || (item.boundaries ?? []).length) ? `<section><h4>产出与边界</h4><div class="gc-capability-result-grid">${(item.outputs ?? []).length ? `<div><h5>最终产出</h5>${list(item.outputs)}</div>` : ''}${(item.boundaries ?? []).length ? `<div><h5>必要边界</h5>${list(item.boundaries)}</div>` : ''}</div></section>` : ''}
     </article>`;
   }
 
@@ -85,7 +80,7 @@
       <section class="gc-owner-links" data-growth-section="overview"><a href="/growth/capabilities/"><small>能力资产</small><strong>${capabilityPackages[0] ? escapeHtml(capabilityPackages[0].name) : '能力正在整理'}</strong><span>查看完整工作流和真实组成 →</span></a><a href="/growth/radar/"><small>最近的资讯整理</small><strong>${latestDigest ? escapeHtml(latestDigest.title) : '第一篇资讯整理完成后会出现在这里'}</strong><span>${latestDigest ? escapeHtml(latestDigest.date) : '等待首次公开沉淀'} →</span></a></section>
       <section class="gc-mastered-preview" data-growth-section="overview"><div class="gc-heading"><div><h2>已经形成的能力</h2></div><p>只展示已完成、可说明且经过脱敏的能力包</p></div>${capabilityPackages.length ? `<ul>${capabilityPackages.map(item => `<li><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.domain)}</span></li>`).join('')}</ul><a class="gc-tree-link" href="/growth/capabilities/">查看能力资产 →</a>` : '<p class="gc-public-empty">完成并确认公开的能力包会出现在这里。</p>'}</section>
 
-      <section class="gc-section" data-growth-section="capabilities">${selectedCapability ? renderCapabilityDetail(selectedCapability, skillsById) : `<div class="gc-heading"><div><h2>我的能力资产</h2></div><p>按真实问题组织，只呈现已经形成且有助于理解的组成</p></div>${capabilityPackages.length ? `<div class="gc-capability-package-grid">${capabilityPackages.map(item => renderCapabilityCard(item, skillsById)).join('')}</div>` : '<p class="gc-public-empty">完成并确认公开的能力包会出现在这里。</p>'}`}</section>
+      <section class="gc-section" data-growth-section="capabilities">${selectedCapability ? renderCapabilityDetail(selectedCapability, skillsById) : `<div class="gc-heading"><div><h2>我的能力资产</h2></div><p>按真实问题组织，只呈现已经形成且有助于理解的组成</p></div>${capabilityPackages.length ? `<div class="gc-capability-package-grid">${capabilityPackages.map(renderCapabilityCard).join('')}</div>` : '<p class="gc-public-empty">完成并确认公开的能力包会出现在这里。</p>'}`}</section>
 
       <section class="gc-section" data-growth-section="radar"><div class="gc-heading"><div><h2>每日资讯</h2></div><p>每天一篇，只保留我判断后值得留下的内容</p></div>${digests.length ? `<div class="gc-digest-list">${digests.map(renderDigest).join('')}</div>` : '<p class="gc-public-empty">第一篇资讯整理完成后会出现在这里。之后可以按日期查看每天筛选过的内容和详细来源。</p>'}</section>`;
 
