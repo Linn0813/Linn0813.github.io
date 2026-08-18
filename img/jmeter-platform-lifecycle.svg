@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">JMeter 平台受控执行生命周期</title>
+  <desc id="desc">控制面完成权限、参数、任务和状态管理，执行面负责隔离目录、JMeter 进程、保护措施和结果回传。</desc>
+  <defs><linearGradient id="bg3" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#071b2d"/><stop offset="1" stop-color="#123d4a"/></linearGradient><marker id="a3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0v6l9-3z" fill="#61d4c7"/></marker></defs>
+  <rect width="1200" height="600" rx="28" fill="url(#bg3)"/>
+  <text x="55" y="68" fill="#f0fcff" font-family="sans-serif" font-size="30" font-weight="700">平台化压测不是远程执行命令，而是受控生命周期</text>
+  <g font-family="sans-serif">
+    <rect x="50" y="110" width="460" height="400" rx="22" fill="#0d3046" stroke="#2d7690" stroke-width="2"/>
+    <text x="80" y="155" fill="#8fe6ec" font-size="22" font-weight="700">控制面</text>
+    <g fill="#16465c" stroke="#3385a0"><rect x="85" y="190" width="170" height="72" rx="14"/><rect x="300" y="190" width="170" height="72" rx="14"/><rect x="85" y="305" width="170" height="72" rx="14"/><rect x="300" y="305" width="170" height="72" rx="14"/></g>
+    <text x="170" y="234" fill="white" text-anchor="middle" font-size="18">权限与目标白名单</text><text x="385" y="234" fill="white" text-anchor="middle" font-size="18">JMX / CSV / 参数</text><text x="170" y="349" fill="white" text-anchor="middle" font-size="18">任务状态与取消</text><text x="385" y="349" fill="white" text-anchor="middle" font-size="18">历史记录与下载</text>
+    <path d="M280 276v-22M280 276h105v-14M280 276H170v29M280 276v29h105" fill="none" stroke="#61d4c7" stroke-width="3"/>
+    <rect x="150" y="420" width="260" height="55" rx="14" fill="#0b2235" stroke="#f5a94f"/><text x="280" y="454" fill="#ffd8a8" text-anchor="middle" font-size="18" font-weight="700">创建不可变任务快照</text>
+    <path d="M510 310h80" stroke="#61d4c7" stroke-width="5" marker-end="url(#a3)"/>
+    <rect x="600" y="110" width="550" height="400" rx="22" fill="#103b3f" stroke="#31917f" stroke-width="2"/>
+    <text x="630" y="155" fill="#8ff0d5" font-size="22" font-weight="700">独立执行面</text>
+    <rect x="635" y="190" width="215" height="90" rx="16" fill="#185553" stroke="#49b9a5"/><text x="742" y="225" fill="white" text-anchor="middle" font-size="18">任务隔离目录</text><text x="742" y="251" fill="#b9ebe2" text-anchor="middle" font-size="15">固定版本与插件清单</text>
+    <rect x="900" y="190" width="215" height="90" rx="16" fill="#185553" stroke="#49b9a5"/><text x="1007" y="225" fill="white" text-anchor="middle" font-size="18">JMeter 进程组</text><text x="1007" y="251" fill="#b9ebe2" text-anchor="middle" font-size="15">CLI 启动与心跳</text>
+    <path d="M850 235h45" stroke="#61d4c7" stroke-width="4" marker-end="url(#a3)"/>
+    <rect x="635" y="320" width="480" height="80" rx="16" fill="#3d3b2b" stroke="#f5a94f"/><text x="875" y="352" fill="#ffe0b5" text-anchor="middle" font-size="18" font-weight="700">超时 · 无进展 · 文件上限 · 用户取消</text><text x="875" y="380" fill="#ddc49f" text-anchor="middle" font-size="15">触发时终止整个进程组，并保留失败阶段</text>
+    <rect x="635" y="430" width="480" height="52" rx="14" fill="#154a45" stroke="#49b9a5"/><text x="875" y="463" fill="white" text-anchor="middle" font-size="18">唯一 JTL → 官方报告 + 业务下钻报告 → 回传平台</text>
+    <path d="M600 470h-68" stroke="#61d4c7" stroke-width="4" marker-end="url(#a3)"/>
+    <text x="55" y="558" fill="#b9dce5" font-size="18">关键边界：平台决定“能不能运行”，执行器保证“怎样安全运行和停止”，报告保留“发生了什么”的证据。</text>
+  </g>
+</svg>

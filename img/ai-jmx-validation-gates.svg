@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">AI 辅助生成 JMX 的四道验证门</title>
+  <desc id="desc">输入证据经过业务建模、JMX 生成、静态校验、无流量加载和最小真实执行，最后由人工确认。</desc>
+  <defs><linearGradient id="bg2" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#101431"/><stop offset="1" stop-color="#252054"/></linearGradient><marker id="a2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0v6l9-3z" fill="#8b9cff"/></marker></defs>
+  <rect width="1200" height="560" rx="28" fill="url(#bg2)"/>
+  <text x="60" y="72" fill="#f5f3ff" font-family="sans-serif" font-size="30" font-weight="700">AI 生成 JMX 后，证据要经过四道门</text>
+  <g font-family="sans-serif">
+    <rect x="55" y="135" width="180" height="270" rx="20" fill="#20285a" stroke="#6677d9"/>
+    <text x="145" y="180" fill="#fff" text-anchor="middle" font-size="21" font-weight="700">输入证据</text>
+    <rect x="82" y="215" width="126" height="42" rx="8" fill="#313b75"/><text x="145" y="242" fill="#dce2ff" text-anchor="middle" font-size="16">顺序抓包</text>
+    <rect x="82" y="275" width="126" height="42" rx="8" fill="#313b75"/><text x="145" y="302" fill="#dce2ff" text-anchor="middle" font-size="16">参考 JMX</text>
+    <rect x="82" y="335" width="126" height="42" rx="8" fill="#313b75"/><text x="145" y="362" fill="#dce2ff" text-anchor="middle" font-size="16">业务约束</text>
+    <path d="M235 270h55" stroke="#8b9cff" stroke-width="4" marker-end="url(#a2)"/>
+    <rect x="300" y="175" width="180" height="190" rx="20" fill="#283065" stroke="#8b9cff"/><text x="390" y="222" fill="#fff" text-anchor="middle" font-size="21" font-weight="700">AI 建模与生成</text><text x="390" y="264" fill="#cbd2ff" text-anchor="middle" font-size="16">先解释业务链</text><text x="390" y="295" fill="#cbd2ff" text-anchor="middle" font-size="16">再生成 JMX</text><text x="390" y="326" fill="#cbd2ff" text-anchor="middle" font-size="16">列出未确认项</text>
+    <path d="M480 270h55" stroke="#8b9cff" stroke-width="4" marker-end="url(#a2)"/>
+    <g transform="translate(545 135)">
+      <rect width="600" height="270" rx="20" fill="#171d43" stroke="#4c5794"/>
+      <text x="300" y="42" fill="#fff" text-anchor="middle" font-size="21" font-weight="700">验证门</text>
+      <g transform="translate(25 72)"><rect width="125" height="145" rx="15" fill="#293367"/><circle cx="62" cy="42" r="23" fill="#5667c8"/><text x="62" y="49" fill="#fff" text-anchor="middle" font-size="20" font-weight="700">1</text><text x="62" y="91" fill="#fff" text-anchor="middle" font-size="17">静态校验</text><text x="62" y="119" fill="#aeb9ed" text-anchor="middle" font-size="14">XML / 变量</text></g>
+      <g transform="translate(165 72)"><rect width="125" height="145" rx="15" fill="#293367"/><circle cx="62" cy="42" r="23" fill="#5667c8"/><text x="62" y="49" fill="#fff" text-anchor="middle" font-size="20" font-weight="700">2</text><text x="62" y="91" fill="#fff" text-anchor="middle" font-size="17">加载检查</text><text x="62" y="119" fill="#aeb9ed" text-anchor="middle" font-size="14">不产生流量</text></g>
+      <g transform="translate(305 72)"><rect width="125" height="145" rx="15" fill="#293367"/><circle cx="62" cy="42" r="23" fill="#5667c8"/><text x="62" y="49" fill="#fff" text-anchor="middle" font-size="20" font-weight="700">3</text><text x="62" y="91" fill="#fff" text-anchor="middle" font-size="17">最小执行</text><text x="62" y="119" fill="#aeb9ed" text-anchor="middle" font-size="14">单用户单轮</text></g>
+      <g transform="translate(445 72)"><rect width="125" height="145" rx="15" fill="#244e4e" stroke="#55d6b4"/><circle cx="62" cy="42" r="23" fill="#35a987"/><path d="M50 42l9 9 17-19" fill="none" stroke="white" stroke-width="5"/><text x="62" y="91" fill="#fff" text-anchor="middle" font-size="17">人工确认</text><text x="62" y="119" fill="#b9eadc" text-anchor="middle" font-size="14">才可正式压测</text></g>
+    </g>
+    <text x="60" y="478" fill="#cbd2ff" font-size="18">任何一道门失败，都回到输入或脚本修正；“JMeter 能加载”不等于“业务链正确”。</text>
+  </g>
+</svg>

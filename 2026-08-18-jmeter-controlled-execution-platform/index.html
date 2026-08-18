@@ -1,0 +1,537 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>把 JMeter 接入测试平台：让压测只在受控执行服务器运行 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="记录将 JMeter 集成进测试平台的工程实践：由平台管理 JMX、CSV 和参数，在受控执行服务器启动、监控、取消并回收压测结果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="把 JMeter 接入测试平台：让压测只在受控执行服务器运行">
+<meta property="og:url" content="https://linn0813.github.io/2026-08-18-jmeter-controlled-execution-platform/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="记录将 JMeter 集成进测试平台的工程实践：由平台管理 JMX、CSV 和参数，在受控执行服务器启动、监控、取消并回收压测结果。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/jmeter-controlled-execution-platform.png">
+<meta property="article:published_time" content="2026-08-18T09:22:00.000Z">
+<meta property="article:modified_time" content="2026-08-18T11:24:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="测试平台">
+<meta property="article:tag" content="JMeter">
+<meta property="article:tag" content="性能测试">
+<meta property="article:tag" content="任务调度">
+<meta property="article:tag" content="执行器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/jmeter-controlled-execution-platform.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "把 JMeter 接入测试平台：让压测只在受控执行服务器运行",
+  "url": "https://linn0813.github.io/2026-08-18-jmeter-controlled-execution-platform/",
+  "image": "https://linn0813.github.io/img/jmeter-controlled-execution-platform.png",
+  "datePublished": "2026-08-18T09:22:00.000Z",
+  "dateModified": "2026-08-18T11:24:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-08-18-jmeter-controlled-execution-platform/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '把 JMeter 接入测试平台：让压测只在受控执行服务器运行',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">132</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">470</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/jmeter-controlled-execution-platform.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">把 JMeter 接入测试平台：让压测只在受控执行服务器运行</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">把 JMeter 接入测试平台：让压测只在受控执行服务器运行</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-18T09:22:00.000Z" title="发表于 2026-08-18 17:22:00">2026-08-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-18T11:24:00.000Z" title="更新于 2026-08-18 19:24:00">2026-08-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8F%97%EF%B8%8F-%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%E6%89%8B%E8%AE%B0/">🏗️ 测试平台开发实战手记</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8F%97%EF%B8%8F-%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%E6%89%8B%E8%AE%B0/%E5%B7%A5%E5%85%B7%E4%B8%8E%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91/">工具与平台开发</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>JMeter 脚本可以在测试人员电脑上直接运行，但当压测进入团队协作后，本地执行会逐渐暴露问题：环境不一致、依赖缺失、结果散落、无法统一取消，也难以限制谁能向什么目标施压。</p>
+<p>我最终采用的方向，是把压测拆成“平台控制面”和“独立执行器”：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户</span><br><span class="line">  ↓</span><br><span class="line">测试平台：计划、文件、参数、状态和权限</span><br><span class="line">  ↓</span><br><span class="line">受控执行器：JMeter CLI、进程监控和报告生成</span><br><span class="line">  ↓</span><br><span class="line">目标测试环境</span><br><span class="line">  ↓</span><br><span class="line">JTL、报告和执行状态回到平台</span><br></pre></td></tr></table></figure>
+
+<p>这里的重点不是把一条 shell 命令放到后端，而是让压测只能通过规定入口、在规定服务器、带着可审计参数运行，并且能够停止、恢复状态和回收证据。</p>
+<p><img src="/img/jmeter-platform-lifecycle.svg" alt="JMeter 平台受控执行生命周期"></p>
+<p>如果你正准备实现类似模块，可以先记住三个边界：</p>
+<ul>
+<li>平台决定“这个任务能不能运行”；</li>
+<li>执行器保证“这个进程怎样安全运行和停止”；</li>
+<li>JTL、日志和报告回答“这次运行实际发生了什么”。</li>
+</ul>
+<h2 id="一、为什么不直接在平台-API-服务里运行-JMeter"><a href="#一、为什么不直接在平台-API-服务里运行-JMeter" class="headerlink" title="一、为什么不直接在平台 API 服务里运行 JMeter"></a>一、为什么不直接在平台 API 服务里运行 JMeter</h2><p>最直接的实现，是后端收到请求后执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">jmeter -n -t plan.jmx -l result.jtl</span><br></pre></td></tr></table></figure>
+
+<p>但把 JMeter 和普通 API 服务放在同一进程或同一资源边界里，会带来明显风险：</p>
+<ul>
+<li>Java 进程消耗 CPU 和内存，影响平台接口；</li>
+<li>长任务占用 Web Worker；</li>
+<li>JTL 和报告可能快速增长；</li>
+<li>用户取消后，子进程不一定真正退出；</li>
+<li>插件、Java 和 JMeter 版本难以统一；</li>
+<li>执行服务器需要访问目标环境，但平台 Web 服务未必应该拥有这些网络权限；</li>
+<li>任意 JMX 都可能包含超出预期的目标地址或脚本逻辑。</li>
+</ul>
+<p>Apache JMeter 官方远程测试文档也提醒，不建议在应用服务器上运行压测引擎，因为额外资源消耗会污染被测结果；更合理的方式是使用独立负载机。<a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/remote-test.html">Apache JMeter：Remote Testing</a></p>
+<h2 id="二、控制面与执行面分别负责什么"><a href="#二、控制面与执行面分别负责什么" class="headerlink" title="二、控制面与执行面分别负责什么"></a>二、控制面与执行面分别负责什么</h2><h3 id="测试平台负责"><a href="#测试平台负责" class="headerlink" title="测试平台负责"></a>测试平台负责</h3><ul>
+<li>保存 JMX、CSV 和测试计划；</li>
+<li>解析可配置参数；</li>
+<li>检查用户是否有权执行；</li>
+<li>选择已配置的执行器；</li>
+<li>创建任务并记录状态；</li>
+<li>向执行器下发运行包；</li>
+<li>接收执行结果和错误；</li>
+<li>提供取消、下载和历史查询入口。</li>
+</ul>
+<h3 id="执行器负责"><a href="#执行器负责" class="headerlink" title="执行器负责"></a>执行器负责</h3><ul>
+<li>创建本次任务的隔离目录；</li>
+<li>写入 JMX 和数据文件；</li>
+<li>注入运行参数；</li>
+<li>启动 JMeter CLI；</li>
+<li>监控进程、时长和 JTL；</li>
+<li>响应取消请求；</li>
+<li>生成官方报告与自定义报告；</li>
+<li>压缩结果并回传平台；</li>
+<li>清理过期临时文件。</li>
+</ul>
+<p>这样做的好处是：平台管理“谁在什么时候运行什么”，执行器管理“这个进程如何安全地完成或停止”。</p>
+<h3 id="从用户点击到结果回来的完整时序"><a href="#从用户点击到结果回来的完整时序" class="headerlink" title="从用户点击到结果回来的完整时序"></a>从用户点击到结果回来的完整时序</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. 用户选择 JMX、CSV、执行参数和目标环境</span><br><span class="line">2. 平台校验权限、目标、配额、文件和插件依赖</span><br><span class="line">3. 平台创建任务快照，状态为 pending</span><br><span class="line">4. 执行器领取任务并创建隔离目录</span><br><span class="line">5. 执行器启动 JMeter，状态变为 running</span><br><span class="line">6. 执行器持续上报心跳、样本进度和保护指标</span><br><span class="line">7. JMeter 退出后，执行器校验 JTL 并生成报告</span><br><span class="line">8. 执行器回传结果清单，平台更新最终状态</span><br><span class="line">9. 用户按权限查看或下载产物</span><br></pre></td></tr></table></figure>
+
+<p>这个时序中，任意一步失败都必须留下阶段和原因。否则平台页面上的一个“失败”无法区分是参数不合法、JMeter 未启动，还是报告生成失败。</p>
+<h2 id="三、平台上传的不是一个孤立-JMX"><a href="#三、平台上传的不是一个孤立-JMX" class="headerlink" title="三、平台上传的不是一个孤立 JMX"></a>三、平台上传的不是一个孤立 JMX</h2><p>一次可复现的压测至少包含：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">JMX</span><br><span class="line">CSV 数据文件</span><br><span class="line">运行参数</span><br><span class="line">CSV 映射规则</span><br><span class="line">目标执行器</span><br><span class="line">结果回调信息</span><br></pre></td></tr></table></figure>
+
+<p>如果 JMX 写死本机路径，例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">/absolute/path/users.csv</span><br></pre></td></tr></table></figure>
+
+<p>上传到服务器后必然失效。因此我让 JMX 只引用逻辑路径：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">$&#123;__P(dataDir,.)&#125;/users.csv</span><br></pre></td></tr></table></figure>
+
+<p>平台负责把用户上传的某个 CSV 映射到执行目录中的 <code>users.csv</code>。同一份 JMX 可以复用，不同测试计划可以使用不同账号池。</p>
+<h3 id="给一次执行定义不可变任务快照"><a href="#给一次执行定义不可变任务快照" class="headerlink" title="给一次执行定义不可变任务快照"></a>给一次执行定义不可变任务快照</h3><p>任务开始后，不应该继续读取“当前测试计划”的可变配置，而应保存提交时的快照。下面是一个脱敏示例：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;jobId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;job_example_001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;planVersion&quot;</span><span class="punctuation">:</span> <span class="string">&quot;plan-v3&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;executor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;executor-a&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;targetProfile&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-environment-a&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;files&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;logicalName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;plan.jmx&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;sha256&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;SHA256&gt;&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;logicalName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;users.csv&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;sha256&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;SHA256&gt;&quot;</span><span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;properties&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;threads&quot;</span><span class="punctuation">:</span> <span class="number">10</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;rampUp&quot;</span><span class="punctuation">:</span> <span class="number">10</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;duration&quot;</span><span class="punctuation">:</span> <span class="number">300</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;dataDir&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./data&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;limits&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;maxRuntimeSeconds&quot;</span><span class="punctuation">:</span> <span class="number">420</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;maxResultBytes&quot;</span><span class="punctuation">:</span> <span class="number">104857600</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里不直接保存任意命令字符串。执行器根据允许的字段组装参数，并对数值、路径和目标做二次校验，避免把平台变成远程 Shell。</p>
+<h2 id="四、平台需要先读懂-JMX-中的参数"><a href="#四、平台需要先读懂-JMX-中的参数" class="headerlink" title="四、平台需要先读懂 JMX 中的参数"></a>四、平台需要先读懂 JMX 中的参数</h2><p>为了让页面能够配置执行参数，平台会解析 JMX 中的 Property，例如：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">threads</span><br><span class="line">rampUp</span><br><span class="line">duration</span><br><span class="line">loops</span><br><span class="line">dataDir</span><br><span class="line">connectTimeout</span><br><span class="line">responseTimeout</span><br></pre></td></tr></table></figure>
+
+<p>页面展示这些参数的默认值，用户确认后再随任务发送给执行器。</p>
+<p>这一步不能只做字符串替换。平台还需要校验：</p>
+<ul>
+<li>参数名是否符合约定；</li>
+<li>数值是否在允许范围内；</li>
+<li>线程数是否超过账号数据量；</li>
+<li>CSV 的逻辑名称是否唯一；</li>
+<li>必需数据文件是否已经上传；</li>
+<li>目标执行器是否支持 JMX 所需插件。</li>
+</ul>
+<p>一个容易被忽略的问题是：<strong>JMX 中能读取到参数，不代表平台就应该允许用户修改它。</strong></p>
+<p>可以把参数分为三类：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>示例</th>
+<th>平台策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户可配置</td>
+<td><code>threads</code>、<code>duration</code></td>
+<td>页面展示，但受上下限约束</td>
+</tr>
+<tr>
+<td>环境注入</td>
+<td><code>host</code>、<code>dataDir</code></td>
+<td>由目标环境和执行器决定，不允许任意输入</td>
+</tr>
+<tr>
+<td>系统固定</td>
+<td>报告路径、回调地址</td>
+<td>只由平台内部生成</td>
+</tr>
+</tbody></table>
+<h2 id="五、执行器如何启动一次任务"><a href="#五、执行器如何启动一次任务" class="headerlink" title="五、执行器如何启动一次任务"></a>五、执行器如何启动一次任务</h2><p>执行器为每个任务创建独立目录：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">jobs/&lt;job-id&gt;/</span><br><span class="line">├── plan.jmx</span><br><span class="line">├── data/</span><br><span class="line">│   └── users.csv</span><br><span class="line">├── result.jtl</span><br><span class="line">├── jmeter.log</span><br><span class="line">└── report/</span><br></pre></td></tr></table></figure>
+
+<p>然后以 CLI 模式启动 JMeter：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">jmeter -n \</span><br><span class="line">  -t plan.jmx \</span><br><span class="line">  -Jthreads=10 \</span><br><span class="line">  -JrampUp=10 \</span><br><span class="line">  -Jduration=300 \</span><br><span class="line">  -JdataDir=./data \</span><br><span class="line">  -l result.jtl \</span><br><span class="line">  -j jmeter.log</span><br></pre></td></tr></table></figure>
+
+<p>Apache JMeter 官方建议正式负载测试使用 CLI 模式；其中 <code>-t</code> 指定测试计划、<code>-l</code> 指定样本结果、<code>-j</code> 指定 JMeter 运行日志。<a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/get-started">Apache JMeter：Getting Started</a></p>
+<h3 id="执行器不是一段拼接命令的代码"><a href="#执行器不是一段拼接命令的代码" class="headerlink" title="执行器不是一段拼接命令的代码"></a>执行器不是一段拼接命令的代码</h3><p>最小执行逻辑可以理解成下面的伪代码：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">validate(jobSnapshot)</span><br><span class="line">workDir = createIsolatedDirectory(jobId)</span><br><span class="line">materializeVerifiedFiles(workDir, files)</span><br><span class="line">args = buildArgumentsFromAllowlist(properties)</span><br><span class="line"></span><br><span class="line">process = startProcessGroup(jmeterBinary, args)</span><br><span class="line">while process is running:</span><br><span class="line">    reportHeartbeat()</span><br><span class="line">    observeJtlProgress()</span><br><span class="line">    enforceRuntimeLimit()</span><br><span class="line">    enforceResultSizeLimit()</span><br><span class="line">    if cancellationRequested():</span><br><span class="line">        terminateProcessGroup()</span><br><span class="line"></span><br><span class="line">verifyExitCode()</span><br><span class="line">verifyJtlReadable()</span><br><span class="line">generateReportsWithTimeout()</span><br><span class="line">uploadArtifactManifest()</span><br></pre></td></tr></table></figure>
+
+<p>关键点是参数数组由白名单字段构造，而不是把用户输入拼成一整段 shell 文本；取消时处理整个进程组，防止只停掉外层脚本而留下 Java 子进程。</p>
+<h2 id="六、为什么一次执行只保留一个权威-JTL"><a href="#六、为什么一次执行只保留一个权威-JTL" class="headerlink" title="六、为什么一次执行只保留一个权威 JTL"></a>六、为什么一次执行只保留一个权威 JTL</h2><p>JMX 内部可以配置 ResultCollector，CLI 的 <code>-l</code> 也会写结果。如果两边同时启用，可能产生多份内容不同的结果文件。</p>
+<p>为了让后续状态、报告和下载都指向同一份证据，我采用单一 JTL 约定：</p>
+<ul>
+<li>JMX 不保留启用状态的 ResultCollector；</li>
+<li>执行器统一通过 <code>-l result.jtl</code> 写入样本；</li>
+<li>官方 Dashboard 读取这份 JTL；</li>
+<li>自定义用户和接口报告也读取这份 JTL；</li>
+<li>回调平台时压缩并回传同一份结果。</li>
+</ul>
+<p>JMeter 的 <code>-l</code> 会为 CLI 测试创建顶层结果监听器，其保存字段由 JMeter Properties 控制。<a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/listeners.html">Apache JMeter：Listeners</a></p>
+<h2 id="七、能够启动不等于能够管理"><a href="#七、能够启动不等于能够管理" class="headerlink" title="七、能够启动不等于能够管理"></a>七、能够启动不等于能够管理</h2><p>平台执行器最关键的能力之一，是在异常情况下真正停止任务。</p>
+<h3 id="用户取消"><a href="#用户取消" class="headerlink" title="用户取消"></a>用户取消</h3><p>平台先把任务标记为取消中，再通知执行器终止当前进程组。只杀启动脚本而不处理 Java 子进程，可能留下继续发压的孤儿进程。</p>
+<h3 id="总执行超时"><a href="#总执行超时" class="headerlink" title="总执行超时"></a>总执行超时</h3><p>任务允许的最长时间可以由下面几部分组成：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">升压时间 + 持续时间 + 收尾宽限</span><br></pre></td></tr></table></figure>
+
+<p>超过后仍未结束，应停止进程并返回明确原因。</p>
+<h3 id="JTL-长时间无进展"><a href="#JTL-长时间无进展" class="headerlink" title="JTL 长时间无进展"></a>JTL 长时间无进展</h3><p>JMeter 进程可能仍然存在，但结果文件长时间没有新增样本。执行器需要识别这种“活着但卡住”的状态，而不是无限等待。</p>
+<h3 id="JTL-异常增长"><a href="#JTL-异常增长" class="headerlink" title="JTL 异常增长"></a>JTL 异常增长</h3><p>错误循环、监听字段过大或脚本空转可能让结果文件快速膨胀。执行器应设置可配置安全上限，超过后停止任务，避免占满磁盘并拖垮报告生成。</p>
+<h3 id="报告阶段超时"><a href="#报告阶段超时" class="headerlink" title="报告阶段超时"></a>报告阶段超时</h3><p>JMeter 已经结束，不代表后处理一定成功。官方报告、自定义报告、压缩和回传都需要各自的超时和失败状态。</p>
+<h3 id="用状态机约束并发更新"><a href="#用状态机约束并发更新" class="headerlink" title="用状态机约束并发更新"></a>用状态机约束并发更新</h3><p>至少应限制合法状态转移：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">pending → running → success</span><br><span class="line">                  ↘ failed</span><br><span class="line">pending → cancelling → cancelled</span><br><span class="line">running → cancelling → cancelled</span><br></pre></td></tr></table></figure>
+
+<p>例如已经进入 <code>success</code> 的任务，迟到的取消回调不能再把它改成 <code>cancelled</code>；两个执行器也不能同时领取同一个 <code>pending</code> 任务。任务领取、心跳过期和最终状态写入需要具备原子性或等价的并发保护。</p>
+<h2 id="八、报告为什么要分两套"><a href="#八、报告为什么要分两套" class="headerlink" title="八、报告为什么要分两套"></a>八、报告为什么要分两套</h2><p>JMeter 官方 Dashboard 可以从 JTL 生成响应时间、吞吐量、错误和百分位等通用图表：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">jmeter -g result.jtl -o official-report</span><br></pre></td></tr></table></figure>
+
+<p>官方文档说明，报告生成器会读取 CSV 样本结果，并可在测试结束后或使用已有日志单独生成 HTML。<a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/generating-dashboard">Apache JMeter：Generating Dashboard Report</a></p>
+<p>但业务链还需要额外下钻：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">用户列表</span><br><span class="line">  → 某用户执行的业务链</span><br><span class="line">    → 链内请求顺序</span><br><span class="line">      → 单次请求详情</span><br><span class="line"></span><br><span class="line">接口列表</span><br><span class="line">  → 调用该接口的用户</span><br><span class="line">    → 每次执行记录</span><br><span class="line">      → 单次请求详情</span><br></pre></td></tr></table></figure>
+
+<p>自定义报告会过滤没有真实 URL 的等待、选择器和事务汇总样本，避免把控制逻辑误算成接口。</p>
+<h2 id="九、请求和响应详情不能无限保存"><a href="#九、请求和响应详情不能无限保存" class="headerlink" title="九、请求和响应详情不能无限保存"></a>九、请求和响应详情不能无限保存</h2><p>下钻报告需要足够证据定位失败，但完整保存所有请求体和响应体会带来两个问题：</p>
+<ul>
+<li>JTL 和报告体积快速增加；</li>
+<li>Token、账号、内部地址和业务数据可能进入产物。</li>
+</ul>
+<p>因此更稳妥的策略是：</p>
+<ul>
+<li>默认不保存成功响应正文，或只保留很短摘要；</li>
+<li>失败响应允许保留受限长度；</li>
+<li>请求、响应和 Header 分别设置截断上限；</li>
+<li>在报告中明确标记内容已截断；</li>
+<li>回传前扫描敏感字段；</li>
+<li>报告下载继续受平台权限控制。</li>
+</ul>
+<p>具体上限应根据执行器内存、网络和审计要求配置，而不是写死成适用于所有项目的数字。</p>
+<h2 id="十、平台状态必须能解释任务停在哪里"><a href="#十、平台状态必须能解释任务停在哪里" class="headerlink" title="十、平台状态必须能解释任务停在哪里"></a>十、平台状态必须能解释任务停在哪里</h2><p>一个任务至少需要这些状态：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">pending</span><br><span class="line">running</span><br><span class="line">cancelling</span><br><span class="line">cancelled</span><br><span class="line">success</span><br><span class="line">failed</span><br></pre></td></tr></table></figure>
+
+<p>失败时还要说明阶段：</p>
+<ul>
+<li>JMX 准备失败；</li>
+<li>JMeter 启动失败；</li>
+<li>执行超时或无进展；</li>
+<li>JMeter 返回非零退出码；</li>
+<li>JTL 解析失败；</li>
+<li>官方报告失败；</li>
+<li>自定义报告失败；</li>
+<li>结果压缩或回调失败。</li>
+</ul>
+<p>只有一个“执行失败”提示，无法支持运维和问题定位。</p>
+<p>可以把最终错误整理为稳定的机器码和面向人的说明：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>示例错误码</th>
+<th>页面说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>准备</td>
+<td><code>FILE_HASH_MISMATCH</code></td>
+<td>上传文件与任务快照不一致</td>
+</tr>
+<tr>
+<td>启动</td>
+<td><code>JMETER_START_FAILED</code></td>
+<td>JMeter 进程未成功启动</td>
+</tr>
+<tr>
+<td>运行</td>
+<td><code>JTL_STALLED</code></td>
+<td>结果文件超过允许时间没有进展</td>
+</tr>
+<tr>
+<td>运行</td>
+<td><code>RESULT_LIMIT_EXCEEDED</code></td>
+<td>结果文件超过任务上限，已停止</td>
+</tr>
+<tr>
+<td>报告</td>
+<td><code>REPORT_TIMEOUT</code></td>
+<td>JMeter 已结束，但报告生成超时</td>
+</tr>
+<tr>
+<td>回传</td>
+<td><code>ARTIFACT_UPLOAD_FAILED</code></td>
+<td>本地结果已保留，上传平台失败</td>
+</tr>
+</tbody></table>
+<p>最后一种情况尤其重要：回传失败不等于 JMeter 执行失败，重试时不应该重新向目标系统发压。</p>
+<h2 id="十一、为什么我没有直接采用-JMeter-RMI-作为全部平台架构"><a href="#十一、为什么我没有直接采用-JMeter-RMI-作为全部平台架构" class="headerlink" title="十一、为什么我没有直接采用 JMeter RMI 作为全部平台架构"></a>十一、为什么我没有直接采用 JMeter RMI 作为全部平台架构</h2><p>JMeter 自带 Remote Testing，可以由一个客户端控制多个远程 JMeter Engine。官方文档也说明，每个远程节点会运行完整测试计划，数据文件不会自动随测试计划发送，而且客户端与服务端需要保持兼容的 JMeter、Java 和网络配置。<a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/remote-test.html">Apache JMeter：Remote Testing</a></p>
+<p>我的平台目标不仅是把压力分发出去，还包括：</p>
+<ul>
+<li>上传并映射 CSV；</li>
+<li>限制执行参数；</li>
+<li>管理任务状态和取消；</li>
+<li>监视 JTL 无进展和文件大小；</li>
+<li>生成两类报告；</li>
+<li>压缩结果并回传；</li>
+<li>给平台保留统一审计入口。</li>
+</ul>
+<p>因此当前实现使用独立执行器服务封装 JMeter CLI。未来如果需要多负载机，可以在执行器层继续扩展，而不让平台控制面直接承担 JMeter 进程管理。</p>
+<h2 id="十二、权限与安全边界"><a href="#十二、权限与安全边界" class="headerlink" title="十二、权限与安全边界"></a>十二、权限与安全边界</h2><p>让压测进入平台后，风险也进入了平台。至少应限制：</p>
+<ul>
+<li>谁可以上传和执行 JMX；</li>
+<li>允许使用哪些执行器；</li>
+<li>允许访问哪些测试目标；</li>
+<li>单任务最大线程、时长和文件大小；</li>
+<li>同时运行任务数；</li>
+<li>回调请求如何认证；</li>
+<li>报告和 JTL 谁可以下载；</li>
+<li>任务结束后数据保留多久；</li>
+<li>是否禁止脚本访问生产和第三方服务。</li>
+</ul>
+<p>这部分不能只写在制度里，还需要由平台和执行器真正执行。</p>
+<h2 id="十三、当前实现的已知边界"><a href="#十三、当前实现的已知边界" class="headerlink" title="十三、当前实现的已知边界"></a>十三、当前实现的已知边界</h2><p>这次实践已经形成了 JMX 启动、进程监控、取消、单一 JTL、报告生成、压缩和结果回传的运行链路。</p>
+<p>但仍需诚实说明：</p>
+<ul>
+<li>当前任务运行状态主要保存在执行器进程内，进程重启后的恢复能力有限；</li>
+<li>单执行器能够管理任务，不代表已经形成多节点容量调度；</li>
+<li>本地或测试环境的软件测试通过，不代表线上服务器、网络和目标系统已经完成真实验收；</li>
+<li>目标地址限制、配额、回调认证和凭据管理需要随开放范围持续加强；</li>
+<li>平台完成任务生命周期，不代表目标系统性能达标。</li>
+</ul>
+<h2 id="十四、如果从零实现，先做哪个最小闭环"><a href="#十四、如果从零实现，先做哪个最小闭环" class="headerlink" title="十四、如果从零实现，先做哪个最小闭环"></a>十四、如果从零实现，先做哪个最小闭环</h2><p>不要一开始同时做多执行器调度、实时曲线、自定义报告和分布式压测。更容易验证的顺序是：</p>
+<h3 id="第-1-阶段：单执行器串行闭环"><a href="#第-1-阶段：单执行器串行闭环" class="headerlink" title="第 1 阶段：单执行器串行闭环"></a>第 1 阶段：单执行器串行闭环</h3><ul>
+<li>固定一套 JMeter、Java 和插件版本；</li>
+<li>上传一份已经验证的 JMX 与 CSV；</li>
+<li>创建任务快照；</li>
+<li>CLI 启动并得到唯一 JTL；</li>
+<li>记录退出码、日志和最终状态；</li>
+<li>页面可以下载结果。</li>
+</ul>
+<p>验收重点：同一个任务可以复现，失败能指出阶段。</p>
+<h3 id="第-2-阶段：补齐停止与保护"><a href="#第-2-阶段：补齐停止与保护" class="headerlink" title="第 2 阶段：补齐停止与保护"></a>第 2 阶段：补齐停止与保护</h3><ul>
+<li>用户取消能够终止整个进程组；</li>
+<li>增加总超时、JTL 无进展和文件大小限制；</li>
+<li>执行器重启后能识别遗留任务；</li>
+<li>目标、线程、时长和并发任务数受限。</li>
+</ul>
+<p>验收重点：异常任务不会无限运行，也不会悄悄丢失状态。</p>
+<h3 id="第-3-阶段：报告与审计"><a href="#第-3-阶段：报告与审计" class="headerlink" title="第 3 阶段：报告与审计"></a>第 3 阶段：报告与审计</h3><ul>
+<li>从同一 JTL 生成官方 Dashboard；</li>
+<li>回传产物清单、哈希和生成状态；</li>
+<li>请求与响应详情按权限、截断和脱敏策略保存；</li>
+<li>记录谁在什么时候对哪个目标提交了什么参数。</li>
+</ul>
+<p>验收重点：报告可追溯到唯一结果源，敏感数据不因下钻功能扩大暴露。</p>
+<h3 id="第-4-阶段：再考虑扩容"><a href="#第-4-阶段：再考虑扩容" class="headerlink" title="第 4 阶段：再考虑扩容"></a>第 4 阶段：再考虑扩容</h3><p>只有单执行器生命周期稳定后，再评估多节点队列、租约、容量标签和分布式执行。多一个执行节点不仅增加吞吐，也增加任务重复领取、版本漂移和结果合并问题。</p>
+<h2 id="十五、平台接入检查清单"><a href="#十五、平台接入检查清单" class="headerlink" title="十五、平台接入检查清单"></a>十五、平台接入检查清单</h2><ul>
+<li><input disabled="" type="checkbox"> JMeter 与 Java 版本在执行器中固定</li>
+<li><input disabled="" type="checkbox"> JMX、CSV、参数和插件依赖能够一起交付</li>
+<li><input disabled="" type="checkbox"> CSV 使用逻辑路径，不依赖上传者电脑</li>
+<li><input disabled="" type="checkbox"> 执行器与平台 API 服务资源隔离</li>
+<li><input disabled="" type="checkbox"> 一次执行只有一个权威 JTL</li>
+<li><input disabled="" type="checkbox"> 用户取消会终止整个进程组</li>
+<li><input disabled="" type="checkbox"> 有总超时、无进展和文件大小保护</li>
+<li><input disabled="" type="checkbox"> 报告、压缩和回调各自有超时</li>
+<li><input disabled="" type="checkbox"> 失败状态能够指出具体阶段</li>
+<li><input disabled="" type="checkbox"> 请求和响应详情有截断与脱敏</li>
+<li><input disabled="" type="checkbox"> 执行器、目标地址、并发和时长受限制</li>
+<li><input disabled="" type="checkbox"> JTL 与报告下载受权限控制</li>
+<li><input disabled="" type="checkbox"> 已区分软件测试、线上执行验收和容量结论</li>
+<li><input disabled="" type="checkbox"> 任务参数来自白名单字段，不接受任意命令字符串</li>
+<li><input disabled="" type="checkbox"> 任务提交后保存不可变快照与文件哈希</li>
+<li><input disabled="" type="checkbox"> 状态转移和任务领取有并发保护</li>
+<li><input disabled="" type="checkbox"> 回传失败可以重试产物，而不会重复执行压测</li>
+</ul>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>把 JMeter 集成进测试平台，不是把命令行搬到网页上。</p>
+<p>真正需要建设的是一个受控执行生命周期：</p>
+<blockquote>
+<p>平台管理文件、参数、权限和任务状态；执行器管理 JMeter 进程、停止条件、结果文件和报告；最后用统一证据回到平台完成审计与分析。</p>
+</blockquote>
+<p>当压测能够在规定服务器启动、在异常时停止、在结束后留下唯一结果源，并且每一步都能解释，平台化才真正带来了可靠性，而不只是一个“远程运行”按钮。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/get-started">Apache JMeter User Manual：Getting Started</a></li>
+<li><a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/listeners.html">Apache JMeter User Manual：Listeners</a></li>
+<li><a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/remote-test.html">Apache JMeter User Manual：Remote Testing</a></li>
+<li><a target="_blank" rel="noopener" href="https://jmeter.apache.org/usermanual/generating-dashboard">Apache JMeter User Manual：Generating Dashboard Report</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-08-18-jmeter-controlled-execution-platform/">https://linn0813.github.io/2026-08-18-jmeter-controlled-execution-platform/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0/">测试平台</a><a class="post-meta__tags" href="/tags/JMeter/">JMeter</a><a class="post-meta__tags" href="/tags/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">性能测试</a><a class="post-meta__tags" href="/tags/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/">任务调度</a><a class="post-meta__tags" href="/tags/%E6%89%A7%E8%A1%8C%E5%99%A8/">执行器</a></div><div class="post-share"><div class="social-share" data-image="/img/jmeter-controlled-execution-platform.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026-08-18-ai-assisted-jmx-business-chain/" title="让 AI 根据 HTTP 抓包编写 JMeter 业务链：能自动化什么，必须人工确认什么"><img class="cover" src="/img/ai-assisted-jmx-business-chain.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">让 AI 根据 HTTP 抓包编写 JMeter 业务链：能自动化什么，必须人工确认什么</div></div><div class="info-2"><div class="info-item-1">基于真实实践说明 AI 如何把 HTTP 抓包整理为可维护的 JMeter 业务链 JMX，以及结构校验、最小执行和人工判断之间的边界。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-06-30-streaming-api-performance-test/" title="🚀 一次流式接口压测实践：我们如何压出了真实压力，又避开了坑"><img class="cover" src="/img/streaming-api-performance-test.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-30</div><div class="info-item-2">🚀 一次流式接口压测实践：我们如何压出了真实压力，又避开了坑</div></div><div class="info-2"><div class="info-item-1">分享流式接口压测的实践经验，介绍使用 JMeter + Groovy 脚本应对流式接口压测挑战的方案，包含踩坑经历与解决方案！</div></div></div></a><a class="pagination-related" href="/2026-08-18-jmeter-business-load-testing-design/" title="从单接口到完整业务链：用一个案例学会 JMeter 业务压测设计"><img class="cover" src="/img/jmeter-business-load-testing-design.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-18</div><div class="info-item-2">从单接口到完整业务链：用一个案例学会 JMeter 业务压测设计</div></div><div class="info-2"><div class="info-item-1">以登录、浏览列表、打开详情和点赞为完整示例，带你从业务目标、JMeter 测试计划、动态参数和负载计算一路做到执行与结果判断。</div></div></div></a><a class="pagination-related" href="/2025-06-08-account-system/" title="🚀 测试平台开发实录：账号体系模块设计与实现"><img class="cover" src="/img/account-system.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-08</div><div class="info-item-2">🚀 测试平台开发实录：账号体系模块设计与实现</div></div><div class="info-2"><div class="info-item-1">详细介绍独立开发测试平台过程中账号体系模块技术方案，涵盖注册、登录、忘记密码等核心功能的设计与实现，包含功能拆解、接口设计、逻辑校验、异常处理及安全策略等内容。</div></div></div></a><a class="pagination-related" href="/2025-06-16-jmeter-response-decoding/" title="压测踩坑实录 | 解码接口响应字段方便查看，断言失效问题及解决方案分享 🚧"><img class="cover" src="/img/jmeter-response-decoding.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-16</div><div class="info-item-2">压测踩坑实录 | 解码接口响应字段方便查看，断言失效问题及解决方案分享 🚧</div></div><div class="info-2"><div class="info-item-1">分享在接口压测中使用JMeter对Base64编码+gzip压缩的接口响应字段进行解码时，遇到断言失效问题的排查过程及解决方案，帮助提高接口压测效率。</div></div></div></a><a class="pagination-related" href="/2026-08-18-ai-assisted-jmx-business-chain/" title="让 AI 根据 HTTP 抓包编写 JMeter 业务链：能自动化什么，必须人工确认什么"><img class="cover" src="/img/ai-assisted-jmx-business-chain.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-18</div><div class="info-item-2">让 AI 根据 HTTP 抓包编写 JMeter 业务链：能自动化什么，必须人工确认什么</div></div><div class="info-2"><div class="info-item-1">基于真实实践说明 AI 如何把 HTTP 抓包整理为可维护的 JMeter 业务链 JMX，以及结构校验、最小执行和人工判断之间的边界。</div></div></div></a><a class="pagination-related" href="/2025-08-06-qps-vs-rps/" title="别再用 QPS 计算并发数了！我曾经也犯了这个错误"><img class="cover" src="/img/qps-rps.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-08-06</div><div class="info-item-2">别再用 QPS 计算并发数了！我曾经也犯了这个错误</div></div><div class="info-2"><div class="info-item-1">深入解析 QPS、RPS、TPS 概念区别，分享压测中因混淆 QPS 和 RPS 导致的误区，提供正确压测方法与实践建议，助你准确评估系统性能！</div></div></div></a><a class="pagination-related" href="/2026-05-15-overseas-forum-performance-guide/" title="学习笔记：海外社区论坛 - 性能测试入门"><img class="cover" src="/img/overseas-forum-performance-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-15</div><div class="info-item-2">学习笔记：海外社区论坛 - 性能测试入门</div></div><div class="info-2"><div class="info-item-1">海外社区论坛性能测试入门：指标与类型、核心场景实战、压测设计与监控分析，以及用例、Bug 与报告。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%9B%B4%E6%8E%A5%E5%9C%A8%E5%B9%B3%E5%8F%B0-API-%E6%9C%8D%E5%8A%A1%E9%87%8C%E8%BF%90%E8%A1%8C-JMeter"><span class="toc-number">1.</span> <span class="toc-text">一、为什么不直接在平台 API 服务里运行 JMeter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%8E%A7%E5%88%B6%E9%9D%A2%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%9D%A2%E5%88%86%E5%88%AB%E8%B4%9F%E8%B4%A3%E4%BB%80%E4%B9%88"><span class="toc-number">2.</span> <span class="toc-text">二、控制面与执行面分别负责什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0%E8%B4%9F%E8%B4%A3"><span class="toc-number">2.1.</span> <span class="toc-text">测试平台负责</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E5%99%A8%E8%B4%9F%E8%B4%A3"><span class="toc-number">2.2.</span> <span class="toc-text">执行器负责</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E7%94%A8%E6%88%B7%E7%82%B9%E5%87%BB%E5%88%B0%E7%BB%93%E6%9E%9C%E5%9B%9E%E6%9D%A5%E7%9A%84%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F"><span class="toc-number">2.3.</span> <span class="toc-text">从用户点击到结果回来的完整时序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B9%B3%E5%8F%B0%E4%B8%8A%E4%BC%A0%E7%9A%84%E4%B8%8D%E6%98%AF%E4%B8%80%E4%B8%AA%E5%AD%A4%E7%AB%8B-JMX"><span class="toc-number">3.</span> <span class="toc-text">三、平台上传的不是一个孤立 JMX</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%99%E4%B8%80%E6%AC%A1%E6%89%A7%E8%A1%8C%E5%AE%9A%E4%B9%89%E4%B8%8D%E5%8F%AF%E5%8F%98%E4%BB%BB%E5%8A%A1%E5%BF%AB%E7%85%A7"><span class="toc-number">3.1.</span> <span class="toc-text">给一次执行定义不可变任务快照</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%B9%B3%E5%8F%B0%E9%9C%80%E8%A6%81%E5%85%88%E8%AF%BB%E6%87%82-JMX-%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">四、平台需要先读懂 JMX 中的参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%89%A7%E8%A1%8C%E5%99%A8%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E4%B8%80%E6%AC%A1%E4%BB%BB%E5%8A%A1"><span class="toc-number">5.</span> <span class="toc-text">五、执行器如何启动一次任务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E5%99%A8%E4%B8%8D%E6%98%AF%E4%B8%80%E6%AE%B5%E6%8B%BC%E6%8E%A5%E5%91%BD%E4%BB%A4%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="toc-number">5.1.</span> <span class="toc-text">执行器不是一段拼接命令的代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%80%E6%AC%A1%E6%89%A7%E8%A1%8C%E5%8F%AA%E4%BF%9D%E7%95%99%E4%B8%80%E4%B8%AA%E6%9D%83%E5%A8%81-JTL"><span class="toc-number">6.</span> <span class="toc-text">六、为什么一次执行只保留一个权威 JTL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E8%83%BD%E5%A4%9F%E5%90%AF%E5%8A%A8%E4%B8%8D%E7%AD%89%E4%BA%8E%E8%83%BD%E5%A4%9F%E7%AE%A1%E7%90%86"><span class="toc-number">7.</span> <span class="toc-text">七、能够启动不等于能够管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E5%8F%96%E6%B6%88"><span class="toc-number">7.1.</span> <span class="toc-text">用户取消</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E6%89%A7%E8%A1%8C%E8%B6%85%E6%97%B6"><span class="toc-number">7.2.</span> <span class="toc-text">总执行超时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JTL-%E9%95%BF%E6%97%B6%E9%97%B4%E6%97%A0%E8%BF%9B%E5%B1%95"><span class="toc-number">7.3.</span> <span class="toc-text">JTL 长时间无进展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JTL-%E5%BC%82%E5%B8%B8%E5%A2%9E%E9%95%BF"><span class="toc-number">7.4.</span> <span class="toc-text">JTL 异常增长</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E5%91%8A%E9%98%B6%E6%AE%B5%E8%B6%85%E6%97%B6"><span class="toc-number">7.5.</span> <span class="toc-text">报告阶段超时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E7%8A%B6%E6%80%81%E6%9C%BA%E7%BA%A6%E6%9D%9F%E5%B9%B6%E5%8F%91%E6%9B%B4%E6%96%B0"><span class="toc-number">7.6.</span> <span class="toc-text">用状态机约束并发更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%8A%A5%E5%91%8A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E4%B8%A4%E5%A5%97"><span class="toc-number">8.</span> <span class="toc-text">八、报告为什么要分两套</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E8%AF%B7%E6%B1%82%E5%92%8C%E5%93%8D%E5%BA%94%E8%AF%A6%E6%83%85%E4%B8%8D%E8%83%BD%E6%97%A0%E9%99%90%E4%BF%9D%E5%AD%98"><span class="toc-number">9.</span> <span class="toc-text">九、请求和响应详情不能无限保存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%B9%B3%E5%8F%B0%E7%8A%B6%E6%80%81%E5%BF%85%E9%A1%BB%E8%83%BD%E8%A7%A3%E9%87%8A%E4%BB%BB%E5%8A%A1%E5%81%9C%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-number">10.</span> <span class="toc-text">十、平台状态必须能解释任务停在哪里</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E6%B2%A1%E6%9C%89%E7%9B%B4%E6%8E%A5%E9%87%87%E7%94%A8-JMeter-RMI-%E4%BD%9C%E4%B8%BA%E5%85%A8%E9%83%A8%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84"><span class="toc-number">11.</span> <span class="toc-text">十一、为什么我没有直接采用 JMeter RMI 作为全部平台架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E6%9D%83%E9%99%90%E4%B8%8E%E5%AE%89%E5%85%A8%E8%BE%B9%E7%95%8C"><span class="toc-number">12.</span> <span class="toc-text">十二、权限与安全边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E5%BD%93%E5%89%8D%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%B7%B2%E7%9F%A5%E8%BE%B9%E7%95%8C"><span class="toc-number">13.</span> <span class="toc-text">十三、当前实现的已知边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E5%9B%9B%E3%80%81%E5%A6%82%E6%9E%9C%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0%EF%BC%8C%E5%85%88%E5%81%9A%E5%93%AA%E4%B8%AA%E6%9C%80%E5%B0%8F%E9%97%AD%E7%8E%AF"><span class="toc-number">14.</span> <span class="toc-text">十四、如果从零实现，先做哪个最小闭环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-1-%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%8D%95%E6%89%A7%E8%A1%8C%E5%99%A8%E4%B8%B2%E8%A1%8C%E9%97%AD%E7%8E%AF"><span class="toc-number">14.1.</span> <span class="toc-text">第 1 阶段：单执行器串行闭环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-2-%E9%98%B6%E6%AE%B5%EF%BC%9A%E8%A1%A5%E9%BD%90%E5%81%9C%E6%AD%A2%E4%B8%8E%E4%BF%9D%E6%8A%A4"><span class="toc-number">14.2.</span> <span class="toc-text">第 2 阶段：补齐停止与保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-3-%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%8A%A5%E5%91%8A%E4%B8%8E%E5%AE%A1%E8%AE%A1"><span class="toc-number">14.3.</span> <span class="toc-text">第 3 阶段：报告与审计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-4-%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%86%8D%E8%80%83%E8%99%91%E6%89%A9%E5%AE%B9"><span class="toc-number">14.4.</span> <span class="toc-text">第 4 阶段：再考虑扩容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%94%E3%80%81%E5%B9%B3%E5%8F%B0%E6%8E%A5%E5%85%A5%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-number">15.</span> <span class="toc-text">十五、平台接入检查清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">16.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">17.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">从业务需求到压测结论的完整路径</title>
+  <desc id="desc">依次经过业务目标、用户链路、数据关联、负载模型、单用户调试、正式执行和结果分析。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1736"/><stop offset="1" stop-color="#122b4f"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".25"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#57d6d0"/></marker>
+  </defs>
+  <rect width="1200" height="560" rx="28" fill="url(#bg)"/>
+  <text x="60" y="74" fill="#f4f8ff" font-size="30" font-family="sans-serif" font-weight="700">一条业务压测，应该怎样闭环</text>
+  <text x="60" y="110" fill="#9fb7d5" font-size="17" font-family="sans-serif">先证明脚本正确，再逐步增加压力，最后用业务与服务端证据解释结果</text>
+  <g filter="url(#shadow)" font-family="sans-serif">
+    <g transform="translate(45 165)"><rect width="145" height="120" rx="18" fill="#173c65" stroke="#3b82b6"/><circle cx="72" cy="36" r="15" fill="#5ac8fa"/><text x="72" y="76" text-anchor="middle" fill="white" font-size="19" font-weight="700">业务目标</text><text x="72" y="102" text-anchor="middle" fill="#b8cce2" font-size="14">要回答什么</text></g>
+    <g transform="translate(205 165)"><rect width="145" height="120" rx="18" fill="#173c65" stroke="#3b82b6"/><path d="M40 39h65M40 39l14-12M40 39l14 12" fill="none" stroke="#5ac8fa" stroke-width="5"/><text x="72" y="76" text-anchor="middle" fill="white" font-size="19" font-weight="700">用户链路</text><text x="72" y="102" text-anchor="middle" fill="#b8cce2" font-size="14">从起点到终点</text></g>
+    <g transform="translate(365 165)"><rect width="145" height="120" rx="18" fill="#173c65" stroke="#3b82b6"/><path d="M43 28h58v29H43zM52 64h40v18H52z" fill="none" stroke="#5ac8fa" stroke-width="4"/><text x="72" y="98" text-anchor="middle" fill="white" font-size="19" font-weight="700">数据关联</text></g>
+    <g transform="translate(525 165)"><rect width="145" height="120" rx="18" fill="#173c65" stroke="#3b82b6"/><path d="M35 57h14V34h14v23h14V22h14v35h14" fill="none" stroke="#5ac8fa" stroke-width="5"/><text x="72" y="82" text-anchor="middle" fill="white" font-size="19" font-weight="700">负载模型</text><text x="72" y="105" text-anchor="middle" fill="#b8cce2" font-size="14">人数与节奏</text></g>
+    <g transform="translate(685 165)"><rect width="145" height="120" rx="18" fill="#173c65" stroke="#3b82b6"/><path d="M47 54l16 16 34-38" fill="none" stroke="#6ee7b7" stroke-width="7"/><text x="72" y="94" text-anchor="middle" fill="white" font-size="19" font-weight="700">单用户调试</text></g>
+    <g transform="translate(845 165)"><rect width="145" height="120" rx="18" fill="#173c65" stroke="#3b82b6"/><circle cx="72" cy="48" r="25" fill="none" stroke="#fbbf24" stroke-width="5"/><path d="M72 32v19l13 8" fill="none" stroke="#fbbf24" stroke-width="5"/><text x="72" y="94" text-anchor="middle" fill="white" font-size="19" font-weight="700">受控执行</text></g>
+    <g transform="translate(1005 165)"><rect width="145" height="120" rx="18" fill="#173c65" stroke="#3b82b6"/><path d="M38 70l20-22 17 13 28-35" fill="none" stroke="#6ee7b7" stroke-width="5"/><text x="72" y="96" text-anchor="middle" fill="white" font-size="19" font-weight="700">结果分析</text></g>
+  </g>
+  <g stroke="#57d6d0" stroke-width="3" marker-end="url(#arrow)"><path d="M190 225h14"/><path d="M350 225h14"/><path d="M510 225h14"/><path d="M670 225h14"/><path d="M830 225h14"/><path d="M990 225h14"/></g>
+  <g font-family="sans-serif">
+    <rect x="60" y="350" width="1080" height="145" rx="20" fill="#0d213e" stroke="#315477"/>
+    <text x="90" y="393" fill="#f4f8ff" font-size="20" font-weight="700">三个必须同时成立的成功条件</text>
+    <circle cx="120" cy="444" r="12" fill="#5ac8fa"/><text x="145" y="451" fill="#c8d8ea" font-size="18">通信成功：连接、状态码、响应格式正常</text>
+    <circle cx="500" cy="444" r="12" fill="#6ee7b7"/><text x="525" y="451" fill="#c8d8ea" font-size="18">业务成功：业务码和关键字段正确</text>
+    <circle cx="850" cy="444" r="12" fill="#fbbf24"/><text x="875" y="451" fill="#c8d8ea" font-size="18">链路完成：到达最终业务动作</text>
+  </g>
+</svg>
