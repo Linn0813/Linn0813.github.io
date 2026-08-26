@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="720" viewBox="0 0 1500 720" role="img" aria-labelledby="title desc">
+  <title id="title">排行榜测试数据设计流程</title>
+  <desc id="desc">从确认规则、建立场景矩阵、构造业务数据到三层证据验收的流程</desc>
+  <defs>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#173d5d"/>
+      <stop offset="1" stop-color="#116466"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#6b8798"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#183247" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="1500" height="720" rx="32" fill="#f4f8fa"/>
+  <rect x="0" y="0" width="1500" height="112" rx="32" fill="url(#header)"/>
+  <rect x="0" y="76" width="1500" height="36" fill="url(#header)"/>
+  <text x="750" y="69" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="38" font-weight="700" fill="#fff">排行榜测试数据：从业务规则到验收证据</text>
+
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+    <g transform="translate(65 180)" filter="url(#shadow)">
+      <rect width="290" height="250" rx="24" fill="#fff" stroke="#cfe0e8" stroke-width="2"/>
+      <circle cx="52" cy="52" r="28" fill="#173d5d"/><text x="52" y="62" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">1</text>
+      <text x="96" y="62" font-size="28" font-weight="700" fill="#17324d">确认规则</text>
+      <text x="32" y="118" font-size="22" fill="#456176">参与资格</text>
+      <text x="32" y="158" font-size="22" fill="#456176">计分与同分排序</text>
+      <text x="32" y="198" font-size="22" fill="#456176">Top N 与展示口径</text>
+    </g>
+    <line x1="370" y1="305" x2="430" y2="305" stroke="#6b8798" stroke-width="4" marker-end="url(#arrow)"/>
+
+    <g transform="translate(450 180)" filter="url(#shadow)">
+      <rect width="290" height="250" rx="24" fill="#fff" stroke="#cfe0e8" stroke-width="2"/>
+      <circle cx="52" cy="52" r="28" fill="#1f7a7a"/><text x="52" y="62" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">2</text>
+      <text x="96" y="62" font-size="28" font-weight="700" fill="#17324d">场景矩阵</text>
+      <text x="32" y="118" font-size="22" fill="#456176">T-1 / T / T+1</text>
+      <text x="32" y="158" font-size="22" fill="#456176">第 1 / N / N+1 名</text>
+      <text x="32" y="198" font-size="22" fill="#456176">并列、0 分、状态变化</text>
+    </g>
+    <line x1="755" y1="305" x2="815" y2="305" stroke="#6b8798" stroke-width="4" marker-end="url(#arrow)"/>
+
+    <g transform="translate(835 180)" filter="url(#shadow)">
+      <rect width="290" height="250" rx="24" fill="#fff" stroke="#cfe0e8" stroke-width="2"/>
+      <circle cx="52" cy="52" r="28" fill="#d88b43"/><text x="52" y="62" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">3</text>
+      <text x="96" y="62" font-size="28" font-weight="700" fill="#17324d">构造数据</text>
+      <text x="32" y="118" font-size="22" fill="#456176">先资格，后分数</text>
+      <text x="32" y="158" font-size="22" fill="#456176">自包含邀请关系</text>
+      <text x="32" y="198" font-size="22" fill="#456176">分阶段执行与回查</text>
+    </g>
+    <line x1="1140" y1="305" x2="1200" y2="305" stroke="#6b8798" stroke-width="4" marker-end="url(#arrow)"/>
+
+    <g transform="translate(1220 180)" filter="url(#shadow)">
+      <rect width="215" height="250" rx="24" fill="#fff" stroke="#cfe0e8" stroke-width="2"/>
+      <circle cx="52" cy="52" r="28" fill="#3b8f7c"/><text x="52" y="62" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">4</text>
+      <text x="92" y="62" font-size="28" font-weight="700" fill="#17324d">验收</text>
+      <text x="28" y="118" font-size="22" fill="#456176">动作结果</text>
+      <text x="28" y="158" font-size="22" fill="#456176">业务状态</text>
+      <text x="28" y="198" font-size="22" fill="#456176">页面展示</text>
+    </g>
+
+    <g transform="translate(180 500)">
+      <rect width="1140" height="142" rx="26" fill="#e4f1ef" stroke="#b7dad4" stroke-width="2"/>
+      <text x="570" y="48" text-anchor="middle" font-size="28" font-weight="700" fill="#174e51">稳定结论 = 业务值正确 + 相对顺序正确 + 三层证据一致</text>
+      <text x="570" y="96" text-anchor="middle" font-size="23" fill="#38666a">共享环境优先验证分数、资格和本批数据的相对关系，不把易漂移的绝对排名当成唯一断言</text>
+    </g>
+  </g>
+</svg>
