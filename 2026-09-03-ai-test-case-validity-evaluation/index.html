@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AI 生成了 100 条测试用例，怎样判断里面有多少是真正有效的？ | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="AI 一口气生成 100 条用例，数字很好看，但真正能用的有多少？本文给出一张从需求可追溯、可执行性到结构合理性的检查表，帮你从数量里筛出有效用例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI 生成了 100 条测试用例，怎样判断里面有多少是真正有效的？">
+<meta property="og:url" content="https://linn0813.github.io/2026-09-03-ai-test-case-validity-evaluation/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="AI 一口气生成 100 条用例，数字很好看，但真正能用的有多少？本文给出一张从需求可追溯、可执行性到结构合理性的检查表，帮你从数量里筛出有效用例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/ai-test-case-validity-evaluation.png">
+<meta property="article:published_time" content="2026-09-03T09:50:00.000Z">
+<meta property="article:modified_time" content="2026-09-03T09:50:00.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="测试用例">
+<meta property="article:tag" content="测试方法论">
+<meta property="article:tag" content="测试设计">
+<meta property="article:tag" content="AI 测试">
+<meta property="article:tag" content="测试覆盖">
+<meta property="article:tag" content="用例质量">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/ai-test-case-validity-evaluation.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AI 生成了 100 条测试用例，怎样判断里面有多少是真正有效的？",
+  "url": "https://linn0813.github.io/2026-09-03-ai-test-case-validity-evaluation/",
+  "image": "https://linn0813.github.io/img/ai-test-case-validity-evaluation.png",
+  "datePublished": "2026-09-03T09:50:00.000Z",
+  "dateModified": "2026-09-03T09:50:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-09-03-ai-test-case-validity-evaluation/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AI 生成了 100 条测试用例，怎样判断里面有多少是真正有效的？',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">139</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">487</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/ai-test-case-validity-evaluation.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">AI 生成了 100 条测试用例，怎样判断里面有多少是真正有效的？</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">AI 生成了 100 条测试用例，怎样判断里面有多少是真正有效的？</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-09-03T09:50:00.000Z" title="发表于 2026-09-03 17:50:00">2026-09-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-09-03T09:50:00.000Z" title="更新于 2026-09-03 17:50:00">2026-09-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8E%A8-%E8%81%8C%E5%9C%BA%E8%BF%9B%E9%98%B6%E4%B8%8E%E6%B5%8B%E8%AF%95%E6%80%9D%E7%BB%B4%EF%BC%9A%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%88%B0%E8%B5%84%E6%B7%B1/">🎨 职场进阶与测试思维：从小白到资深</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8E%A8-%E8%81%8C%E5%9C%BA%E8%BF%9B%E9%98%B6%E4%B8%8E%E6%B5%8B%E8%AF%95%E6%80%9D%E7%BB%B4%EF%BC%9A%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%88%B0%E8%B5%84%E6%B7%B1/%E6%B5%8B%E8%AF%95%E5%9F%BA%E7%A1%80%E4%B8%8E%E7%90%86%E8%AE%BA/">测试基础与理论</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>让 AI 生成测试用例，最常见的场景是这样：你把一份需求丢进去，几秒钟后它吐回来 100 条用例，整整齐齐，每条都带编号、前置条件、步骤、预期结果。</p>
+<p>有人看到这个数字会很高兴：”效率真高，100 条。”</p>
+<p>但做过用例评审的人会立刻问一个更关键的问题：<strong>这 100 条里，有多少是真正有效的？</strong></p>
+<p>这里的”有效”不是”格式完整”，而是：<strong>它能对应上一条真实需求、能被执行、预期结果能被判断、不和其他条重复、也不是 AI 编出来的规则。</strong></p>
+<p>这篇文章我想讲清楚：怎么从一堆 AI 生成的用例里，把”有效”的那部分筛出来。判断标准不玄学，是一张可以逐条套用的检查表。</p>
+<h2 id="一、先问一个反直觉的问题：用例多，就代表覆盖好吗？"><a href="#一、先问一个反直觉的问题：用例多，就代表覆盖好吗？" class="headerlink" title="一、先问一个反直觉的问题：用例多，就代表覆盖好吗？"></a>一、先问一个反直觉的问题：用例多，就代表覆盖好吗？</h2><p>100 条用例，和”覆盖好”之间没有必然关系。</p>
+<p>我见过一个很典型的反例：AI 把同一个登录场景拆成了”输入正确密码””输入错误密码””不输密码””输入特殊字符密码”……看起来分了很多条，但它们本质上都是”登录密码校验”这一个测试点的不同取值。<strong>数量上去了，测试点的覆盖并没有真正变宽。</strong></p>
+<p>反过来，10 条用例如果每条都对应一个不同的业务规则，那它的有效覆盖可能比 100 条”注水”的用例还高。</p>
+<p>所以第一步，先别被总数唬住。判断有效性，要<strong>逐条看它到底验了什么</strong>，而不是数它有多少条。</p>
+<h2 id="二、单条用例：先过这七道检查"><a href="#二、单条用例：先过这七道检查" class="headerlink" title="二、单条用例：先过这七道检查"></a>二、单条用例：先过这七道检查</h2><p>对每一条用例，我会问七个问题。任何一个答不上来，这条就值得打问号。</p>
+<h3 id="1-能不能追溯到需求？"><a href="#1-能不能追溯到需求？" class="headerlink" title="1. 能不能追溯到需求？"></a>1. 能不能追溯到需求？</h3><p>这条用例验的规则，在需求里找得到吗？</p>
+<p>AI 最大的风险之一，是<strong>顺着自己脑补的”常识”往下写</strong>，写出需求里根本没有的东西。比如需求只说了”支持账号密码登录”，AI 却凭空加了一条”连续失败三次锁定账号”——这条用例对应的规则在需求里不存在。</p>
+<p><strong>有效的用例，必须能指回一条真实的需求条目。</strong> 指不回去的，要么是 AI 编的，要么是需求本身没写清，都需要单独处理，不能直接当成有效用例收下。</p>
+<h3 id="2-前置条件成立吗？"><a href="#2-前置条件成立吗？" class="headerlink" title="2. 前置条件成立吗？"></a>2. 前置条件成立吗？</h3><p>用例能不能跑，第一步取决于前置条件是不是真实、可满足的。</p>
+<p>常见问题：前置条件写得太笼统（”用户已登录”——登录到什么状态？什么角色？），或者前置条件之间互相矛盾（”未登录用户”+”已绑定手机号”），或者依赖一个根本不存在的状态。</p>
+<p>前置条件必须具体到<strong>能据此准备测试数据</strong>的程度。否则这条用例只是”看起来能跑”，真执行起来第一步就卡住。</p>
+<h3 id="3-步骤可执行吗？"><a href="#3-步骤可执行吗？" class="headerlink" title="3. 步骤可执行吗？"></a>3. 步骤可执行吗？</h3><p>步骤要具体到”照着做不会产生歧义”。</p>
+<p>如果一条用例的步骤是”进入页面进行操作，检查结果”这种大而化之的描述，它就不是一条可执行用例，只是一句正确的废话。有效的步骤，应该能让人（或脚本）明确知道：<strong>点哪里、输入什么、走哪条路径。</strong></p>
+<h3 id="4-预期结果能被判断吗？"><a href="#4-预期结果能被判断吗？" class="headerlink" title="4. 预期结果能被判断吗？"></a>4. 预期结果能被判断吗？</h3><p>预期结果要落在<strong>可观察、可判断</strong>的对象上。</p>
+<p>“操作成功”不是有效预期；”提交后列表出现新记录，且状态显示为已提交”才是。预期结果越具体，这条用例越能真正拦住缺陷；预期越笼统，它就越可能”永远通过”。</p>
+<h3 id="5-是不是在重复？"><a href="#5-是不是在重复？" class="headerlink" title="5. 是不是在重复？"></a>5. 是不是在重复？</h3><p>100 条里，往往藏着一大批”换个说法再来一遍”的重复项。</p>
+<p>判断重复不能只看标题，要看<strong>它验的测试点是不是同一个</strong>。两条用例，一条叫”登录成功进入首页”，一条叫”正确账号密码能进入系统”，标题不同，验的是同一件事，这就是重复。重复项不仅没有新增覆盖，还会在回归时白白浪费执行时间。</p>
+<h3 id="6-有没有虚构规则？"><a href="#6-有没有虚构规则？" class="headerlink" title="6. 有没有虚构规则？"></a>6. 有没有虚构规则？</h3><p>这一条和”可追溯性”相关，但更隐蔽：AI 可能把<strong>某个技术细节或行业惯例</strong>当成产品规则写进用例。</p>
+<p>比如它默认”密码至少 8 位””手机号必须是 11 位”，但这些规则需求里并没有，是 AI 从训练数据里”猜”出来的。这类虚构规则一旦被当成真需求去验收，轻则白测，重则把开发带偏。</p>
+<h3 id="7-边界覆盖了吗？"><a href="#7-边界覆盖了吗？" class="headerlink" title="7. 边界覆盖了吗？"></a>7. 边界覆盖了吗？</h3><p>有效的用例，不能只测”正常路径”。</p>
+<p>一个测试点，如果只写了正常情况，没有写边界（最大值、最小值、空值、异常值）和异常路径（失败、超时、中断），那它对这条规则的覆盖是残缺的。AI 生成的用例特别容易”重正常、轻异常”，因为正常路径最好写。</p>
+<h2 id="三、整体结构：单条没问题，也可能整体失效"><a href="#三、整体结构：单条没问题，也可能整体失效" class="headerlink" title="三、整体结构：单条没问题，也可能整体失效"></a>三、整体结构：单条没问题，也可能整体失效</h2><p>单条用例都过关了，还要再看一层——<strong>这 100 条作为一个整体，结构合不合理。</strong></p>
+<h3 id="结构膨胀"><a href="#结构膨胀" class="headerlink" title="结构膨胀"></a>结构膨胀</h3><p>AI 喜欢把需求拆成一堆并列的一级模块。我做过的一个真实案例里，AI 把一个功能拆出了 22 个一级模块——数量没错，但根本没法评审，因为真实的业务主线被淹没在一堆并列项里了。</p>
+<p><strong>模块要沿主流程合并子流程，横向的检查维度不该和主流程并列堆在一起。</strong> 一级模块过多，本身就是结构失效的信号。</p>
+<h3 id="用例平铺"><a href="#用例平铺" class="headerlink" title="用例平铺"></a>用例平铺</h3><p>另一个常见问题是”平铺”：大量可执行的判断点直接摊在业务目录下，还原不出用户的操作路径。</p>
+<p>好的用例结构是有层级的——先有共同入口，再有前置状态，然后是连续操作、页面流转，最后落到可观察的结果。如果一堆 case 直接平铺、彼此没有父子关系，说明 AI 没有真正理解业务路径，只是把判断点罗列了一遍。</p>
+<h3 id="把过程当结果"><a href="#把过程当结果" class="headerlink" title="把过程当结果"></a>把过程当结果</h3><p>还有一种隐蔽的错误：把”中间动作”标成”用例结果”。</p>
+<p>比如一条用例的”结果”写的是”点击开始校验”，或者笼统的”通过校验”——这两个都不是可判断的结果。真正的结果应该是”校验完成后，页面显示通过&#x2F;失败的具体状态”。把中间动作当结果，用例等于没写完。</p>
+<h3 id="包装层"><a href="#包装层" class="headerlink" title="包装层"></a>包装层</h3><p>“核心流程用例”这种标题，看着像一个分类，其实没有任何业务含义——它既不是页面，也不是入口，也不是流程或规则。这种包装层会让用例树看起来很规整，实际上什么都没分类。</p>
+<h2 id="四、一个可以落地的筛法"><a href="#四、一个可以落地的筛法" class="headerlink" title="四、一个可以落地的筛法"></a>四、一个可以落地的筛法</h2><p>综合上面两层，我一般会用一个”两轮筛”的流程来处理 AI 生成的批量用例：</p>
+<p><strong>第一轮，筛单条质量。</strong> 用第二节的七道检查，把每条用例标记成三类：</p>
+<ul>
+<li><strong>有效</strong>：七道都过关，可以直接进入评审或执行；</li>
+<li><strong>待修改</strong>：格式在，但某一项不具体（比如预期结果太笼统），补一补能用；</li>
+<li><strong>无效</strong>：不可追溯、虚构规则、无法执行、纯重复，直接剔除。</li>
+</ul>
+<p><strong>第二轮，筛结构质量。</strong> 看剩下的用例作为一个整体的组织：</p>
+<ul>
+<li>一级模块数量是否可评审；</li>
+<li>用例有没有形成清晰的父子路径，还是平铺了一堆判断点；</li>
+<li>有没有把中间动作当成结果、有没有无意义的包装层。</li>
+</ul>
+<p>两轮筛完，你得到的就不再是一个虚高的”100 条”，而是一个<strong>知道里面有多少真能用、多少要改、多少该扔</strong>的结论。</p>
+<h2 id="五、为什么不能指望-AI-自己筛"><a href="#五、为什么不能指望-AI-自己筛" class="headerlink" title="五、为什么不能指望 AI 自己筛"></a>五、为什么不能指望 AI 自己筛</h2><p>有人会想：那再让 AI 自己评审一遍不就行了？</p>
+<p>可以，但要清楚 AI 自评的局限。AI 既生成又评审，用的是同一套”常识”，它大概率会把自己脑补的虚构规则也判成”合理”，把自己写平铺的结构也判成”清晰”。<strong>用一个和生成时相同视角的检查，很难发现自己同一视角下的问题。</strong></p>
+<p>更可靠的做法，是<strong>把判断标准固定成明确的、确定性的检查项</strong>——就像上面这张检查表——让它独立于”生成者的主观感受”而存在。这样无论是人来筛，还是用脚本辅助筛，结论都是可复现的。</p>
+<p>这也是为什么”有多少用例真正有效”这个问题，最终不该由 AI 自己来回答，而该由一套<strong>稳定的评判标准</strong>来回答。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>AI 生成 100 条用例，真正的价值不在于”100”这个数字，而在于你<strong>能不能从这 100 条里，稳定地识别出有效的那部分</strong>。</p>
+<p>判断的方法并不复杂：单条看七项质量，整体看结构是否可评审、可执行、可判断。把这两个层面走一遍，”100 条”就不再是一个需要你去猜的数字，而是一份你知道分量的用例清单。</p>
+<p>因为有效的测试用例，从来不靠数量取胜，而靠<strong>每一条都验在点子上、且整体能被看明白</strong>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-09-03-ai-test-case-validity-evaluation/">https://linn0813.github.io/2026-09-03-ai-test-case-validity-evaluation/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B/">测试用例</a><a class="post-meta__tags" href="/tags/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95%E8%AE%BA/">测试方法论</a><a class="post-meta__tags" href="/tags/%E6%B5%8B%E8%AF%95%E8%AE%BE%E8%AE%A1/">测试设计</a><a class="post-meta__tags" href="/tags/AI-%E6%B5%8B%E8%AF%95/">AI 测试</a><a class="post-meta__tags" href="/tags/%E6%B5%8B%E8%AF%95%E8%A6%86%E7%9B%96/">测试覆盖</a><a class="post-meta__tags" href="/tags/%E7%94%A8%E4%BE%8B%E8%B4%A8%E9%87%8F/">用例质量</a></div><div class="post-share"><div class="social-share" data-image="/img/ai-test-case-validity-evaluation.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026-09-03-tracking-pass-not-run-boundary/" title="12 条 Pass、8 条 Not Run，为什么最终仍能判断埋点通过？"><img class="cover" src="/img/tracking-pass-not-run-boundary.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">12 条 Pass、8 条 Not Run，为什么最终仍能判断埋点通过？</div></div><div class="info-2"><div class="info-item-1">埋点验收出现 12 条 Pass、8 条 Not Run 时，为什么不能简单算出 60% 通过率就下结论？本文讲清 Pass/Fail/Blocked/Not Run 四态的判定边界，以及"没跑到"和"跑挂了"为什么必须分开。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026-02-25-ai-test-case-generation-tool-design/" title="AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD"><img class="cover" src="/img/ai-test-case-generation-tool-design.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-25</div><div class="info-item-2">AI 生成测试用例工具设计：围绕测试流程，而非直接扔 PRD</div></div><div class="info-2"><div class="info-item-1">测试用例生成本质是有流程的脑力活动，而非一次文本生成。本文从人工编写用例的真实流程出发，说明如何把测试思维拆解成 AI 可执行流程，实现流程化、分阶段、可控生成。</div></div></div></a><a class="pagination-related" href="/2026-02-26-ai-chat-testing-guide/" title="拿到 AI 对话需求后，如何设计测试方向？"><img class="cover" src="/img/ai-chat-testing-guide.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-26</div><div class="info-item-2">拿到 AI 对话需求后，如何设计测试方向？</div></div><div class="info-2"><div class="info-item-1">当拿到 AI 对话需求时，如何从模糊需求拆解为可测试方案？本文系统讲清需求结构拆解、测试目标识别、维度体系建立及可落地方案设计，体现完整测试设计能力。</div></div></div></a><a class="pagination-related" href="/2026-09-01-automation-pass-not-feature-proof/" title="自动化用例通过了，为什么我仍然不敢说功能没问题？"><img class="cover" src="/img/automation-pass-not-feature-proof.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-01</div><div class="info-item-2">自动化用例通过了，为什么我仍然不敢说功能没问题？</div></div><div class="info-2"><div class="info-item-1">自动化用例全绿，只能证明特定条件下的实际结果符合断言。本文用执行、断言、覆盖和业务结论四层模型，分析“假绿”从哪里产生，以及测试人员怎样给出有边界的质量结论。</div></div></div></a><a class="pagination-related" href="/2025-06-20-postman-class/" title="从入门到实战：一篇文章掌握接口测试与 Postman 全流程"><img class="cover" src="/img/postman-class.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-20</div><div class="info-item-2">从入门到实战：一篇文章掌握接口测试与 Postman 全流程</div></div><div class="info-2"><div class="info-item-1">分享码尚教育Postman课程的学习内容，详细介绍接口测试的概念、分类、流程与用例设计，全面讲解 Postman 的使用方法，包括界面操作、断言设置、数据驱动测试和 Mock Server 等功能，适合接口测试初学者与自动化测试入门者学习。</div></div></div></a><a class="pagination-related" href="/2025-10-15-coze-testcase-assistant/" title="🤖 手把手教你用Coze打造专属测试用例编写助手"><img class="cover" src="/img/coze-testcase-assistant.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-15</div><div class="info-item-2">🤖 手把手教你用Coze打造专属测试用例编写助手</div></div><div class="info-2"><div class="info-item-1">手把手教你用Coze平台零代码搭建专属测试用例编写助手，从需求明确到配置优化，助力测试工作提效</div></div></div></a><a class="pagination-related" href="/2026-02-27-test-case-generation-prompt-design/" title="测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践"><img class="cover" src="/img/test-case-generation-prompt-design.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-27</div><div class="info-item-2">测试用例生成 Prompt 的完整设计：从需求到用例的结构化实践</div></div><div class="info-2"><div class="info-item-1">系统讲解测试用例生成 Prompt 的完整设计方法，涵盖核心原则、Prompt 结构、按测试流程拆分多个 Prompt、Few-Shot 示例、变量与占位符、工程化实践，帮助构建稳定、可复用的 AI 测试用例生成能力。</div></div></div></a><a class="pagination-related" href="/2026-02-12-ai-testing-vs-traditional-testing/" title="🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模"><img class="cover" src="/img/ai-testing-vs-traditional-testing.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-02-12</div><div class="info-item-2">🎯 AI 测试与传统测试的本质差异：从功能验证到质量建模</div></div><div class="info-2"><div class="info-item-1">从一次"断言失败"开始，深入思考AI测试与传统测试的本质差异：确定性vs概率性、验证逻辑变化、回归测试困难、测试对象边界变化</div></div></div></a><a class="pagination-related" href="/2026-09-03-tracking-pass-not-run-boundary/" title="12 条 Pass、8 条 Not Run，为什么最终仍能判断埋点通过？"><img class="cover" src="/img/tracking-pass-not-run-boundary.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-03</div><div class="info-item-2">12 条 Pass、8 条 Not Run，为什么最终仍能判断埋点通过？</div></div><div class="info-2"><div class="info-item-1">埋点验收出现 12 条 Pass、8 条 Not Run 时，为什么不能简单算出 60% 通过率就下结论？本文讲清 Pass/Fail/Blocked/Not Run 四态的判定边界，以及"没跑到"和"跑挂了"为什么必须分开。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%85%88%E9%97%AE%E4%B8%80%E4%B8%AA%E5%8F%8D%E7%9B%B4%E8%A7%89%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A%E7%94%A8%E4%BE%8B%E5%A4%9A%EF%BC%8C%E5%B0%B1%E4%BB%A3%E8%A1%A8%E8%A6%86%E7%9B%96%E5%A5%BD%E5%90%97%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">一、先问一个反直觉的问题：用例多，就代表覆盖好吗？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8D%95%E6%9D%A1%E7%94%A8%E4%BE%8B%EF%BC%9A%E5%85%88%E8%BF%87%E8%BF%99%E4%B8%83%E9%81%93%E6%A3%80%E6%9F%A5"><span class="toc-number">2.</span> <span class="toc-text">二、单条用例：先过这七道检查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%83%BD%E4%B8%8D%E8%83%BD%E8%BF%BD%E6%BA%AF%E5%88%B0%E9%9C%80%E6%B1%82%EF%BC%9F"><span class="toc-number">2.1.</span> <span class="toc-text">1. 能不能追溯到需求？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6%E6%88%90%E7%AB%8B%E5%90%97%EF%BC%9F"><span class="toc-number">2.2.</span> <span class="toc-text">2. 前置条件成立吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%AD%A5%E9%AA%A4%E5%8F%AF%E6%89%A7%E8%A1%8C%E5%90%97%EF%BC%9F"><span class="toc-number">2.3.</span> <span class="toc-text">3. 步骤可执行吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%A2%84%E6%9C%9F%E7%BB%93%E6%9E%9C%E8%83%BD%E8%A2%AB%E5%88%A4%E6%96%AD%E5%90%97%EF%BC%9F"><span class="toc-number">2.4.</span> <span class="toc-text">4. 预期结果能被判断吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%98%AF%E4%B8%8D%E6%98%AF%E5%9C%A8%E9%87%8D%E5%A4%8D%EF%BC%9F"><span class="toc-number">2.5.</span> <span class="toc-text">5. 是不是在重复？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%9C%89%E6%B2%A1%E6%9C%89%E8%99%9A%E6%9E%84%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-number">2.6.</span> <span class="toc-text">6. 有没有虚构规则？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E8%BE%B9%E7%95%8C%E8%A6%86%E7%9B%96%E4%BA%86%E5%90%97%EF%BC%9F"><span class="toc-number">2.7.</span> <span class="toc-text">7. 边界覆盖了吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84%EF%BC%9A%E5%8D%95%E6%9D%A1%E6%B2%A1%E9%97%AE%E9%A2%98%EF%BC%8C%E4%B9%9F%E5%8F%AF%E8%83%BD%E6%95%B4%E4%BD%93%E5%A4%B1%E6%95%88"><span class="toc-number">3.</span> <span class="toc-text">三、整体结构：单条没问题，也可能整体失效</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E8%86%A8%E8%83%80"><span class="toc-number">3.1.</span> <span class="toc-text">结构膨胀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E4%BE%8B%E5%B9%B3%E9%93%BA"><span class="toc-number">3.2.</span> <span class="toc-text">用例平铺</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%8A%E8%BF%87%E7%A8%8B%E5%BD%93%E7%BB%93%E6%9E%9C"><span class="toc-number">3.3.</span> <span class="toc-text">把过程当结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%85%E8%A3%85%E5%B1%82"><span class="toc-number">3.4.</span> <span class="toc-text">包装层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E4%B8%80%E4%B8%AA%E5%8F%AF%E4%BB%A5%E8%90%BD%E5%9C%B0%E7%9A%84%E7%AD%9B%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">四、一个可以落地的筛法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E6%8C%87%E6%9C%9B-AI-%E8%87%AA%E5%B7%B1%E7%AD%9B"><span class="toc-number">5.</span> <span class="toc-text">五、为什么不能指望 AI 自己筛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">6.</span> <span class="toc-text">结语</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

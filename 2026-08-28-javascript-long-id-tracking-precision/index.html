@@ -1,0 +1,597 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>一个超长 ID，为什么到了前端就变了？埋点验收中发现的 JavaScript 精度坑 | Linn｜测试笔记</title><meta name="author" content="yuxiaoling"><meta name="copyright" content="yuxiaoling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一次埋点验收中，接口返回的超长 ID 到了前端却发生变化。本文从真实排查过程出发，讲清安全整数、JSON 解析、接口契约、前端防御和边界测试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个超长 ID，为什么到了前端就变了？埋点验收中发现的 JavaScript 精度坑">
+<meta property="og:url" content="https://linn0813.github.io/2026-08-28-javascript-long-id-tracking-precision/index.html">
+<meta property="og:site_name" content="Linn｜测试笔记">
+<meta property="og:description" content="一次埋点验收中，接口返回的超长 ID 到了前端却发生变化。本文从真实排查过程出发，讲清安全整数、JSON 解析、接口契约、前端防御和边界测试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linn0813.github.io/img/javascript-long-id-tracking-precision.svg">
+<meta property="article:published_time" content="2026-08-28T07:25:39.000Z">
+<meta property="article:modified_time" content="2026-08-28T09:03:08.000Z">
+<meta property="article:author" content="yuxiaoling">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="埋点测试">
+<meta property="article:tag" content="大整数">
+<meta property="article:tag" content="接口契约">
+<meta property="article:tag" content="故障排查">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linn0813.github.io/img/javascript-long-id-tracking-precision.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "一个超长 ID，为什么到了前端就变了？埋点验收中发现的 JavaScript 精度坑",
+  "url": "https://linn0813.github.io/2026-08-28-javascript-long-id-tracking-precision/",
+  "image": "https://linn0813.github.io/img/javascript-long-id-tracking-precision.svg",
+  "datePublished": "2026-08-28T07:25:39.000Z",
+  "dateModified": "2026-08-28T09:03:08.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "yuxiaoling",
+      "url": "https://linn0813.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.jpg"><link rel="canonical" href="https://linn0813.github.io/2026-08-28-javascript-long-id-tracking-precision/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Xj7zV_DKnHFmJ7sXNRvdl5-UTfG4NLy-s7hDk1DZt4A"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":3,"unescape":true,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyloadPlugin: false,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '一个超长 ID，为什么到了前端就变了？埋点验收中发现的 JavaScript 精度坑',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/blog-enhancements.css"><meta name="msvalidate.01" content="C0AF818C725A2A1E112A1537E1064EA8" /><meta name="generator" content="Hexo 7.3.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">139</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">487</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">65</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/javascript-long-id-tracking-precision.svg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.jpg" alt="Logo"><span class="site-name">Linn｜测试笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">一个超长 ID，为什么到了前端就变了？埋点验收中发现的 JavaScript 精度坑</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/qa/"><i class="fa-fw fa fa-comments"></i><span> 知识库问答</span></a></div><div class="menus_item"><a class="site-page" href="/growth/"><i class="fa-fw fas fa-chart-line"></i><span> 成长中心</span></a></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">一个超长 ID，为什么到了前端就变了？埋点验收中发现的 JavaScript 精度坑</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-28T07:25:39.000Z" title="发表于 2026-08-28 15:25:39">2026-08-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-28T09:03:08.000Z" title="更新于 2026-08-28 17:03:08">2026-08-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8E%A8-%E8%81%8C%E5%9C%BA%E8%BF%9B%E9%98%B6%E4%B8%8E%E6%B5%8B%E8%AF%95%E6%80%9D%E7%BB%B4%EF%BC%9A%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%88%B0%E8%B5%84%E6%B7%B1/">🎨 职场进阶与测试思维：从小白到资深</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%F0%9F%8E%A8-%E8%81%8C%E5%9C%BA%E8%BF%9B%E9%98%B6%E4%B8%8E%E6%B5%8B%E8%AF%95%E6%80%9D%E7%BB%B4%EF%BC%9A%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%88%B0%E8%B5%84%E6%B7%B1/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98%E4%B8%8E%E6%A1%88%E4%BE%8B%E7%BB%8F%E9%AA%8C/">项目实战与案例经验</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>一次站外活动的埋点验收中，我遇到了两个看起来毫不相关的现象。</p>
+<p>第一个很显眼：页面报错了。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">TypeError: response.activityId.trim is not a function</span><br></pre></td></tr></table></figure>
+
+<p>第二个没有任何报错，却更危险：接口返回的活动 ID 到了前端以后，最后一位变了。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">原始响应：9007199254740993</span><br><span class="line">前端变量：9007199254740992</span><br></pre></td></tr></table></figure>
+
+<p>这个变化非常隐蔽。数字没有少一位，页面也可能继续正常运行。如果验收时只确认“事件出现了”，错误 ID 就会一路进入分享链接、归因参数和埋点平台，最后留下一个看起来合法、实际上无法关联的数据。</p>
+<p>继续往下查，我发现两个现象来自同一个根因：<strong>接口把只用于标识的超长 ID 当成了数字，而 JavaScript 无法安全表示所有超长整数。</strong></p>
+<p>这篇文章不会只给出一句“把 ID 改成字符串”。我更想完整还原：</p>
+<ul>
+<li>为什么 <code>trim()</code> 报错只是表象；</li>
+<li>JavaScript 到底从哪个数字开始不可靠；</li>
+<li>为什么最后再调用 <code>String()</code> 也救不回来；</li>
+<li>JSON、接口和前端分别应该承担什么责任；</li>
+<li>埋点验收怎样证明 ID 在整条链路中没有被改变。</li>
+</ul>
+<p>文中的业务名称、接口、事件名、设备和真实 ID 均已替换。</p>
+<h2 id="一、先还原问题：一个报错和一个静默错误"><a href="#一、先还原问题：一个报错和一个静默错误" class="headerlink" title="一、先还原问题：一个报错和一个静默错误"></a>一、先还原问题：一个报错和一个静默错误</h2><p>页面需要从接口取得活动 ID，再把它写进分享链接和埋点参数。逻辑可以简化为：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> activityId = response.<span class="property">activityId</span>.<span class="title function_">trim</span>();</span><br><span class="line"></span><br><span class="line"><span class="title function_">track</span>(<span class="string">&#x27;activity_page_view&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">activity_id</span>: activityId</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>代码显然认为 <code>activityId</code> 是字符串，所以调用了 <code>trim()</code> 清理两端空格。</p>
+<p>但真实接口返回的结构更接近：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;activityId&quot;</span><span class="punctuation">:</span> <span class="number">9007199254740993</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意，ID 外面没有引号。它是 JSON Number，进入前端后会成为 JavaScript <code>number</code>。</p>
+<p>于是，第一个问题出现了：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typeof</span> response.<span class="property">activityId</span> === <span class="string">&#x27;number&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>数字没有 <code>trim()</code> 方法，所以运行时报错。</p>
+<p>如果只看到这里，最容易做的修复是删掉 <code>trim()</code>，或者在后面补上 <code>String()</code>。但继续对比原始 Response 和前端变量后，我发现 ID 已经变了。</p>
+<p>这时，问题就从“字符串方法用错”升级成了“数据精度丢失”。</p>
+<p>两类错误的差别也很值得注意：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>表现</th>
+<th>是否容易发现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>类型不一致</td>
+<td><code>trim is not a function</code></td>
+<td>容易，页面或日志会报错</td>
+</tr>
+<tr>
+<td>数字精度丢失</td>
+<td>ID 末位变化，程序仍可运行</td>
+<td>难，必须逐位核对</td>
+</tr>
+</tbody></table>
+<p>显式报错会打断程序，反而容易暴露；静默产生一个错误但“长得合理”的 ID，风险更高。</p>
+<h2 id="二、三行代码复现：两个-ID-变成了同一个"><a href="#二、三行代码复现：两个-ID-变成了同一个" class="headerlink" title="二、三行代码复现：两个 ID 变成了同一个"></a>二、三行代码复现：两个 ID 变成了同一个</h2><p>先不谈浮点数原理，直接在浏览器控制台运行：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> a = <span class="number">9007199254740992</span>;</span><br><span class="line"><span class="keyword">const</span> b = <span class="number">9007199254740993</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a);       <span class="comment">// 9007199254740992</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(b);       <span class="comment">// 9007199254740992</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a === b); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>业务上，<code>a</code> 和 <code>b</code> 是两个不同 ID。</p>
+<p>但在 JavaScript 的 <code>Number</code> 中，它们变成了同一个值。</p>
+<p>这不是显示格式问题。JavaScript 内部已经无法区分它们，所以比较结果也是 <code>true</code>。如果两个用户、订单或活动 ID 在这里发生碰撞，后面的查询、归因和数据关联都会建立在错误值上。</p>
+<h2 id="三、为什么边界是-2-53-1"><a href="#三、为什么边界是-2-53-1" class="headerlink" title="三、为什么边界是 2^53 - 1"></a>三、为什么边界是 <code>2^53 - 1</code></h2><p>JavaScript 普通数字统一使用 <code>Number</code> 类型。它采用 IEEE 754 双精度浮点数格式，总共 64 位，但这 64 位不全用来保存整数：</p>
+<ul>
+<li>1 位表示正负；</li>
+<li>11 位表示指数，也就是数量级；</li>
+<li>52 位保存有效数字；</li>
+<li>再加上一位默认存在的最高位，共有 53 位有效精度。</li>
+</ul>
+<p>因此，JavaScript 能够连续、准确区分的最大整数是：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="number">2</span> ** <span class="number">53</span> - <span class="number">1</span></span><br><span class="line"><span class="comment">// 9007199254740991</span></span><br></pre></td></tr></table></figure>
+
+<p>JavaScript 已经把它作为常量提供出来：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Number</span>.<span class="property">MAX_SAFE_INTEGER</span></span><br><span class="line"><span class="comment">// 9007199254740991</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的关键词是“安全”，不是“最大”。</p>
+<p>JavaScript 能表示远大于它的数，例如 <code>1e100</code>；但数字越大，可精确表示的整数就越稀疏。超过安全整数边界后，有些整数可以碰巧表示，有些会被舍入到邻近值，而且不同整数可能落到同一个 <code>Number</code> 上。</p>
+<p>所以不要用下面这种判断：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">能打印出来 = 数字是准确的</span><br></pre></td></tr></table></figure>
+
+<p>应该使用：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Number</span>.<span class="title function_">isSafeInteger</span>(value)</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Number</span>.<span class="title function_">isSafeInteger</span>(<span class="number">9007199254740991</span>); <span class="comment">// true</span></span><br><span class="line"><span class="title class_">Number</span>.<span class="title function_">isSafeInteger</span>(<span class="number">9007199254740992</span>); <span class="comment">// false</span></span><br><span class="line"><span class="title class_">Number</span>.<span class="title function_">isSafeInteger</span>(<span class="number">9007199254740993</span>); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>ECMAScript 规范对安全整数的定义正是：这个 <code>Number</code> 值不会与另一个数学整数共享同一表示。<a target="_blank" rel="noopener" href="https://tc39.es/ecma262/2025/multipage/numbers-and-dates.html#sec-number.max_safe_integer">ECMAScript：Number.MAX_SAFE_INTEGER</a></p>
+<h2 id="四、精度到底在哪一步丢失"><a href="#四、精度到底在哪一步丢失" class="headerlink" title="四、精度到底在哪一步丢失"></a>四、精度到底在哪一步丢失</h2><p>这类问题最容易产生的误解是：“JSON 把数字改了。”</p>
+<p>更准确地说，JSON 只是一段文本。真正的变化发生在接收端把 JSON 数字解析成 JavaScript <code>Number</code> 时。</p>
+<p>把链路拆开看：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">服务端内存中的整数</span><br><span class="line">  ↓ 序列化</span><br><span class="line">HTTP 响应里的 JSON 文本</span><br><span class="line">  ↓ JSON.parse / 请求库自动解析</span><br><span class="line">JavaScript Number</span><br><span class="line">  ↓ 构造参数</span><br><span class="line">分享链接与埋点</span><br></pre></td></tr></table></figure>
+
+<p>原始响应文本可以完整写着：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;activityId&quot;</span><span class="punctuation">:</span> <span class="number">9007199254740993</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>但常规解析后：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> raw = <span class="string">&#x27;&#123;&quot;activityId&quot;: 9007199254740993&#125;&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> data = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(raw);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(data.<span class="property">activityId</span>);</span><br><span class="line"><span class="comment">// 9007199254740992</span></span><br></pre></td></tr></table></figure>
+
+<p>因此，排查时必须区分两样东西：</p>
+<ol>
+<li>Network 面板中的原始 Response；</li>
+<li>Console 中已经解析完成的 JavaScript 对象。</li>
+</ol>
+<p>只看 Console，可能误以为服务端本来就返回了错误 ID；只看 Response，又可能不知道前端解析后已经发生变化。</p>
+<p>RFC 8259 允许 JSON 中出现范围更大的数字，但也提醒：广泛使用双精度浮点数的实现，对 <code>[-(2^53)+1, (2^53)-1]</code> 范围内的整数才能稳定保持精确互操作。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc8259#section-6">RFC 8259：Numbers</a></p>
+<p>换句话说：</p>
+<blockquote>
+<p>JSON 文本能写下一个数字，不等于每个接收端都能精确保存它。</p>
+</blockquote>
+<h2 id="五、为什么最后再转字符串救不回来"><a href="#五、为什么最后再转字符串救不回来" class="headerlink" title="五、为什么最后再转字符串救不回来"></a>五、为什么最后再转字符串救不回来</h2><p>发现埋点需要字符串后，很多代码会这样修：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> activityId = <span class="title class_">String</span>(response.<span class="property">activityId</span>);</span><br></pre></td></tr></table></figure>
+
+<p>问题在于，<code>String()</code> 执行时，<code>response.activityId</code> 已经是解析后的 <code>Number</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> data = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">&#x27;&#123;&quot;activityId&quot;: 9007199254740993&#125;&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(data.<span class="property">activityId</span>);</span><br><span class="line"><span class="comment">// 9007199254740992</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">String</span>(data.<span class="property">activityId</span>));</span><br><span class="line"><span class="comment">// &quot;9007199254740992&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>String()</code> 只负责改变类型，不负责恢复历史。它不知道原始文本是 <code>9007199254740993</code>，还是另一个被舍入到相同结果的整数。</p>
+<p>可以把它理解成：</p>
+<blockquote>
+<p>原件在第一次抄写时已经写错。后面把错字打印得再清楚，也不会自动恢复原文。</p>
+</blockquote>
+<p>下面这些写法都有同样风险：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Number</span>(rawId);</span><br><span class="line"><span class="built_in">parseInt</span>(rawId, <span class="number">10</span>);</span><br><span class="line">+rawId;</span><br></pre></td></tr></table></figure>
+
+<p>只要一个超长 ID 中途经过不安全的 <code>Number</code>，后面再转回字符串也可能为时已晚。</p>
+<h2 id="六、普通-reviver-为什么经常也补救不了"><a href="#六、普通-reviver-为什么经常也补救不了" class="headerlink" title="六、普通 reviver 为什么经常也补救不了"></a>六、普通 reviver 为什么经常也补救不了</h2><p><code>JSON.parse()</code> 支持传入 reviver，对解析结果做二次处理：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">JSON</span>.<span class="title function_">parse</span>(raw, <span class="function">(<span class="params">key, value</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (key === <span class="string">&#x27;activityId&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">String</span>(value);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这段代码看起来像是在解析时转字符串，但传统 reviver 收到的 <code>value</code> 已经是 <code>Number</code>。如果精度在数值解析阶段丢失，<code>String(value)</code> 仍然只能得到错误值。</p>
+<p>现代 ECMAScript 标准为 primitive 值的 reviver 增加了第三个 <code>context</code> 参数，其中 <code>context.source</code> 可以提供对应的原始 JSON 文本。支持该能力的运行环境中，可以基于原文恢复：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> data = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(raw, <span class="function">(<span class="params">key, value, context</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (key === <span class="string">&#x27;activityId&#x27;</span> &amp;&amp; context?.<span class="property">source</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> context.<span class="property">source</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>但它更适合作为理解解析过程的高级知识，而不是业务接口的首选设计：</p>
+<ul>
+<li>运行环境和工具链需要确认兼容性；</li>
+<li>请求库可能在业务代码拿到响应前就完成了解析；</li>
+<li>每个超长字段都要维护额外规则；</li>
+<li>下游仍需要统一把 ID 当字符串使用。</li>
+</ul>
+<p>如果接口本身可修改，让服务端直接返回字符串，依旧是最简单、最稳定的方案。<a target="_blank" rel="noopener" href="https://tc39.es/ecma262/multipage/structured-data.html#sec-json.parse">ECMAScript：JSON.parse</a></p>
+<h2 id="七、为什么-ID-应该是字符串"><a href="#七、为什么-ID-应该是字符串" class="headerlink" title="七、为什么 ID 应该是字符串"></a>七、为什么 ID 应该是字符串</h2><p>“全部由数字组成”和“应该使用数字类型”不是一回事。</p>
+<p>判断一个字段该用数字还是字符串，关键要看它的业务语义：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th align="right">需要计算吗</th>
+<th>更合适的类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>商品数量</td>
+<td align="right">是</td>
+<td>Number</td>
+</tr>
+<tr>
+<td>金额或比例</td>
+<td align="right">是，但要考虑精度策略</td>
+<td>数值类型或专用金额类型</td>
+</tr>
+<tr>
+<td>用户 ID</td>
+<td align="right">否</td>
+<td>String</td>
+</tr>
+<tr>
+<td>订单 ID</td>
+<td align="right">否</td>
+<td>String</td>
+</tr>
+<tr>
+<td>活动 ID</td>
+<td align="right">否</td>
+<td>String</td>
+</tr>
+<tr>
+<td>手机号、证件号</td>
+<td align="right">否</td>
+<td>String</td>
+</tr>
+</tbody></table>
+<p>ID 的作用是回答“它是谁”，不是回答“它有多少”。</p>
+<p>把 ID 定义成字符串还会顺带解决几个问题：</p>
+<ul>
+<li>不受 JavaScript 安全整数边界影响；</li>
+<li>可以保留 <code>001234</code> 这样的前导零；</li>
+<li>不会被误做加减乘除；</li>
+<li>URL、日志、埋点 SDK 和跨语言接口更容易保持一致；</li>
+<li>Schema 能明确表达“这是标识符，不是计数值”。</li>
+</ul>
+<p>推荐的响应是：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;activityId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;9007199254740993&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>而不是：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;activityId&quot;</span><span class="punctuation">:</span> <span class="number">9007199254740993</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果使用 OpenAPI，可以把契约写清楚：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">activityId:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">string</span></span><br><span class="line">  <span class="attr">pattern:</span> <span class="string">&#x27;^\d+$&#x27;</span></span><br><span class="line">  <span class="attr">example:</span> <span class="string">&#x27;9007199254740993&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>pattern</code> 是否只允许数字，要根据真实 ID 规则决定；核心是把类型固定为 <code>string</code>。</p>
+<h2 id="八、BigInt-能不能解决"><a href="#八、BigInt-能不能解决" class="headerlink" title="八、BigInt 能不能解决"></a>八、BigInt 能不能解决</h2><p><code>BigInt</code> 可以精确表示大整数：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> id = <span class="number">9007199254740993n</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(id);</span><br><span class="line"><span class="comment">// 9007199254740993n</span></span><br></pre></td></tr></table></figure>
+
+<p>但对于跨系统传递的业务 ID，它通常不是首选。</p>
+<p>原因不是 BigInt 不够准确，而是 ID 根本不需要算术能力。前端最终往往还要把它写入 URL、日志、埋点参数或 JSON，而这些边界通常仍需要字符串。</p>
+<p>此外，直接序列化 BigInt 会报错：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123; <span class="attr">activityId</span>: <span class="number">9007199254740993n</span> &#125;);</span><br><span class="line"><span class="comment">// TypeError</span></span><br></pre></td></tr></table></figure>
+
+<p>因此可以这样理解：</p>
+<ul>
+<li>需要进行大整数计算：考虑 <code>BigInt</code>；</li>
+<li>只需要保存、传递和比较 ID：优先使用 <code>String</code>。</li>
+</ul>
+<h2 id="九、修复应该分三层"><a href="#九、修复应该分三层" class="headerlink" title="九、修复应该分三层"></a>九、修复应该分三层</h2><h3 id="第一层：服务端修正接口契约"><a href="#第一层：服务端修正接口契约" class="headerlink" title="第一层：服务端修正接口契约"></a>第一层：服务端修正接口契约</h3><p>这是根治方案。</p>
+<p>服务端在序列化响应前就把 ID 输出为字符串，并同步更新接口文档、Schema 和生成的客户端类型。</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;activityId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;9007199254740993&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>需要特别注意：后端语言能准确保存这个整数，不代表把它作为 JSON Number 发送给前端也安全。接口设计必须考虑接收端能力，而不是只看服务端自身的数据类型。</p>
+<h3 id="第二层：前端增加防御性校验"><a href="#第二层：前端增加防御性校验" class="headerlink" title="第二层：前端增加防御性校验"></a>第二层：前端增加防御性校验</h3><p>前端不应该默默接收不安全的数字型 ID。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">normalizeId</span>(<span class="params">value, fieldName = <span class="string">&#x27;id&#x27;</span></span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> value === <span class="string">&#x27;string&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> normalized = value.<span class="title function_">trim</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="regexp">/^\d+$/</span>.<span class="title function_">test</span>(normalized)) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TypeError</span>(<span class="string">`<span class="subst">$&#123;fieldName&#125;</span> must be a digit string`</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> normalized;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> value === <span class="string">&#x27;number&#x27;</span> &amp;&amp; <span class="title class_">Number</span>.<span class="title function_">isSafeInteger</span>(value)) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">String</span>(value);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RangeError</span>(<span class="string">`<span class="subst">$&#123;fieldName&#125;</span> is not a safe identifier`</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个函数做了三件事：</p>
+<ol>
+<li>字符串 ID 经过格式检查后原样保留；</li>
+<li>安全整数可以兼容性地转成字符串；</li>
+<li>不安全的 Number 直接报错，不让错误值继续进入链接和埋点。</li>
+</ol>
+<p>要注意，前端校验只能阻止错误扩散，不能恢复已经丢失的数字。真正的修复仍应尽量发生在数据进入 JavaScript <code>Number</code> 之前。</p>
+<h3 id="第三层：暂时改不了接口时，保留原始文本"><a href="#第三层：暂时改不了接口时，保留原始文本" class="headerlink" title="第三层：暂时改不了接口时，保留原始文本"></a>第三层：暂时改不了接口时，保留原始文本</h3><p>如果短期内无法修改服务端，又必须兼容超长 JSON Number，需要在“标准 Number 解析之前”保留原始数字文本，例如：</p>
+<ul>
+<li>使用确认支持大整数的无损 JSON 解析方案；</li>
+<li>将目标字段解析为字符串或 BigInt；</li>
+<li>在请求库自动解析前取得原始响应文本；</li>
+<li>为该兼容方案增加专门测试和下线计划。</li>
+</ul>
+<p>不建议用正则表达式随意替换 JSON 中的数字。JSON 可能包含嵌套结构、转义字符、科学计数法和多个相似字段，临时正则很容易制造新的解析错误。</p>
+<p>这类方案属于兼容措施，不应替代清晰的接口契约。</p>
+<h2 id="十、埋点验收怎样定位第一次变化"><a href="#十、埋点验收怎样定位第一次变化" class="headerlink" title="十、埋点验收怎样定位第一次变化"></a>十、埋点验收怎样定位第一次变化</h2><p>如果只看最终分析平台，看到的只是链路末端。ID 错了时，很容易误判成：</p>
+<ul>
+<li>埋点平台改了参数；</li>
+<li>SDK 上报异常；</li>
+<li>数据延迟；</li>
+<li>事件没有正确触发。</li>
+</ul>
+<p>更有效的方法是比较同一个 ID 经过的每一层：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">原始接口响应文本</span><br><span class="line">  ↓</span><br><span class="line">前端解析后的值与类型</span><br><span class="line">  ↓</span><br><span class="line">页面状态或分享 URL</span><br><span class="line">  ↓</span><br><span class="line">埋点参数构造结果</span><br><span class="line">  ↓</span><br><span class="line">SDK 接收日志</span><br><span class="line">  ↓</span><br><span class="line">分析平台最终参数</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-先看原始-Response"><a href="#1-先看原始-Response" class="headerlink" title="1. 先看原始 Response"></a>1. 先看原始 Response</h3><p>在 Network 面板中确认：</p>
+<ul>
+<li>ID 是否带引号；</li>
+<li>原始文本中的每一位是否完整；</li>
+<li>同一字段在不同接口中是否使用相同类型；</li>
+<li>接口文档和真实响应是否一致。</li>
+</ul>
+<h3 id="2-同时打印“值、类型、安全性”"><a href="#2-同时打印“值、类型、安全性”" class="headerlink" title="2. 同时打印“值、类型、安全性”"></a>2. 同时打印“值、类型、安全性”</h3><p>只打印值不够。字符串 <code>&quot;123&quot;</code> 和数字 <code>123</code> 在普通日志中看起来很像。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> value = response.<span class="property">activityId</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(&#123;</span><br><span class="line">  value,</span><br><span class="line">  <span class="attr">type</span>: <span class="keyword">typeof</span> value,</span><br><span class="line">  <span class="attr">safe</span>: <span class="keyword">typeof</span> value === <span class="string">&#x27;number&#x27;</span></span><br><span class="line">    ? <span class="title class_">Number</span>.<span class="title function_">isSafeInteger</span>(value)</span><br><span class="line">    : <span class="string">&#x27;not-a-number&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-找到第一次不一致"><a href="#3-找到第一次不一致" class="headerlink" title="3. 找到第一次不一致"></a>3. 找到第一次不一致</h3><p>可以把证据整理成：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">原始 Response：9007199254740993（JSON Number）</span><br><span class="line">前端变量：     9007199254740992（number）</span><br><span class="line">分享 URL：     9007199254740992</span><br><span class="line">SDK 日志：     &quot;9007199254740992&quot;</span><br></pre></td></tr></table></figure>
+
+<p>第一次变化发生在“原始 Response → 前端变量”，排查范围就可以收敛到 JSON 解析和数据类型，而不是继续在埋点平台里盲目查找。</p>
+<h3 id="4-修复后重新走完整链路"><a href="#4-修复后重新走完整链路" class="headerlink" title="4. 修复后重新走完整链路"></a>4. 修复后重新走完整链路</h3><p>本次修复后，我重新执行了真实入口、页面操作、分享归因和埋点上报，最终确认：</p>
+<ul>
+<li>页面不再出现字符串方法报错；</li>
+<li>活动 ID 以完整字符串进入前端；</li>
+<li>分享归因参数与原始 ID 一致；</li>
+<li>SDK 日志接收到的埋点参数逐位一致。</li>
+</ul>
+<p>验收的重点不是“开发加了一个转换函数”，而是证据证明 ID 从源头到最终消费者都没有再次变化。</p>
+<h2 id="十一、边界测试不能只放一个超长-ID"><a href="#十一、边界测试不能只放一个超长-ID" class="headerlink" title="十一、边界测试不能只放一个超长 ID"></a>十一、边界测试不能只放一个超长 ID</h2><p>一个成熟的测试集不仅要覆盖“很长”，还要覆盖类型、边界和格式。</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>示例输入</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>普通字符串 ID</td>
+<td><code>&quot;123456&quot;</code></td>
+<td>原样保留</td>
+</tr>
+<tr>
+<td>最大安全整数 Number</td>
+<td><code>9007199254740991</code></td>
+<td>可识别为安全整数</td>
+</tr>
+<tr>
+<td>超过安全边界的 Number</td>
+<td><code>9007199254740992</code></td>
+<td>拒绝作为 ID 继续传递</td>
+</tr>
+<tr>
+<td>发生碰撞的典型值</td>
+<td><code>9007199254740993</code></td>
+<td>必须使用字符串</td>
+</tr>
+<tr>
+<td>超长字符串 ID</td>
+<td><code>&quot;9007199254740993&quot;</code></td>
+<td>每一位保持不变</td>
+</tr>
+<tr>
+<td>带前导零</td>
+<td><code>&quot;001234&quot;</code></td>
+<td>不得变成 <code>1234</code></td>
+</tr>
+<tr>
+<td>空字符串</td>
+<td><code>&quot;&quot;</code></td>
+<td>按契约明确拒绝或处理</td>
+</tr>
+<tr>
+<td>非数字字符</td>
+<td><code>&quot;12A34&quot;</code></td>
+<td>按真实 ID 格式规则处理</td>
+</tr>
+<tr>
+<td><code>null</code> 或字段缺失</td>
+<td><code>null</code></td>
+<td>不得静默变成 <code>&quot;null&quot;</code></td>
+</tr>
+</tbody></table>
+<p>接口测试可以先检查类型：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title function_">expect</span>(<span class="keyword">typeof</span> response.<span class="property">activityId</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;string&#x27;</span>);</span><br><span class="line"><span class="title function_">expect</span>(response.<span class="property">activityId</span>).<span class="title function_">toMatch</span>(<span class="regexp">/^\d+$/</span>);</span><br></pre></td></tr></table></figure>
+
+<p>端到端测试则要检查值是否贯穿全链路：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">接口原始 ID</span><br><span class="line">=== 页面使用的 ID</span><br><span class="line">=== 分享链接中的 ID</span><br><span class="line">=== 埋点日志中的 ID</span><br></pre></td></tr></table></figure>
+
+<p>这里不能只断言字段“存在”，还应断言它与源值完全相等。</p>
+<h2 id="十二、五种看似有效的错误修复"><a href="#十二、五种看似有效的错误修复" class="headerlink" title="十二、五种看似有效的错误修复"></a>十二、五种看似有效的错误修复</h2><h3 id="1-只删掉-trim"><a href="#1-只删掉-trim" class="headerlink" title="1. 只删掉 trim()"></a>1. 只删掉 <code>trim()</code></h3><p>它只能消除类型报错，不能解决精度丢失。</p>
+<h3 id="2-在最后调用-String"><a href="#2-在最后调用-String" class="headerlink" title="2. 在最后调用 String()"></a>2. 在最后调用 <code>String()</code></h3><p>如果前面已经经过不安全的 Number，只会得到错误数字的字符串。</p>
+<h3 id="3-只修改-TypeScript-类型"><a href="#3-只修改-TypeScript-类型" class="headerlink" title="3. 只修改 TypeScript 类型"></a>3. 只修改 TypeScript 类型</h3><figure class="highlight typescript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ResponseData</span> &#123;</span><br><span class="line">  <span class="attr">activityId</span>: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>类型声明不会自动改写真实 HTTP 响应。接口 Schema、服务端序列化和运行时数据必须保持一致。</p>
+<h3 id="4-看到事件上报就判通过"><a href="#4-看到事件上报就判通过" class="headerlink" title="4. 看到事件上报就判通过"></a>4. 看到事件上报就判通过</h3><p>事件存在不代表关键参数正确。错误 ID 可能造成归因失败、对象关联不上，甚至把两个对象错误合并。</p>
+<h3 id="5-只使用短-ID-回归"><a href="#5-只使用短-ID-回归" class="headerlink" title="5. 只使用短 ID 回归"></a>5. 只使用短 ID 回归</h3><p>短 ID 无法触发安全整数问题。回归数据必须包含安全边界之外的字符串 ID。</p>
+<h2 id="十三、一份可复用的检查清单"><a href="#十三、一份可复用的检查清单" class="headerlink" title="十三、一份可复用的检查清单"></a>十三、一份可复用的检查清单</h2><ul>
+<li><input disabled="" type="checkbox"> 原始 Response 中的业务 ID 是否带引号</li>
+<li><input disabled="" type="checkbox"> 接口 Schema 是否把 ID 定义为 <code>string</code></li>
+<li><input disabled="" type="checkbox"> 前端类型声明是否与真实响应一致</li>
+<li><input disabled="" type="checkbox"> 代码中是否对 ID 使用了 <code>Number</code>、<code>parseInt</code> 或一元加号</li>
+<li><input disabled="" type="checkbox"> 数字型 ID 是否经过 <code>Number.isSafeInteger()</code> 检查</li>
+<li><input disabled="" type="checkbox"> 是否同时记录了值、<code>typeof</code> 和安全整数结果</li>
+<li><input disabled="" type="checkbox"> 是否对比接口、页面、URL、SDK 日志和分析平台中的同一 ID</li>
+<li><input disabled="" type="checkbox"> 是否覆盖 <code>2^53 - 1</code> 附近的边界值</li>
+<li><input disabled="" type="checkbox"> 是否覆盖超长字符串、前导零、空值和字段缺失</li>
+<li><input disabled="" type="checkbox"> 修复后是否重新执行完整业务入口</li>
+<li><input disabled="" type="checkbox"> 验收报告是否保留原始响应与最终参数的脱敏证据</li>
+</ul>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>这次问题最容易被记成一个 JavaScript 小知识：超过 <code>Number.MAX_SAFE_INTEGER</code> 的整数可能不准确。</p>
+<p>但对测试来说，更值得沉淀的是三层判断。</p>
+<p>第一层是<strong>数据语义</strong>：</p>
+<blockquote>
+<p>看起来像数字，不代表就应该使用数字类型。只负责“它是谁”的字段，更适合字符串。</p>
+</blockquote>
+<p>第二层是<strong>错误发生的位置</strong>：</p>
+<blockquote>
+<p>最终参数错了，不代表问题发生在最终平台。要沿数据链路找到第一次变化。</p>
+</blockquote>
+<p>第三层是<strong>验收证据</strong>：</p>
+<blockquote>
+<p>事件出现只是第一步。关键参数的值和类型必须从接口到最终消费者保持一致。</p>
+</blockquote>
+<p>一个 <code>trim()</code> 报错让问题露出了头，真正危险的却是没有报错的那一位数字。测试的价值，恰恰在于把这种“系统仍能运行，但数据已经不可信”的问题找出来。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://tc39.es/ecma262/2025/multipage/numbers-and-dates.html#sec-number.max_safe_integer">ECMAScript：Number.MAX_SAFE_INTEGER</a></li>
+<li><a target="_blank" rel="noopener" href="https://tc39.es/ecma262/multipage/structured-data.html#sec-json.parse">ECMAScript：JSON.parse</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc8259#section-6">RFC 8259：The JavaScript Object Notation (JSON) Data Interchange Format</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linn0813.github.io">yuxiaoling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linn0813.github.io/2026-08-28-javascript-long-id-tracking-precision/">https://linn0813.github.io/2026-08-28-javascript-long-id-tracking-precision/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">版权所有，转载请注明出处。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/JavaScript/">JavaScript</a><a class="post-meta__tags" href="/tags/%E5%9F%8B%E7%82%B9%E6%B5%8B%E8%AF%95/">埋点测试</a><a class="post-meta__tags" href="/tags/%E5%A4%A7%E6%95%B4%E6%95%B0/">大整数</a><a class="post-meta__tags" href="/tags/%E6%8E%A5%E5%8F%A3%E5%A5%91%E7%BA%A6/">接口契约</a><a class="post-meta__tags" href="/tags/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/">故障排查</a></div><div class="post-share"><div class="social-share" data-image="/img/javascript-long-id-tracking-precision.svg" data-sites="wechat,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026-08-27-tracking-validation-device-switch-evidence-chain/" title="埋点验收中途换手机，怎样保证证据链不断？"><img class="cover" src="/img/tracking-device-switch-evidence-chain.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">埋点验收中途换手机，怎样保证证据链不断？</div></div><div class="info-2"><div class="info-item-1">结合一次中途更换 Android 真机的埋点验收实践，讲清如何保留同一验收任务、重建采集窗口，并用设备段、证据索引和结论历史保证结果可追溯。</div></div></div></a><a class="pagination-related" href="/2026-09-01-automation-pass-not-feature-proof/" title="自动化用例通过了，为什么我仍然不敢说功能没问题？"><img class="cover" src="/img/automation-pass-not-feature-proof.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">自动化用例通过了，为什么我仍然不敢说功能没问题？</div></div><div class="info-2"><div class="info-item-1">自动化用例全绿，只能证明特定条件下的实际结果符合断言。本文用执行、断言、覆盖和业务结论四层模型，分析“假绿”从哪里产生，以及测试人员怎样给出有边界的质量结论。</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025-07-16-vue-js-file-naming-guide/" title="🧠Vue 项目中的 JS 文件命名规范实战指南：让代码一眼读懂！"><img class="cover" src="/img/vue-js-naming.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-16</div><div class="info-item-2">🧠Vue 项目中的 JS 文件命名规范实战指南：让代码一眼读懂！</div></div><div class="info-2"><div class="info-item-1">全面介绍 Vue 项目中 JS 文件的命名规范，涵盖不同命名格式、适用场景、命名建议及注意事项，助你让项目代码结构更清晰、维护更高效！</div></div></div></a><a class="pagination-related" href="/2026-08-11-ai-assisted-tracking-testing/" title="如何让 AI 协助埋点测试：从埋点文档到 Firebase 验收报告"><img class="cover" src="/img/ai-assisted-tracking-testing.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-11</div><div class="info-item-2">如何让 AI 协助埋点测试：从埋点文档到 Firebase 验收报告</div></div><div class="info-2"><div class="info-item-1">结合一次真实但已脱敏的移动端实践，讲清如何让 AI 从埋点文档出发，联动真机、设备日志与 Firebase DebugView，完成可追溯的埋点验收。</div></div></div></a><a class="pagination-related" href="/2026-08-27-tracking-validation-device-switch-evidence-chain/" title="埋点验收中途换手机，怎样保证证据链不断？"><img class="cover" src="/img/tracking-device-switch-evidence-chain.svg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-27</div><div class="info-item-2">埋点验收中途换手机，怎样保证证据链不断？</div></div><div class="info-2"><div class="info-item-1">结合一次中途更换 Android 真机的埋点验收实践，讲清如何保留同一验收任务、重建采集窗口，并用设备段、证据索引和结论历史保证结果可追溯。</div></div></div></a><a class="pagination-related" href="/2026-09-03-tracking-pass-not-run-boundary/" title="12 条 Pass、8 条 Not Run，为什么最终仍能判断埋点通过？"><img class="cover" src="/img/tracking-pass-not-run-boundary.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-03</div><div class="info-item-2">12 条 Pass、8 条 Not Run，为什么最终仍能判断埋点通过？</div></div><div class="info-2"><div class="info-item-1">埋点验收出现 12 条 Pass、8 条 Not Run 时，为什么不能简单算出 60% 通过率就下结论？本文讲清 Pass/Fail/Blocked/Not Run 四态的判定边界，以及"没跑到"和"跑挂了"为什么必须分开。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%85%88%E8%BF%98%E5%8E%9F%E9%97%AE%E9%A2%98%EF%BC%9A%E4%B8%80%E4%B8%AA%E6%8A%A5%E9%94%99%E5%92%8C%E4%B8%80%E4%B8%AA%E9%9D%99%E9%BB%98%E9%94%99%E8%AF%AF"><span class="toc-number">1.</span> <span class="toc-text">一、先还原问题：一个报错和一个静默错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E4%B8%89%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0%EF%BC%9A%E4%B8%A4%E4%B8%AA-ID-%E5%8F%98%E6%88%90%E4%BA%86%E5%90%8C%E4%B8%80%E4%B8%AA"><span class="toc-number">2.</span> <span class="toc-text">二、三行代码复现：两个 ID 变成了同一个</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BE%B9%E7%95%8C%E6%98%AF-2-53-1"><span class="toc-number">3.</span> <span class="toc-text">三、为什么边界是 2^53 - 1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E7%B2%BE%E5%BA%A6%E5%88%B0%E5%BA%95%E5%9C%A8%E5%93%AA%E4%B8%80%E6%AD%A5%E4%B8%A2%E5%A4%B1"><span class="toc-number">4.</span> <span class="toc-text">四、精度到底在哪一步丢失</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%80%E5%90%8E%E5%86%8D%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%95%91%E4%B8%8D%E5%9B%9E%E6%9D%A5"><span class="toc-number">5.</span> <span class="toc-text">五、为什么最后再转字符串救不回来</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%99%AE%E9%80%9A-reviver-%E4%B8%BA%E4%BB%80%E4%B9%88%E7%BB%8F%E5%B8%B8%E4%B9%9F%E8%A1%A5%E6%95%91%E4%B8%8D%E4%BA%86"><span class="toc-number">6.</span> <span class="toc-text">六、普通 reviver 为什么经常也补救不了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88-ID-%E5%BA%94%E8%AF%A5%E6%98%AF%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">7.</span> <span class="toc-text">七、为什么 ID 应该是字符串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81BigInt-%E8%83%BD%E4%B8%8D%E8%83%BD%E8%A7%A3%E5%86%B3"><span class="toc-number">8.</span> <span class="toc-text">八、BigInt 能不能解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E4%BF%AE%E5%A4%8D%E5%BA%94%E8%AF%A5%E5%88%86%E4%B8%89%E5%B1%82"><span class="toc-number">9.</span> <span class="toc-text">九、修复应该分三层</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%B1%82%EF%BC%9A%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%BF%AE%E6%AD%A3%E6%8E%A5%E5%8F%A3%E5%A5%91%E7%BA%A6"><span class="toc-number">9.1.</span> <span class="toc-text">第一层：服务端修正接口契约</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%B1%82%EF%BC%9A%E5%89%8D%E7%AB%AF%E5%A2%9E%E5%8A%A0%E9%98%B2%E5%BE%A1%E6%80%A7%E6%A0%A1%E9%AA%8C"><span class="toc-number">9.2.</span> <span class="toc-text">第二层：前端增加防御性校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E5%B1%82%EF%BC%9A%E6%9A%82%E6%97%B6%E6%94%B9%E4%B8%8D%E4%BA%86%E6%8E%A5%E5%8F%A3%E6%97%B6%EF%BC%8C%E4%BF%9D%E7%95%99%E5%8E%9F%E5%A7%8B%E6%96%87%E6%9C%AC"><span class="toc-number">9.3.</span> <span class="toc-text">第三层：暂时改不了接口时，保留原始文本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%9F%8B%E7%82%B9%E9%AA%8C%E6%94%B6%E6%80%8E%E6%A0%B7%E5%AE%9A%E4%BD%8D%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%8F%98%E5%8C%96"><span class="toc-number">10.</span> <span class="toc-text">十、埋点验收怎样定位第一次变化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%85%88%E7%9C%8B%E5%8E%9F%E5%A7%8B-Response"><span class="toc-number">10.1.</span> <span class="toc-text">1. 先看原始 Response</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%90%8C%E6%97%B6%E6%89%93%E5%8D%B0%E2%80%9C%E5%80%BC%E3%80%81%E7%B1%BB%E5%9E%8B%E3%80%81%E5%AE%89%E5%85%A8%E6%80%A7%E2%80%9D"><span class="toc-number">10.2.</span> <span class="toc-text">2. 同时打印“值、类型、安全性”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%89%BE%E5%88%B0%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-number">10.3.</span> <span class="toc-text">3. 找到第一次不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%BF%AE%E5%A4%8D%E5%90%8E%E9%87%8D%E6%96%B0%E8%B5%B0%E5%AE%8C%E6%95%B4%E9%93%BE%E8%B7%AF"><span class="toc-number">10.4.</span> <span class="toc-text">4. 修复后重新走完整链路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E8%BE%B9%E7%95%8C%E6%B5%8B%E8%AF%95%E4%B8%8D%E8%83%BD%E5%8F%AA%E6%94%BE%E4%B8%80%E4%B8%AA%E8%B6%85%E9%95%BF-ID"><span class="toc-number">11.</span> <span class="toc-text">十一、边界测试不能只放一个超长 ID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E4%BA%94%E7%A7%8D%E7%9C%8B%E4%BC%BC%E6%9C%89%E6%95%88%E7%9A%84%E9%94%99%E8%AF%AF%E4%BF%AE%E5%A4%8D"><span class="toc-number">12.</span> <span class="toc-text">十二、五种看似有效的错误修复</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%8F%AA%E5%88%A0%E6%8E%89-trim"><span class="toc-number">12.1.</span> <span class="toc-text">1. 只删掉 trim()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%9C%A8%E6%9C%80%E5%90%8E%E8%B0%83%E7%94%A8-String"><span class="toc-number">12.2.</span> <span class="toc-text">2. 在最后调用 String()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%8F%AA%E4%BF%AE%E6%94%B9-TypeScript-%E7%B1%BB%E5%9E%8B"><span class="toc-number">12.3.</span> <span class="toc-text">3. 只修改 TypeScript 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%9C%8B%E5%88%B0%E4%BA%8B%E4%BB%B6%E4%B8%8A%E6%8A%A5%E5%B0%B1%E5%88%A4%E9%80%9A%E8%BF%87"><span class="toc-number">12.4.</span> <span class="toc-text">4. 看到事件上报就判通过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%8F%AA%E4%BD%BF%E7%94%A8%E7%9F%AD-ID-%E5%9B%9E%E5%BD%92"><span class="toc-number">12.5.</span> <span class="toc-text">5. 只使用短 ID 回归</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E4%B8%80%E4%BB%BD%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-number">13.</span> <span class="toc-text">十三、一份可复用的检查清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">14.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">15.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 - 2026 By yuxiaoling</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Linn0813/Linn0813.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script src="/js/blog-enhancements.js"></script><script src="/js/category-enhancements.js"></script><script src="/js/archive-enhancements.js"></script><script src="/js/tag-enhancements.js"></script><script src="/js/index-enhancements.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章、分类、标签..." type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
